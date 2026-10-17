@@ -1,0 +1,19 @@
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/[Ll]ogs/
+/[Uu]ser[Ss]ettings/
+*.csproj
+*.sln
+.vs/
+.idea/
+LogicTests/bin/
+LogicTests/obj/
+/Assets/XR [0-9]*
+/Assets/XR [0-9]*.meta
+*.apk
+/.utmp/
+/ProjectSettings/Packages/
+!/LogicTests/LogicTests.csproj
