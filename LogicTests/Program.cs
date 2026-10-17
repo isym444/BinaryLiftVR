@@ -22,9 +22,65 @@ static class Program
         PlayerWinsWithSetBitsOnly();
         NpcWinsIfPlayerIdles();
         RulesRejectIllegalMoves();
+        CampusQuestProgression();
+        PhysicalClimbProgression();
+        AdventureFlow();
 
         Console.WriteLine(failures == 0 ? "ALL PASSED" : failures + " FAILURE(S)");
         return failures == 0 ? 0 : 1;
+    }
+
+    static void AdventureFlow()
+    {
+        for(int seed=0;seed<40;seed++)
+        {
+            var s=new AdventureState(seed);
+            var original=TreeGenerator.Generate(seed,16,18);
+            Check(string.Join(",",s.Tree.Parent)==string.Join(",",original.Parent),"original tree topology retained");
+            Check(!s.BeginChase()&&!s.Choose(1)&&!s.EnterTree(),"classroom cannot be skipped");
+            Check(s.ExitClassroom()&&!s.ExitClassroom()&&s.BeginChase()&&!s.BeginChase(),"exit and theft occur once");
+            Check(s.ReachGate()&&s.EnterTree(),"mapping precedes tree");
+            while(s.Remaining>0)
+            {
+                int span=8;while(span>s.Remaining)span/=2;
+                int from=s.Node,levels=s.TotalLevels;
+                Check(!s.Choose(3)&&!s.Choose(16),"only valid powers of two");
+                Check(s.Choose(span)&&s.Node==from&&s.TotalLevels==levels,"selection never moves player");
+                Check(!s.Pull(0)&&!s.Pull(-1)&&!s.Pull(float.NaN)&&!s.Pull(float.PositiveInfinity)&&!s.Pull(.21f),"invalid or discontinuous pulls rejected");
+                s.Pull(.1f);Check(s.TotalLevels==levels&&s.Node==from&&s.EdgeProgress>0,"partial edge is not a completed level");
+                int guard=0;
+                while(s.Phase==AdventurePhase.Climbing&&guard++<1000)
+                {
+                    int old=s.Node,oldLevels=s.TotalLevels;s.Pull(.1f);
+                    if(old!=s.Node)Check(s.Node==s.Tree.Parent[old]&&s.TotalLevels==oldLevels+1,"each crossed edge is counted once");
+                }
+                Check(guard<1000&&s.Node==s.Tree.KthAncestor(from,span)&&s.CompletedInSelection==span,"multi-level selection traverses every ancestor");
+            }
+            Check(s.Phase==AdventurePhase.Clue&&s.Node==s.Goal&&s.TotalLevels==s.RequiredLevels,"full route reaches original target");
+            Check(Math.Abs(s.TotalPull-s.RequiredLevels*AdventureState.PullPerEdge)<.001f,"selection length does not bypass physical effort");
+            Check(s.CollectCone()&&!s.CollectCone()&&!s.Pull(.1f)&&!s.Choose(1)&&!s.BeginChase(),"single terminal ending");
+        }
+    }
+
+    static void PhysicalClimbProgression()
+    {
+        var p = new ClimbProgress();
+        Check(p.Ancestor(9)==8, "unassisted return follows one real branch");
+        Check(!p.Collect(2) && !p.Collect(-1), "only physical clue nodes collect");
+        Check(p.Collect(9) && !p.Collect(9), "free exploration and unique collection");
+        Check(p.Reach==2 && p.Ancestor(9)==3, "two-edge return crosses branch junction");
+        p.Collect(3);
+        Check(p.Ancestor(11)==3, "four-edge return stays on ancestor route");
+        p.Collect(7); p.Collect(11);
+        Check(p.Cones==4 && p.Reach==8, "four cones cap reach at eight");
+        Check(p.Ancestor(12)==0, "eight-edge rope reaches the root from the crown");
+        Check(p.Ancestor(0)==-1 && p.Ancestor(100)==-1, "no root or invalid return");
+        for(int i=1;i<p.Tree.Count;i++)
+        {
+            int a=p.Ancestor(i);
+            Check(a>=0 && p.Tree.Depth[a]<p.Tree.Depth[i], "return always moves rootward");
+        }
+        Check(new ClimbProgress().Cones==0, "restart has no collected cones");
     }
 
     static void KthAncestorMatchesNaive()
@@ -127,5 +183,40 @@ static class Program
         for (int j = 0; j < shallow.Bits; j++)
             if (shallow.Up[j][r2.Player] < 0) Check(!r2.TryPortal(j), "overshooting portal refused");
         Check(r2.Moves == movesBefore, "refused portals do not count as moves");
+    }
+
+    static void CampusQuestProgression()
+    {
+        var q = new CampusQuestState();
+        Check(!q.TryJump(1) && !q.PickUpCone(), "quest blocks actions before briefing ends");
+        Check(q.Begin() && !q.Begin(), "quest starts exactly once");
+        Check(!q.TryJump(2) && !q.TryJump(0) && !q.TryJump(-1), "locked and invalid jumps rejected");
+        Check(!q.PickUpCone() && !q.DepositCone(), "cannot collect remotely or deposit empty hands");
+        int[] legs = { 1, 2, 4 };
+        foreach (int leg in legs)
+        {
+            Check(q.CanJump(leg), "new jump available: " + leg);
+            var preview = q.Preview(leg);
+            Check(preview.Count == leg + 1 && preview[0] == q.Node && preview[leg] == q.Goal, "preview follows each parent edge");
+            Check(q.TryJump(leg) && q.Node == q.Goal, "jump reaches clue");
+            Check(!q.TryJump(1), "cannot overshoot a clue");
+            Check(q.PickUpCone() && !q.PickUpCone(), "cone cannot be duplicated");
+            Check(!q.TryJump(1), "cannot travel while carrying cone");
+            Check(q.ReturnCone() && q.PickUpCone(), "dropped cone can be recovered");
+            Check(q.DepositCone() && !q.DepositCone(), "deposit unlocks exactly once");
+        }
+        Check(q.Remaining == 13 && q.MaxJump == 8, "final challenge teaches 13 = 8 + 4 + 1");
+        Check(!q.TryJump(3) && !q.TryJump(16), "non-powers and unavailable powers rejected");
+        Check(q.TryJump(8) && !q.TryJump(8) && q.TryJump(4) && q.TryJump(1), "final bit decomposition");
+        Check(q.PickUpCone() && q.DepositCone(), "last clue stored");
+        Check(q.Phase == QuestPhase.Complete && q.Cones == 4 && q.Moves == 6, "complete in six jumps");
+        Check(!q.Begin() && !q.TryJump(1) && !q.PickUpCone() && !q.ReturnCone(), "completion is terminal");
+        var visited = q.BreadthFirstOrder();
+        var unique = new HashSet<int>(visited);
+        Check(visited.Count == q.Tree.Count && unique.Count == q.Tree.Count, "BFS visits every node once");
+        for (int i = 1; i < visited.Count; i++)
+            Check(q.Tree.Depth[visited[i]] >= q.Tree.Depth[visited[i-1]], "BFS visits nondecreasing depth");
+        var reset = new CampusQuestState();
+        Check(reset.Node == 20 && reset.Cones == 0 && reset.Moves == 0 && reset.Phase == QuestPhase.Briefing, "fresh session resets progression");
     }
 }

@@ -1,0 +1,66 @@
+Adventure integration checks
+PASS arrival waits in classroom
+PASS selection cannot skip classroom
+PASS walk through classroom exit
+PASS walk checkpoint 0
+PASS walk checkpoint 1
+PASS walk checkpoint 2
+PASS walk checkpoint 3
+PASS walk checkpoint 4
+PASS walk checkpoint 5
+PASS walk checkpoint 6
+PASS all checkpoints precede tree reveal
+PASS original 35-node structure
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS all physical levels counted
+PASS cone ends journey
+PASS single complete state
+PASS results and collected cone visible
+PASS no second game controller
+PASS replay accepted
+PASS replay returns to clean classroom
+PASS one adventure controller after replay
+Result: PASS
+Headset validation: NOT RUN

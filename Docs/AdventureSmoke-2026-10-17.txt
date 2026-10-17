@@ -1,0 +1,38 @@
+Adventure integration checks
+PASS arrival waits for player
+PASS upgrade cannot skip arrival
+PASS notebook starts theft
+PASS walk checkpoint 0
+PASS walk checkpoint 1
+PASS walk checkpoint 2
+PASS walk checkpoint 3
+PASS all chase checkpoints precede transition
+PASS selection buttons unobstructed by duplicate HUD
+PASS two-level upgrade locked
+PASS ordinary connection selected
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS ordinary connection selected
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS holding still cannot climb
+PASS ordinary route requires two segments
+PASS cone collected
+PASS horse displays recovered cone
+PASS repeat transition accepted
+PASS repeat uses identical starting node
+PASS two-edge ancestor connection unlocked
+PASS full adventure reaches completion
+PASS same route uses one segment and less pull
+PASS comparison and replay controls visible
+Result: PASS
+Headset validation: NOT RUN
