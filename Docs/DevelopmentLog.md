@@ -303,3 +303,11 @@ The publication commit includes the previously uncommitted foundation and histor
 prototype sources needed to preserve the team's work; legacy modes are not reachable
 from the default adventure. Personal .cursor files and line-ending-only XR/project
 settings are left local. Main remains at its original commit.
+
+### GitHub publication verified
+Published implementation commit eb6d436f317564696b30e9cd622fb428e39ddef9 with a normal
+push to origin HEAD:refs/heads/Fexas. A fresh git ls-remote confirmed Fexas matches
+that exact commit and main remains 15279ec90778d1ff7e01b3e04f51e833d8b57184.
+Fexas now tracks origin/Fexas. This publication receipt is a documentation-only
+follow-up to the tested implementation. Pre-existing line-ending-only XR/project
+settings and personal .cursor files remain local and were not uploaded.

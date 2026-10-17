@@ -61,3 +61,9 @@ Art owner: propose free non-AI rigged horse/monkey and campus assets for approva
 import. Use current named primitives as replacement points and preserve target contracts.
 Gameplay owner: retain single-flow completion and original tree structure; extend seeds
 or progression only after agreeing the next experience with the user.
+
+## Published implementation
+Implementation commit eb6d436f317564696b30e9cd622fb428e39ddef9 was pushed to Fexas
+and verified against the remote. Main was verified unchanged at
+15279ec90778d1ff7e01b3e04f51e833d8b57184. This handoff receipt is a documentation-only
+follow-up; the tested gameplay implementation is the commit named above.
