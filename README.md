@@ -52,6 +52,11 @@ All visuals are approved code-built Unity primitives and materials. No AI media,
 external art, reference-photo pixels or audio assets were imported. This is a playable
 prototype with placeholder characters, not a final-art campus reconstruction.
 
+Next revision: the exploration, cone collection, two-edge/four-edge connection and
+target-reuse loop is approved, with asset selection first. See
+[the current shortlist](Docs/AssetSelection-2026-10-18.md). Limited AI decoration is
+now permitted subject to preview approval; none has been generated or imported yet.
+
 Read AGENTS.md, Docs/Handoff.md, Docs/Design.md and Docs/TeamWorkflow.md before changes.
 Keep English development logs and handoffs current. Runtime milestone logs remain local
 under Application.persistentDataPath/QuestLogs; no account data or pose streams are logged.

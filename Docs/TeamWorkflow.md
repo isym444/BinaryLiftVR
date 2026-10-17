@@ -7,7 +7,10 @@ Docs/DevelopmentLog.md before editing. Inspect git status and preserve other peo
 ## Language and assets
 - Use English for code identifiers, comments, logs, filenames, UI, documentation,
   commit messages, and pull request descriptions.
-- Do not use AI-generated media. Primitive blockouts have been explicitly approved.
+- The user permits a small amount of AI-generated media as of 2026-10-18. Identify
+  generated candidates explicitly and obtain preview approval before import. Record
+  the tool, prompt, date, applicable terms, edits and approval in the asset register.
+  Primitive blockouts remain approved. No specific AI asset has been approved yet.
 - Use only free external assets after the user approves the specific source and preview.
 - Record asset provenance, license, cost, approval, and intended use in Docs/AssetRegister.md.
 - Never treat a reference photo or a free license as permission to import an asset.

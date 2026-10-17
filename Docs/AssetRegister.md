@@ -1,6 +1,6 @@
 # Asset register
 
-Last reviewed: 2026-10-17. External asset approval is pending. Nothing below has been
+Last reviewed: 2026-10-18. External asset approval is pending. Nothing below has been
 downloaded or imported. A free licence is not approval to import.
 
 ## Current prototype inventory
@@ -11,7 +11,9 @@ downloaded or imported. A free licence is not approval to import.
 - Font: Unity's bundled LegacyRuntime.ttf, used through the built-in resource API.
 - Sounds/music/voices: none. Haptic impulses are code-driven device feedback.
 - Reference photo: supplied in conversation; reference-only, not copied into Assets.
-- AI-generated media: none. Do not invoke image/audio/mesh generation services.
+- AI-generated media: none currently. The user now permits a small amount, superseding
+  the original prohibition. Show clearly labelled previews before importing any.
+  See AssetSelection-2026-10-18.md for the current proposal and pending decisions.
 
 ## Free candidate shortlist — approval required
 
@@ -37,7 +39,7 @@ downloaded or imported. A free licence is not approval to import.
 
 ### Horse, monkey, and University of Glasgow architecture
 - No specific external pack selected or approved.
-- Keep primitive placeholders until a free, non-AI source with a suitable preview,
+- Keep primitive placeholders until a free source with a suitable preview,
   explicit redistribution licence, manageable geometry and animation support is reviewed.
 - Team-authored art is another option. Record its author and permission before import.
 - Do not treat a model hosted on a marketplace as evidence of authorship or non-AI provenance.
@@ -46,3 +48,10 @@ downloaded or imported. A free licence is not approval to import.
 Record exact source URL, author, preview, asset version, licence text/file, price (zero),
 approval date, intended use, any attribution, and modifications. Preserve a copy of its
 licence. Check model scale, texture sizes, material count, rig/animation, and Quest cost.
+
+## Current campus shortlist
+The dated selection document records the proposed Poly Haven Sandstone Blocks 08,
+Kenney Furniture Kit and Quaternius Ultimate Animated Animal Pack, with official
+preview/source links, licence, zero-cost download options and inspection limitations.
+All remain candidates. University photography is reference-only. No asset archive,
+texture, model, audio clip or AI-generated artwork was downloaded or imported.

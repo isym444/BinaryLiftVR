@@ -6,7 +6,10 @@ Applies to this entire repository.
   entry before changing code. Inspect git status and preserve existing work.
 - Write all game text, identifiers, comments, logs, filenames, documentation, commits
   and PR descriptions in English. Conversation with the user may use their language.
-- Do not import or generate AI media. Approved Unity primitive blockouts are allowed.
+- The user permits a small amount of AI-generated media as of 2026-10-18.
+  Label generated candidates and obtain approval of their preview before import.
+  This replaces the earlier blanket prohibition; it is not approval of any specific asset.
+  Approved Unity primitive blockouts remain allowed.
 - External assets must be free and approved by the user after source, preview, licence,
   and proposed usage are presented. Maintain Docs/AssetRegister.md. The user's statue
   photo is reference-only; do not add it to the game.

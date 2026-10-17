@@ -311,3 +311,31 @@ that exact commit and main remains 15279ec90778d1ff7e01b3e04f51e833d8b57184.
 Fexas now tracks origin/Fexas. This publication receipt is a documentation-only
 follow-up to the tested implementation. Pre-existing line-ending-only XR/project
 settings and personal .cursor files remain local and were not uploaded.
+
+
+## Session 07 - Asset selection before the learning loop (2026-10-18)
+The user approved exploration, cone collection, two-edge connection construction,
+four-edge composition and target reuse, preserving manual climbing and the original
+single-flow game. The user requested asset selection before implementation, with real
+Glasgow campus references and a humorous fictional research-funding theft premise.
+A subsequent explicit instruction permits a small amount of AI-generated media.
+
+Reviewed official University of Glasgow Quadrangles/Cloisters references, Poly Haven
+Sandstone Blocks 08 and its publisher AI policy, Kenney Furniture Kit and publisher
+provenance, and Quaternius Ultimate Animated Animal Pack. Recorded previews, source,
+CC0 licences, free individual download options and untested integration details in
+AssetSelection-2026-10-18.md. No suitable monkey replacement has been selected.
+No external assets were downloaded/imported and no AI media was generated. Source-page
+image links are previews only. No gameplay implementation or new playtest is claimed.
+
+Updated AGENTS.md and TeamWorkflow.md to reflect the user's revised AI permission;
+updated AssetRegister.md, README.md and Handoff.md with the selection and next scope.
+Historical no-AI statements in earlier logs and validation reports remain accurate for
+those sessions. The revised permission does not approve any individual external asset.
+
+Baseline: Fexas with existing changes in XR settings, Packages/manifest.json,
+Packages/packages-lock.json, ProjectSettings/ProjectSettings.asset and local .cursor/.
+Preserved all these unrelated changes. Validation for this documentation-only step:
+review official source statements, inspect diff, check English content and whitespace.
+No Unity or headset run is warranted for documentation changes. Next: user selection,
+then approved import/integration and the learning loop, with actual input walkthrough.

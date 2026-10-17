@@ -55,12 +55,18 @@ No authorization to message teammates was given. External free assets still requ
 preview/source/license approval. The supplied statue photograph remains reference-only.
 
 ## Next owner actions
+The user has approved a small learning loop: explore individual levels, collect cones,
+build two-edge connections, compose four-edge connections, then change target and reuse
+valid connections. Asset selection must happen first. See AssetSelection-2026-10-18.md.
+No implementation or import for this new scope has occurred yet. Limited AI media is
+now permitted, with explicit provenance and preview approval before import.
+
 Hardware owner: follow VRValidation.md, particularly close grips/HUD, sideways branch
 motion, two-hand averaging, stationary aerial overlook and complete replay.
-Art owner: propose free non-AI rigged horse/monkey and campus assets for approval before
+Art owner: complete the free horse/monkey and campus asset selection for approval before
 import. Use current named primitives as replacement points and preserve target contracts.
-Gameplay owner: retain single-flow completion and original tree structure; extend seeds
-or progression only after agreeing the next experience with the user.
+Gameplay owner: retain single-flow completion and original tree structure; implement
+the approved small learning loop after the asset-selection decision.
 
 ## Published implementation
 Implementation commit eb6d436f317564696b30e9cd622fb428e39ddef9 was pushed to Fexas
