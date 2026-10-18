@@ -40,6 +40,9 @@ namespace BinaryLift
             Bronze = Mat(new Color(.18f, .26f, .27f));
             White = Mat(new Color(.92f, .88f, .76f));
             Muted = Mat(new Color(.16f, .23f, .27f));
+            var masonry=Resources.Load<Texture2D>("Approved/Sandstone");
+            var masonryShader=Resources.Load<Shader>("Sandstone");
+            if(masonry!=null && masonryShader!=null){Sand.shader=masonryShader;Sand.mainTexture=masonry;Sand.color=Color.white;}
             BuildCampus();
             Station = Root("Player station", transform);
             if (!climbing) BuildTerminal();

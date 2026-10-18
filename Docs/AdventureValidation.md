@@ -1,4 +1,63 @@
-# Adventure validation - current revision 2026-10-18
+# Learning-loop validation - current revision 2026-10-18
+
+## Scope and results
+Unity 6000.0.85f1 Windows Editor, Main scene. Scripts/Test-Logic.ps1: ALL PASSED.
+Coverage includes 40 adventure seeds, unchanged tree topology, source-node-specific
+memory, two/four-edge composition prerequisites, partial/rest/invalid pulls, equal
+physical effort per edge, target changes, unique rewards and clean reset.
+
+Unity method-driven integration: PASS (LearningLoopSmoke-2026-10-18.txt). It checks
+the full exploration/composition/reuse cycle, approved art loading, original 35 nodes,
+no RaceController, classroom reset and new-target text viewport margins.
+This runner calls gameplay methods directly; real input evidence is separate.
+
+## Actual desktop mouse walkthrough
+LearningLoopManual-2026-10-18.log contains the isolated manual run after the automated
+runner returned to the classroom at 00:11:07 UTC. All subsequent gameplay used real
+mouse clicks and drags, with fresh screenshots between actions.
+
+1. Exit classroom, trigger funding theft, follow seven campus markers and map reveal.
+2. Enter the original tree at 00:14:13. Select single levels. A short first pull and
+   released pause keep the counter at zero; a later pull completes that edge.
+3. At level two collect cone one separately, then drag the plug to the socket:
+   node 23 -> 13 -> 12 becomes a two-level connection.
+4. Climb two more individual edges, collect cone two, build 12 -> 11 -> 10, then
+   combine 23 -> 12 -> 10 into four levels at 00:17:53.
+5. Follow the funding to a six-level target. Select four, manually pull through all
+   four crossings, then select/climb one plus one. The HUD counts every crossed node.
+6. Collect cone three at 00:19:17. Results: six levels, three route decisions, one
+   remembered connection reused. No other game starts.
+7. Select New Target / Keep Memory. The target changes to five levels. Use 2+2+1,
+   manually climb every edge, and collect cone four at 00:20:29. Lifetime totals:
+   fifteen levels and three reused connections. Results stay in the same adventure.
+8. Replay from Classroom at 00:20:40 clears cones, climb count and route memory.
+
+## Presentation fixes and evidence
+The first attempt exposed clipped workshop instructions and platform occlusion.
+Panels were moved to a compact foreground dock and the recovery balcony now follows
+the active goal. The full manual walkthrough above used these fixes. After that run,
+the new-target panel alone moved down 0.08 world units to give its heading more margin;
+the final integration adds a projected-text bounds check. Input and progression did
+not change after the successful manual run.
+
+Current screenshots in Evidence/:
+- Adventure-Arrival-000315.png: approved sandstone, furniture and poster.
+- Adventure-Weaving-001743.png: real four-level composition workshop.
+- Adventure-Climbing-001833.png: live second crossing of a selected four-level route.
+- Adventure-Complete-001930.png: first recovered funding result.
+- Adventure-Complete-002033.png: repeat search result with four cones.
+
+No headset was connected. Stereo, physical reach, controller tracking, haptics,
+comfort and on-device performance remain NOT RUN. No APK was built or tested.
+The inherited 0.4 m instruction HUD and close workshop require hardware review.
+Desktop pull units are normalized mouse input, not measured human motion. Character
+models remain project geometry; approved imported art is listed in AssetRegister.md.
+
+---
+
+# Historical validation - original manual-climb revision, 2026-10-18
+
+The following results predate the learning-loop and approved-art changes above.
 
 ## Current results
 Unity 6000.0.85f1 Windows Editor, Main scene. Scripts/Test-Logic.ps1: ALL PASSED.

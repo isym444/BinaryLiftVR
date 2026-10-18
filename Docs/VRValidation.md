@@ -6,7 +6,7 @@ Record device model, runtime, controller type, build, date and tester; no serial
 ## Entry and locomotion
 - Build and launch on the intended device after installing matching Android modules.
 - Confirm OpenXR/controller profile, both-eye rendering, floor origin and seated height.
-- Explore the classroom, open the door, approach the notebook and trigger theft once.
+- Explore the classroom, open the door, approach the funding and trigger theft once.
 - Complete all seven checkpoints with left-stick movement and with optional ray walking.
 - Check clear routes around desks and the exit; the prototype is not a room-scale collision solver.
 
@@ -19,8 +19,11 @@ Record device model, runtime, controller type, build, date and tester; no serial
   Move or redesign the panel if uncomfortable; current depth is not hardware-approved.
 
 ## Manual climbing and collection
-- Select each available 1/2/4/8 connection. Selecting alone must not move the player.
-- Seed 13 has six target levels; use a longer seed in a test harness to exercise eight.
+- Initially only one level is available. Explore four levels with cone stops at two/four.
+- Join each pair through orange-plug/cyan-socket trigger selections; combine two pairs
+  into four. Check workshop text, connector reach and visible thread animation.
+- Select each learned 1/2/4 connection. Selecting alone must not move the player.
+- Change to the six-level target, retaining memory; manually traverse 4+1+1.
 - Reach and grip each rounded orange hold with either hand, then pull downward.
 - Alternate hands, use both hands, pause and release. Two hands must not double speed.
 - Verify motion follows the actual branch direction, including sideways connections.
@@ -28,7 +31,10 @@ Record device model, runtime, controller type, build, date and tester; no serial
 - Lose tracking or introduce a pose discontinuity: release safely without extra progress.
 - Check physical reach while seated, glove contact, personal space and haptic comfort.
 - Collect the final cone by nearby grip and by trigger ray in separate runs.
-- Results must contain only replay; no legacy controller or second game may start.
+- Results offer New Target / Keep Memory and Replay from Classroom only.
+- A new target preserves cones and node-specific connections, resets mission counts,
+  and fades to the start without forcing head rotation. Try 2+2+1 on the five-level target.
+- No legacy controller or second game may start.
 - Replay/reset must clear counters, trophy, grips and route reveal, returning to classroom.
 
 ## Performance and production gaps
@@ -36,4 +42,6 @@ Record device model, runtime, controller type, build, date and tester; no serial
 - Inspect the full campus/35-node overview and dense branch holds as worst-case views.
 - Repeat ten minutes of climbing and restarts; check object/material counts.
 - No device performance claim, verified APK, audio, persistent save, guardian integration
-  or final character rigs is included. All external art/audio needs separate approval.
+  or final character rigs is included. New external art/audio needs separate approval.
+- Profile the approved sandstone, furniture and poster on device; inspect mipmaps,
+  readability and texture/shader cost. See AssetRegister.md for exact imported sources.

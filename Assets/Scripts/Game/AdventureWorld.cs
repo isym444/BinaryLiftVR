@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BinaryLift
 {
-    public enum AdventureAction { Exit, Waypoint, OneLevel, TwoLevels, FourLevels, EightLevels, Grip, Cone, Replay }
+    public enum AdventureAction { Exit, Waypoint, OneLevel, TwoLevels, FourLevels, EightLevels, Grip, Cone, Replay, LinkStart, LinkEnd, NextTarget }
     public sealed class AdventureTarget : MonoBehaviour
     {
         public AdventureAction Action;
@@ -23,7 +23,11 @@ namespace BinaryLift
     {
         public CampusWorld Art { get; private set; }
         public Transform Course, Controls, Grips, Notebook, Cone, Marker, Intro, EndCard;
-        public Transform SafetyDeck, Instructions, Classroom, Door;
+        public Transform SafetyDeck, Instructions, Classroom, Door, Loom, NewSearch, RecoveryBalcony;
+        public TextMesh LoomTitle, LoomNodes, LoomHint, SearchTitle, MemoryLabel;
+        public AdventureTarget LinkStart, LinkEnd;
+        public LineRenderer Thread;
+        readonly List<LineRenderer> remembered = new List<LineRenderer>();
         public Vector3[] CampusNodes;
         public readonly List<AdventureTarget> Choices=new List<AdventureTarget>();
         public readonly List<LineRenderer> Roads=new List<LineRenderer>();
@@ -52,11 +56,11 @@ namespace BinaryLift
             Intro=Art.Root("Classroom welcome",Classroom);
             Panel("CONE COURIER", "UNIVERSITY OF GLASGOW / AFTER HOURS\nExplore the classroom, then head outside.",Intro,new Vector3(0,2.85f,-1.18f),new Vector2(3.7f,1.1f));
             Button("EXIT TO COURTYARD",Intro,new Vector3(0,1.4f,-1.17f),AdventureAction.Exit,2.1f);
-            Notebook=Art.Root("Algorithm notebook",transform);Notebook.position=new Vector3(0,1.1f,3.8f);
-            Art.Box("Notebook pages",Notebook,Vector3.zero,new Vector3(.55f,.08f,.36f),Art.White);
-            Art.Box("Orange notebook cover",Notebook,new Vector3(0,.06f,0),new Vector3(.58f,.045f,.39f),Art.Orange);
+            Notebook=Art.Root("Research funding envelope",transform);Notebook.position=new Vector3(0,1.1f,3.8f);
+            Art.Box("Grant paperwork",Notebook,Vector3.zero,new Vector3(.55f,.08f,.36f),Art.White);
+            Art.Box("Grant envelope",Notebook,new Vector3(0,.06f,0),new Vector3(.58f,.045f,.39f),Art.Orange);
             Art.Box("Reading pedestal",transform,new Vector3(0,.52f,3.8f),new Vector3(.7f,1.04f,.5f),Art.Dark);
-            Art.Text("ROUTE RESEARCH",Notebook,new Vector3(0,.35f,-.05f),.10f,Art.White.color);
+            Art.Text("RESEARCH FUND\nNOT FOR BANANAS",Notebook,new Vector3(0,.35f,-.05f),.10f,Art.White.color);
             Marker=Art.Root("Chase destination",transform);
             Art.Primitive("Waypoint ring",PrimitiveType.Cylinder,Marker,new Vector3(0,.035f,0),new Vector3(1.4f,.02f,1.4f),Art.Orange);
             var beacon=Art.Box("Waypoint beacon",Marker,new Vector3(0,.7f,0),new Vector3(.12f,1.4f,.12f),Art.Cyan);
@@ -121,20 +125,22 @@ namespace BinaryLift
                 {
                     Art.Box("Window glass",Classroom,new Vector3(side*4.88f,2.1f,z),new Vector3(.02f,1.6f,2),Art.Muted);
                     Art.Box("Window mullion",Classroom,new Vector3(side*4.84f,2.1f,z),new Vector3(.06f,1.6f,.06f),Art.White);
-                    Art.Box("Desk top",Classroom,new Vector3(side*2.8f,.76f,z),new Vector3(2.3f,.09f,.85f),Art.Sand);
-                    for(int leg=-1;leg<=1;leg+=2)Art.Box("Desk leg",Classroom,new Vector3(side*2.8f+leg*.9f,.36f,z),new Vector3(.06f,.72f,.65f),Art.Dark);
+                    PlaceFurniture("desk",new Vector3(side*2.8f,0,z),new Vector3(2.3f,.80f,.85f));
                     Art.Box("Computer screen",Classroom,new Vector3(side*2.8f,1.12f,z+.15f),new Vector3(.8f,.45f,.05f),Art.Dark);
                     Art.Box("Screen glow",Classroom,new Vector3(side*2.8f,1.12f,z+.117f),new Vector3(.7f,.35f,.01f),Art.Cyan);
                     Art.Box("Keyboard",Classroom,new Vector3(side*2.8f,.82f,z-.18f),new Vector3(.55f,.03f,.19f),Art.Dark);
                     for(int line=0;line<4;line++)Art.Box("Code line",Classroom,new Vector3(side*2.8f-.07f,1.23f-line*.065f,z+.105f),new Vector3(.35f-line*.055f,.018f,.006f),Art.White);
                     Art.Box("Lecture notes",Classroom,new Vector3(side*2.8f+.8f,.82f,z-.12f),new Vector3(.36f,.012f,.29f),Art.White);
                     Art.Primitive("Coffee cup",PrimitiveType.Cylinder,Classroom,new Vector3(side*2.8f-.78f,.89f,z),new Vector3(.13f,.1f,.13f),Art.Orange);
-                    Art.Box("Chair",Classroom,new Vector3(side*2.8f,.45f,z-.8f),new Vector3(.5f,.12f,.5f),Art.Dark);
-                    Art.Box("Chair back",Classroom,new Vector3(side*2.8f,.7f,z-1),new Vector3(.5f,.6f,.07f),Art.Dark);
+                    PlaceFurniture("chairDesk",new Vector3(side*2.8f,0,z-.85f),new Vector3(.60f,1.05f,.60f));
                 }
             }
             for(int z=-10;z<-1;z+=3)Art.Box("Ceiling strip",Classroom,new Vector3(0,3.38f,z),new Vector3(3,.03f,.08f),Art.White);
             for(int z=-11;z<-1;z++)Art.Box("Floor joint",Classroom,new Vector3(0,.005f,z),new Vector3(9.8f,.008f,.025f),Art.Dark);
+            var posterMaterial=Art.Mat(Color.white,true);
+            posterMaterial.mainTexture=Resources.Load<Texture2D>("Approved/FundingPoster");
+            Art.Box("Noticeboard frame",Classroom,new Vector3(-3,1.82f,-1.16f),new Vector3(1.18f,1.75f,.06f),Art.Dark);
+            Art.Primitive("Funding notice - approved AI illustration",PrimitiveType.Quad,Classroom,new Vector3(-3,1.82f,-1.20f),new Vector3(1.08f,1.62f,1),posterMaterial);
             Door=Art.Root("Automatic exit door",Classroom);Door.position=new Vector3(0,0,-1);
             Art.Box("Door leaf",Door,new Vector3(0,1.25f,0),new Vector3(2.4f,2.5f,.08f),Art.Muted);
             Art.Box("Door light",Door,new Vector3(0,2.55f,-.06f),new Vector3(2.4f,.04f,.03f),Art.Cyan);
@@ -185,18 +191,36 @@ namespace BinaryLift
                     Art.Box("Archive window light",Course,new Vector3(xColumn+1.8f,y-1.3f,6.5f),new Vector3(2.4f,.045f,.06f),Art.Cyan);
                 }
             }
-            Vector3 balcony=Positions[state.Goal]+new Vector3(0,-.12f,2.5f);
-            Art.Box("Recovery balcony",Course,balcony,new Vector3(6,.2f,4),bark);
+            RecoveryBalcony=Art.Root("Recovery balcony assembly",Course);
+            Vector3 balcony=new Vector3(0,-.12f,2.5f);
+            RecoveryBalcony.localPosition=Positions[state.Goal];
+            Art.Box("Recovery balcony",RecoveryBalcony,balcony,new Vector3(6,.2f,4),bark);
             for(int side=-1;side<=1;side+=2)
             {
-                Beam(Course,balcony+new Vector3(side*2.9f,1,-1.8f),balcony+new Vector3(side*2.9f,1,1.8f),.07f,silver);
-                for(int z=-1;z<=1;z++)Beam(Course,balcony+new Vector3(side*2.9f,0,z*1.7f),balcony+new Vector3(side*2.9f,1,z*1.7f),.045f,silver);
+                Beam(RecoveryBalcony,balcony+new Vector3(side*2.9f,1,-1.8f),balcony+new Vector3(side*2.9f,1,1.8f),.07f,silver);
+                for(int z=-1;z<=1;z++)Beam(RecoveryBalcony,balcony+new Vector3(side*2.9f,0,z*1.7f),balcony+new Vector3(side*2.9f,1,z*1.7f),.045f,silver);
             }
             Panel("THE ROUTE TREE", "UNIVERSITY OF GLASGOW / ROUTE ARCHIVE",Course,new Vector3(0,18,5),new Vector2(9,1.4f));
             Controls=Art.Root("Ancestor choices",Course);
-            var actions=new[]{AdventureAction.OneLevel,AdventureAction.TwoLevels,AdventureAction.FourLevels,AdventureAction.EightLevels};
-            for(int i=0;i<4;i++)Choices.Add(Button((1<<i)+" LEVEL"+(i==0?"":"S"),Controls,new Vector3((i-1.5f)*.68f,1.15f,1.5f),actions[i],.61f));
+            var actions=new[]{AdventureAction.OneLevel,AdventureAction.TwoLevels,AdventureAction.FourLevels};
+            for(int i=0;i<3;i++)Choices.Add(Button((1<<i)+" LEVEL"+(i==0?"":"S"),Controls,new Vector3((i-1)*.9f,1.15f,1.5f),actions[i],.82f));
             RouteTitle=Art.Text("",Controls,new Vector3(0,1.88f,1.65f),.095f,Art.White.color);
+            MemoryLabel=Art.Text("",Controls,new Vector3(0,.72f,1.45f),.08f,Art.Cyan.color);
+            Loom=Art.Root("Connection workshop",Course);
+            Panel("REMEMBER THE BRANCHES", "",Loom,new Vector3(0,1.35f,1.65f),new Vector2(3.1f,1.85f));
+            LoomTitle=Art.Text("",Loom,new Vector3(0,1.71f,1.52f),.105f,Art.Cyan.color);
+            LoomNodes=Art.Text("",Loom,new Vector3(0,1.4f,1.50f),.09f,Art.White.color);
+            LoomHint=Art.Text("",Loom,new Vector3(0,.68f,1.50f),.085f,Art.White.color);
+            var plug=Art.Primitive("Memory connector",PrimitiveType.Sphere,Loom,new Vector3(-.85f,1.05f,1.40f),Vector3.one*.24f,Art.Orange);
+            LinkStart=Target(plug,AdventureAction.LinkStart,Vector3.one*1.6f);
+            var socket=Art.Primitive("Memory socket",PrimitiveType.Cube,Loom,new Vector3(.85f,1.05f,1.40f),Vector3.one*.24f,Art.Cyan);
+            LinkEnd=Target(socket,AdventureAction.LinkEnd,Vector3.one*1.6f);
+            Thread=Art.Line("Memory thread",transform,Art.Orange,.025f);Thread.positionCount=2;Thread.enabled=false;
+            NewSearch=Art.Root("New funding target",Course);
+            Panel("CONNECTIONS READY", "",NewSearch,new Vector3(0,1.8f,1.65f),new Vector2(3.5f,1.5f));
+            SearchTitle=Art.Text("",NewSearch,new Vector3(0,1.65f,1.52f),.10f,Art.White.color);
+            Button("FOLLOW THE FUNDING",NewSearch,new Vector3(0,.92f,1.5f),AdventureAction.NextTarget,2.65f);
+            Loom.gameObject.SetActive(false);NewSearch.gameObject.SetActive(false);
             Grips=Art.Root("Branch climbing holds",Course);Grips.localPosition=ClimbOffset;
             Preview=Art.Line("Selected ancestor path",transform,Art.Orange,.055f);Preview.enabled=false;
             Cone=Art.BuildCone(Course,Positions[state.Goal]+ClimbOffset+new Vector3(0,1.15f,.85f),.40f);
@@ -205,8 +229,35 @@ namespace BinaryLift
             EndCard=Art.Root("Journey results",Course);
             Panel("ROUTE MEMORY RESTORED", "",EndCard,new Vector3(0,2,2),new Vector2(3.8f,1.3f));
             Outcome=Art.Text("",EndCard,new Vector3(0,1.9f,1.88f),.11f,Art.White.color);
-            Button("REPLAY FROM CLASSROOM",EndCard,new Vector3(0,1.1f,1.6f),AdventureAction.Replay,2.7f);
+            Button("NEW TARGET / KEEP MEMORY",EndCard,new Vector3(0,1.08f,1.6f),AdventureAction.NextTarget,2.9f);
+            Button("REPLAY FROM CLASSROOM",EndCard,new Vector3(0,.62f,1.6f),AdventureAction.Replay,2.9f);
             EndCard.gameObject.SetActive(false);Grips.gameObject.SetActive(false);Course.gameObject.SetActive(false);
+        }
+        void PlaceFurniture(string resource,Vector3 feet,Vector3 size)
+        {
+            var prefab=Resources.Load<GameObject>("Approved/"+resource);
+            if(prefab==null){Debug.LogError("Approved furniture missing: "+resource);return;}
+            var item=Instantiate(prefab,Classroom);item.name="Kenney "+resource;item.transform.localPosition=Vector3.zero;
+            var renderers=item.GetComponentsInChildren<Renderer>();
+            if(renderers.Length==0)return;
+            Bounds bounds=renderers[0].bounds;foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
+            item.transform.localScale=Vector3.Scale(item.transform.localScale,new Vector3(size.x/bounds.size.x,size.y/bounds.size.y,size.z/bounds.size.z));
+            bounds=renderers[0].bounds;foreach(var renderer in renderers)bounds.Encapsulate(renderer.bounds);
+            item.transform.position+=Classroom.TransformPoint(feet)-new Vector3(bounds.center.x,bounds.min.y,bounds.center.z);
+            var finish=Art.Mat(resource=="desk"?new Color(.43f,.30f,.20f):new Color(.13f,.23f,.26f));
+            foreach(var renderer in renderers){var materials=new Material[renderer.sharedMaterials.Length];for(int i=0;i<materials.Length;i++)materials[i]=finish;renderer.sharedMaterials=materials;}
+        }
+        public void RefreshMemory(AdventureState model)
+        {
+            foreach(var line in remembered)Destroy(line.gameObject);remembered.Clear();
+            for(int n=0;n<model.Tree.Count;n++)foreach(int span in new[]{2,4})
+            {
+                if(!model.Knows(n,span))continue;
+                var line=Art.Line("Remembered "+span+" from node "+n,transform,span==4?Art.Orange:Art.Cyan,.035f);
+                line.positionCount=span+1;
+                for(int j=0;j<=span;j++)line.SetPosition(j,CourseOrigin+Positions[model.Tree.KthAncestor(n,j)]+new Vector3(span==4?-.24f:.24f,.12f,-.15f));
+                line.gameObject.SetActive(Course.gameObject.activeSelf);remembered.Add(line);
+            }
         }
         public void BuildGrips(AdventureState model,float headHeight)
         {
@@ -235,7 +286,7 @@ namespace BinaryLift
         }
         public void PreviewRoute(AdventureState model,int span)
         {
-            Preview.enabled=span<=model.Remaining;if(!Preview.enabled)return;
+            Preview.enabled=span<=model.Remaining && (model.Phase==AdventurePhase.Climbing || model.CanChoose(span));if(!Preview.enabled)return;
             int target=model.Tree.KthAncestor(model.Node,span);
             var points=new List<Vector3>();
             for(int n=model.Node;n>=0;n=model.Tree.Parent[n]){points.Add(CourseOrigin+Positions[n]+new Vector3(0,.08f,-.1f));if(n==target)break;}

@@ -1,6 +1,8 @@
 # Campus asset selection - 2026-10-18
 
-Status: proposal for user review; no asset import or gameplay changes in this step.
+Status: historical selection proposal. The user subsequently approved sandstone and
+furniture, then the generated poster preview. See AssetRegister.md for actual imports
+and Docs/Design.md for the implemented loop. Horse remains under review.
 The user requested asset selection before the approved learning-loop implementation.
 All individual external assets below are free; no paid bundle or subscription is needed.
 

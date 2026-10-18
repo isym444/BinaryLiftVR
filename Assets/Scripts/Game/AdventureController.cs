@@ -23,7 +23,7 @@ namespace BinaryLift
         readonly Transform[] gloves=new Transform[2],arms=new Transform[2];
         readonly AdventureTarget[] nearGrip=new AdventureTarget[2];
         Vector3 walkDestination;
-        bool walking,activeRight=true,desktopHeld;
+        bool walking,activeRight=true,desktopHeld,linkArmed;
         Vector3 mousePrevious;
         float animationClock,flashUntil;
         string flash="";
@@ -34,7 +34,7 @@ namespace BinaryLift
         {
             State=new AdventureState();Rig=XRRig.Create();
             World=new GameObject("Cone Courier adventure").AddComponent<AdventureWorld>();World.Build(Rig,State);
-            route=new Vector3[State.RequiredLevels+1];
+            route=new Vector3[State.OriginalLevels+1];
             for(int i=0,n=State.StartNode;i<route.Length;i++,n=State.Tree.Parent[n]){route[i]=World.CampusNodes[n];route[i].y=0;}
             foreach(var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None))if(camera!=Rig.Head)Destroy(camera.gameObject);
             RenderSettings.skybox=null;RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;
@@ -91,6 +91,11 @@ namespace BinaryLift
             cursor.gameObject.SetActive(hover!=null&&!Busy);cursor.position=point;
             cursor.localScale=Vector3.one*Mathf.Clamp(Vector3.Distance(ray.origin,point)*.008f,.012f,.10f);
             rayLine.enabled=Rig.XRActive&&!Busy;rayLine.SetPosition(0,ray.origin);rayLine.SetPosition(1,point);
+            if(State.Phase==AdventurePhase.Weaving && linkArmed && !Busy)
+            {
+                World.Thread.enabled=true;World.Thread.SetPosition(0,World.LinkStart.transform.position);
+                World.Thread.SetPosition(1,hover==World.LinkEnd?World.LinkEnd.transform.position:ray.GetPoint(2.2f));
+            }
             if(State.Phase==AdventurePhase.Choosing)
             {
                 if(hover!=null&&(SpanFor(hover.Action)>0))
@@ -105,6 +110,12 @@ namespace BinaryLift
         public bool Activate(AdventureAction action)
         {
             if(Busy)return false;
+            if(action==AdventureAction.LinkStart && State.Phase==AdventurePhase.Weaving)
+            {linkArmed=true;World.LoomHint.text="CONNECT TO THE CYAN SOCKET";Record("memory_connector_grabbed");return true;}
+            if(action==AdventureAction.LinkEnd && State.Phase==AdventurePhase.Weaving && linkArmed)
+            {StartCoroutine(WeaveConnection());return true;}
+            if(action==AdventureAction.NextTarget && (State.Phase==AdventurePhase.Retargeting || State.Phase==AdventurePhase.Complete))
+            {StartCoroutine(ChangeTarget());return true;}
             if(action==AdventureAction.Replay && State.Phase==AdventurePhase.Complete){StartCoroutine(Restart());return true;}
             if(action==AdventureAction.Exit && (State.Phase==AdventurePhase.Arrival||State.Phase==AdventurePhase.Courtyard))
             {walkDestination=new Vector3(0,0,2.5f);walking=true;return true;}
@@ -113,14 +124,15 @@ namespace BinaryLift
             int span=SpanFor(action);
             if(span>0)
             {
-                if(!State.Choose(span)){Say("That connection passes the goal. Choose a shorter route.");return false;}
+                if(!State.Choose(span)){Say("Explore these branches first, or choose a shorter connection.");return false;}
                 World.BuildGrips(State,Rig.Head.transform.position.y-Rig.transform.position.y);
                 World.PreviewRoute(State,span);ReleaseHands();Refresh();Record("connection_selected_"+span);return true;
             }
             if(action==AdventureAction.Cone && State.CollectCone())
             {
-                World.Cone.gameObject.SetActive(false);World.Art.TrophyCones[0].gameObject.SetActive(true);
-                Rig.Pulse(activeRight,.45f,.12f);Refresh();Record("cone_recovered_journey_complete");return true;
+                World.Cone.gameObject.SetActive(false);
+                for(int i=0;i<World.Art.TrophyCones.Count;i++)World.Art.TrophyCones[i].gameObject.SetActive(i<State.Cones);
+                Rig.Pulse(activeRight,.45f,.12f);Refresh();Record(State.Phase==AdventurePhase.Complete?"funding_recovered_journey_complete":"cone_recovered_memory_ready");return true;
             }
             return false;
         }
@@ -139,10 +151,10 @@ namespace BinaryLift
                 foreach(Transform limb in monkey)if(limb.name=="Arm")limb.localRotation=Quaternion.Euler(-65*t/.65f,0,0);
                 yield return null;
             }
-            World.Notebook.gameObject.SetActive(false);monkey.Find("Stolen route notebook").gameObject.SetActive(true);Record("notebook_snatched");
+            World.Notebook.gameObject.SetActive(false);monkey.Find("Stolen route notebook").gameObject.SetActive(true);Record("funding_snatched");
             Quaternion facing=monkey.rotation,target=Quaternion.LookRotation(monkey.position-route[0]);
             for(float t=0;t<.45f;t+=Time.deltaTime){monkey.rotation=Quaternion.Slerp(facing,target,t/.45f);yield return null;}
-            World.Art.Horse.rotation=Quaternion.LookRotation(new Vector3(-1,0,3));World.Art.CompanionLine.text="AFTER THAT MONKEY!";
+            World.Art.Horse.rotation=Quaternion.LookRotation(new Vector3(-1,0,3));World.Art.CompanionLine.text="OUR FUNDING HAS DEVELOPED LEGS!";
             World.Marker.gameObject.SetActive(true);World.Marker.position=route[0];Busy=false;Refresh();
         }
         void Walk()
@@ -305,6 +317,12 @@ namespace BinaryLift
                     {desktopHeld=true;mousePrevious=screen;anchor[1]=handle.transform.position;Record("desktop_grip");input.Use();}
                 }
             }
+            else if(linkArmed && State.Phase==AdventurePhase.Weaving && input.type==EventType.MouseUp)
+            {
+                if(Physics.Raycast(Rig.Head.ScreenPointToRay(screen),out var socketHit,70) && socketHit.collider.GetComponentInParent<AdventureTarget>()==World.LinkEnd)
+                    Activate(AdventureAction.LinkEnd);
+                input.Use();
+            }
             else if(desktopHeld&&(input.type==EventType.MouseDrag||input.type==EventType.MouseUp))
             {
                 bool released=input.type==EventType.MouseUp;
@@ -317,7 +335,7 @@ namespace BinaryLift
                 input.Use();
             }
         }
-        void OnApplicationFocus(bool focused){if(!focused)ReleaseHands();}
+        void OnApplicationFocus(bool focused){if(!focused){ReleaseHands();linkArmed=false;if(World!=null)World.Thread.enabled=false;}}
         public bool ApplyPull(float metres)
         {
             int before=State.TotalLevels;
@@ -346,13 +364,40 @@ namespace BinaryLift
             }
         }
         void ReleaseHands(){held[0]=held[1]=desktopHeld=false;}
+        IEnumerator WeaveConnection()
+        {
+            Busy=true;linkArmed=false;
+            int span=State.PendingSpan,from=State.PendingStart,middle=State.PendingMiddle;
+            World.Thread.enabled=true;World.Thread.SetPosition(0,World.LinkStart.transform.position);
+            for(float t=0;t<.7f;t+=Time.deltaTime)
+            {
+                World.Thread.SetPosition(1,Vector3.Lerp(World.LinkStart.transform.position,World.LinkEnd.transform.position,Mathf.SmoothStep(0,1,t/.7f)));
+                yield return null;
+            }
+            if(State.Weave()){Record("memory_built_"+span+"_from_"+from+"_via_"+middle);Rig.Pulse(activeRight,.4f,.12f);}
+            World.Thread.enabled=false;World.RefreshMemory(State);Refresh();Busy=false;
+        }
+        IEnumerator ChangeTarget()
+        {
+            Busy=true;ReleaseHands();linkArmed=false;World.Thread.enabled=false;
+            yield return Fade(0,1,.35f);
+            if(State.NextTarget())
+            {
+                Rig.TeleportFeet(World.CourseOrigin+World.Positions[State.Node]+AdventureWorld.ClimbOffset);
+                if(!Rig.XRActive){Rig.transform.rotation=Quaternion.identity;Rig.SetDesktopView(0);}
+                World.Art.Horse.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(1.8f,0,2);
+                World.Art.Monkey.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(-1.8f,.1f,1.8f);
+                Refresh();Record("new_target_memory_preserved");
+            }
+            yield return Fade(1,0,.45f);Busy=false;
+        }
         IEnumerator Restart()
         {
             Busy=true;ReleaseHands();walking=false;yield return Fade(0,1,.25f);
-            State=new AdventureState();Checkpoint=0;flashUntil=0;
+            State=new AdventureState();Checkpoint=0;flashUntil=0;linkArmed=false;World.Thread.enabled=false;World.RefreshMemory(State);
             World.Course.gameObject.SetActive(false);World.Intro.gameObject.SetActive(true);World.Notebook.gameObject.SetActive(true);
             World.Cone.gameObject.SetActive(true);World.EndCard.gameObject.SetActive(false);World.Marker.gameObject.SetActive(false);World.MapLine.enabled=false;
-            World.Grips.gameObject.SetActive(false);World.Preview.enabled=false;World.Art.TrophyCones[0].gameObject.SetActive(false);
+            World.Grips.gameObject.SetActive(false);World.Preview.enabled=false;foreach(var trophy in World.Art.TrophyCones)trophy.gameObject.SetActive(false);
             World.Art.Horse.position=new Vector3(1.95f,0,3);World.Art.Horse.rotation=horseFacing;
             World.Art.CompanionLine.transform.position=new Vector3(1.95f,2.35f,3);World.Art.CompanionLine.text="YOUR CAMPUS COMPANION";
             World.Art.Monkey.position=new Vector3(-1,.4f,4.2f);if(!Rig.XRActive)Rig.transform.rotation=Quaternion.identity;Rig.SetDesktopView(0);Rig.TeleportFeet(new Vector3(0,0,-8));
@@ -371,10 +416,17 @@ namespace BinaryLift
             for(float t=0;t<duration;t+=Time.unscaledDeltaTime){fadeMaterial.color=new Color(0,0,0,Mathf.Lerp(from,to,t/duration));yield return null;}
             fadeMaterial.color=new Color(0,0,0,to);fade.gameObject.SetActive(to>0);
         }
+        void DockPanel(Transform panel,int node)
+        {
+            // Keep the full panel within view and ahead of branches, including its instructions.
+            panel.localScale=Vector3.one*.4f;
+            panel.localPosition=World.Positions[node]+AdventureWorld.ClimbOffset+new Vector3(0,Rig.Head.transform.position.y-Rig.transform.position.y-.52f,.06f);
+        }
         void Refresh()
         {
             bool choosing=State.Phase==AdventurePhase.Choosing;
-            World.Controls.gameObject.SetActive(choosing);World.Controls.localPosition=World.Positions[State.Node]+AdventureWorld.ClimbOffset;
+            World.RecoveryBalcony.localPosition=World.Positions[State.Goal];
+            World.Controls.gameObject.SetActive(choosing);DockPanel(World.Controls,State.Node);
             World.SafetyDeck.localPosition=World.Positions[State.Node]+AdventureWorld.ClimbOffset-Vector3.up*.09f;
             for(int i=0;i<World.Platforms.Count;i++)World.Platforms[i].sharedMaterial.color=i==State.Node?new Color(.65f,.9f,.85f):i==State.Goal?new Color(.85f,.49f,.13f):new Color(.18f,.30f,.36f);
             for(int i=0;i<World.Choices.Count;i++)
@@ -383,27 +435,42 @@ namespace BinaryLift
                 choice.GetComponent<Collider>().enabled=available;choice.BaseColor=available?World.Art.Dark.color:new Color(.12f,.13f,.14f);choice.Highlight(false);
                 choice.transform.parent.GetComponentInChildren<TextMesh>().color=available?World.Art.White.color:new Color(.4f,.42f,.44f);
             }
-            World.RouteTitle.text="CHOOSE YOUR NEXT CONNECTION\n"+State.Remaining+" LEVEL"+(State.Remaining==1?"":"S")+" TO THE GOLD NODE\nSelect, then grab and pull along the branches.";
+            World.RouteTitle.text=(State.Searches==0?"EXPLORE AND REMEMBER":"REUSE YOUR ROUTE MEMORY")+"\n"+State.Remaining+" LEVEL"+(State.Remaining==1?"":"S")+" TO THE GOLD NODE\nSelect, then grab and pull along the branches.";
+            World.MemoryLabel.text=State.Searches==0?"Grey connections need remembered branches.":"4 = 2 + 2 / same climb, fewer route decisions.";
+            World.Cone.localPosition=World.Positions[State.Phase==AdventurePhase.Clue?State.Node:State.ConeNode]+AdventureWorld.ClimbOffset+new Vector3(0,1.15f,.85f);
+            World.Cone.gameObject.SetActive(State.Phase==AdventurePhase.Clue);
+            World.Loom.gameObject.SetActive(State.Phase==AdventurePhase.Weaving);
+            DockPanel(World.Loom,State.Node);
+            int half=State.PendingSpan/2;
+            World.LoomTitle.text=half+" + "+half+" = "+State.PendingSpan+" LEVEL CONNECTION";
+            World.LoomNodes.text="NODE "+State.PendingStart+"   >   "+State.PendingMiddle+"   >   "+State.PendingEnd;
+            World.LoomHint.text=Rig.XRActive?"SELECT THE ORANGE PLUG, THEN THE CYAN SOCKET":"DRAG ORANGE PLUG TO CYAN SOCKET\nOr click the plug, then the socket.";
+            World.NewSearch.gameObject.SetActive(State.Phase==AdventurePhase.Retargeting);
+            DockPanel(World.NewSearch,State.Node);
+            World.NewSearch.localPosition-=Vector3.up*.08f;
+            World.SearchTitle.text="The monkey moved the funding!\nNEW TARGET: "+State.NextTargetLevels+" LEVELS FROM THE START\nReturn to the start with your connections intact.";
             World.EndCard.gameObject.SetActive(State.Phase==AdventurePhase.Complete);
             World.Art.CompanionLine.gameObject.SetActive(State.Phase!=AdventurePhase.Complete&&State.Phase!=AdventurePhase.Clue&&State.Phase!=AdventurePhase.Climbing&&State.Phase!=AdventurePhase.Choosing);
-            World.Instructions.gameObject.SetActive(!World.EndCard.gameObject.activeSelf&&!choosing);
-            World.EndCard.localPosition=World.Positions[State.Goal]+AdventureWorld.ClimbOffset;
-            World.Outcome.text="CLIMBED "+State.TotalLevels+" / "+State.RequiredLevels+" LEVELS\n"+State.Selections+" CONNECTIONS / 1 CONE RECOVERED\nLonger selections reduce stops, not the climb.";
+            World.Instructions.gameObject.SetActive(!World.EndCard.gameObject.activeSelf&&!choosing && State.Phase!=AdventurePhase.Weaving && State.Phase!=AdventurePhase.Retargeting);
+            DockPanel(World.EndCard,State.Goal);
+            World.Outcome.text="FUNDING RECOVERED / "+State.Cones+" CONES\n"+State.MissionLevels+" LEVELS / "+State.MissionSelections+" ROUTE DECISIONS\n"+State.ReusedConnections+" MEMORIES REUSED / BANANA EXPENSES REJECTED";
             World.MarkerLabel.text="FOLLOW THE MONKEY / "+Mathf.Min(Checkpoint+1,route.Length)+" OF "+route.Length+"\nCLICK TO WALK HERE";
         }
         void UpdateInstructions()
         {
-            World.Status.text=State.Phase==AdventurePhase.Arrival?"01 / AFTER CLASS":State.Phase==AdventurePhase.Courtyard?"02 / THE COURTYARD":State.Phase==AdventurePhase.Chase?"03 / FOLLOW THE MONKEY":State.Phase==AdventurePhase.Mapping?"04 / THE ROUTE REVEALED":"CLIMBED "+State.TotalLevels+" / "+State.RequiredLevels+" LEVELS";
+            World.Status.text=State.Phase==AdventurePhase.Arrival?"01 / AFTER CLASS":State.Phase==AdventurePhase.Courtyard?"02 / THE COURTYARD":State.Phase==AdventurePhase.Chase?"03 / FOLLOW THE MONKEY":State.Phase==AdventurePhase.Mapping?"04 / THE ROUTE REVEALED":"CLIMBED "+State.MissionLevels+" / "+State.RequiredLevels+" LEVELS / CONES "+State.Cones;
             string hint;
             switch(State.Phase)
             {
                 case AdventurePhase.Arrival:hint="WASD / left stick: explore. Exit through the lit door.";break;
-                case AdventurePhase.Courtyard:hint="Walk towards your notebook in the courtyard.";break;
+                case AdventurePhase.Courtyard:hint="Walk towards the research funding in the courtyard.";break;
                 case AdventurePhase.Chase:hint="Follow the orange marker. Walk or click to move.";break;
                 case AdventurePhase.Mapping:hint="Look down: the monkey followed these ancestor paths.";break;
                 case AdventurePhase.Choosing:hint="Choose a connection, then climb it yourself.";break;
                 case AdventurePhase.Climbing:hint=(Rig.XRActive?"GRIP + PULL DOWN":"DRAG AN ORANGE HOLD DOWN")+" / THIS ROUTE "+State.CompletedInSelection+" OF "+State.Span;break;
-                case AdventurePhase.Clue:hint="Clue reached! Grip nearby or click the orange cone.";break;
+                case AdventurePhase.Clue:hint="Memory found! Grip nearby or click the orange cone.";break;
+                case AdventurePhase.Weaving:hint="Join remembered routes at the connection workshop.";break;
+                case AdventurePhase.Retargeting:hint="Follow the funding. Your route memory stays with you.";break;
                 default:hint="Journey complete. Replay from the classroom.";break;
             }
             World.Hint.text=Time.time<flashUntil?flash:hint;
@@ -411,7 +478,7 @@ namespace BinaryLift
         void Say(string message,float seconds=3){flash=message;flashUntil=Time.time+seconds;}
         void Record(string action)
         {
-            string line=System.DateTime.UtcNow.ToString("o")+" event="+action+" phase="+State.Phase+" node="+State.Node+" climbed="+State.TotalLevels+" selected="+State.Span+" crossed="+State.CompletedInSelection+" selections="+State.Selections;
+            string line=System.DateTime.UtcNow.ToString("o")+" event="+action+" phase="+State.Phase+" node="+State.Node+" climbed="+State.TotalLevels+" selected="+State.Span+" crossed="+State.CompletedInSelection+" selections="+State.Selections+" search="+State.Searches+" mission_levels="+State.MissionLevels+" cones="+State.Cones+" reused="+State.ReusedConnections;
             journal?.WriteLine(line);Debug.Log("Adventure | "+line);
         }
         void OnDestroy(){journal?.Dispose();if(World!=null)Destroy(World.gameObject);if(Rig!=null)Destroy(Rig.gameObject);}

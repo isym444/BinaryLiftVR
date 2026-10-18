@@ -1,75 +1,75 @@
-# Handoff - Classroom to Canopy (2026-10-18)
+# Handoff - Funding and route memory (2026-10-18)
 
-## Accepted scope and current runtime
-The default experience is a single first-person adventure: classroom exploration,
-exit, proximity-triggered monkey theft, seven connected campus checkpoints, aerial
-map reveal, original tree overview, manual branch climbing, cone, results and replay.
-No entry or ending launches RaceController. The previous two-edge upgrade trial is
-superseded. All content is English and all art uses approved code-built primitives.
+## Current scope
+Single AdventureController journey: classroom exploration, funding theft, seven campus
+waypoints, aerial map reveal, original tree, four individual exploration edges, two
+cone discoveries, two two-edge constructions, four-edge composition, new target,
+manual reuse, funding recovery and results. New Target keeps memory inside this game;
+Replay from Classroom resets it. No RaceController handoff exists.
 
-## Ownership and implementation contracts
-- AdventureState owns phase guards, original tree/start/goal, selected span, completed
-  edges, remaining levels, decision count and accepted pull amount. It is Unity-free.
-- TreeGenerator.Generate(13,16,18), RaceState.Create and TreeLayout.ComputeX(tree,1.3)
-  preserve original topology/layout. Unity Mono's current seed produces node 23 to 8,
-  six levels. Avoid hardcoding these node IDs in gameplay; derive them from the model.
-- Choose(1/2/4/8) only schedules a valid ancestor span. Pull accepts finite input in
-  (0,0.2] and requires 0.65 units per edge. Node increments only at an edge boundary.
-  Larger spans reduce decisions, never physical edge traversal or effort.
-- AdventureController owns the rig, input, chase, animation, transitions and local log.
-  ApplyPull interpolates the current real parent edge, including horizontal motion.
-  No Update-time or selection-time automatic climbing is permitted.
-- Desktop pointer actions all use OnGUI events. Preserve this: Input polling loses
-  short drags and can turn release into an accidental cone click. Release/focus loss
-  stops holding. VR grip input is proximity-based, averaged across two tracked hands;
-  discontinuities above 0.20 m release the affected hand.
-- AdventureWorld builds classroom, branch traces, retained node arena, rounded holds,
-  recovery balcony and results. CampusWorld provides shared primitive art helpers.
-- XRRig.SetDesktopView is desktop-only. VR aerial/overview transitions use stationary
-  faded placements and preserve root yaw and head tracking. Do not force head pitch.
-- RaceController and historical CampusQuest/TreeClimbing sources remain for regression
-  history. They are not launched by the adventure or its results screen.
-- AdventureValidation runs timed walking plus direct action/pull calls. It verifies
-  topology count, choice without movement, no idle movement, cone, single ending and
-  replay. This is separate from actual mouse input evidence.
+All game text, code, documents and logs are English. Sandstone and furniture imports
+were approved in the user request; the AI poster was separately approved after preview.
+AssetRegister.md and PosterGeneration-2026-10-18.md record provenance. No other AI or
+external asset is approved by implication. University photographs remain reference-only.
 
-## Validation and known boundaries
-Pure logic and final Unity integration pass. A complete real mouse journey also passed;
-see AdventureValidation.md and the dated logs for the distinction between builds/runs.
-Stop Play before C# edits; domain reload discards runtime-only state.
-The seed-13 goal has six levels; the eight-level button is correctly disabled. Longer
-seeds exercise eight-level traversal in logic tests. There is no in-game seed picker.
-The climb is guided along ancestor branches, not unrestricted free-bark physics.
-Classroom boundaries/furniture checks are a simple desktop/stick movement constraint,
-not a room-scale collision or guardian system. The HUD at 0.4 m needs comfort review.
-No headset was connected. Stereo, tracking, reach, haptics, comfort and performance are
-NOT RUN. Android modules/APK remain unavailable. No audio or external character rigs.
+## Gameplay ownership and contracts
+- AdventureState is Unity-free. OriginalLevels/OriginalGoal preserve the generator's
+  race target. RequiredLevels/Goal describe the active search, initially four edges.
+- TotalLevels, Selections and TotalPull are lifetime counters; MissionLevels and
+  MissionSelections reset at a target change. Remaining is mission-relative.
+- Observed edges and constructed connections are indexed by their source node.
+  Two edges require both observed parents; four requires both stored adjacent twos.
+  Knows/CanChoose reject unrelated, undiscovered and overshooting connections.
+- Clue pauses at exploration levels two and four. CollectCone enters Weaving.
+  Weave constructs the pending path; after the second two it requests four-edge
+  composition. Retargeting follows that composition. This is binary lifting.
+- NextTarget preserves tree and memory, returns to StartNode, and chooses the original
+  final goal first. Further searches alternate five/six-level goals. They do not load
+  another controller, tree topology or game.
+- Pull requires finite input in (0,0.2], accumulates 0.65 per physical edge, and follows
+  horizontal and vertical ancestor displacement. No idle or selection-time ascent.
+- AdventureController owns input, transitions, animation and local event logs.
+  Desktop uses OnGUI mouse events; preserve this to avoid losing short drags or making
+  release accidentally collect a cone. Connection construction supports drag-to-socket
+  and sequential endpoint clicks; VR uses endpoint trigger selections.
+- XRRig retains headset rotation. Aerial and target-return transitions fade in VR.
+  No forced head pitch, head bob, camera roll or falling penalty.
+- AdventureWorld owns workshop, remembered branch traces, counts, world choices and
+  the approved classroom art. CampusWorld supplies common art and sandstone material.
+- ApprovedAssetImport bounds texture dimensions to 1024 and disables furniture animation,
+  generated colliders and embedded materials. No new dependency or package was added.
 
-## Publication and collaboration
-User authorizes uploads to https://github.com/isym444/BinaryLiftVR.git on Fexas only.
-Verify remote URL, branch and remote ancestry before normal pushes. Do not use main
-or force-push. Exclude Library/Temp/Logs caches, installers, credentials and personal
-.cursor settings. Sanitized project evidence is stored in Docs. Keep source .meta files.
-Every meaningful step requires English DevelopmentLog, validation and handoff updates.
-No authorization to message teammates was given. External free assets still require
-preview/source/license approval. The supplied statue photograph remains reference-only.
+## Validation
+Pure logic: Scripts/Test-Logic.ps1 reports ALL PASSED, including 40 adventure seeds,
+node-specific memory, composition, partial edges, effort invariants, original topology,
+repeated searches and reset. Existing tree/race/layout regression checks remain.
+Unity method-driven integration passed the complete loop and clean replay, including
+approved artwork/furniture loading, new-target text margins and absence of RaceController.
+Actual mouse-input walkthrough passed the entire classroom/chase/explore/compose/reuse
+flow, a repeat five-level target using 2+2+1, and clean classroom replay at 00:20:40 UTC.
+See AdventureValidation.md, LearningLoopManual-2026-10-18.log and Evidence screenshots.
+The final new-target margin adjustment changes presentation only; integration was rerun.
+Stop Play before C# edits. Unity domain reload discards runtime-only state.
 
-## Next owner actions
-The user has approved a small learning loop: explore individual levels, collect cones,
-build two-edge connections, compose four-edge connections, then change target and reuse
-valid connections. Asset selection must happen first. See AssetSelection-2026-10-18.md.
-No implementation or import for this new scope has occurred yet. Limited AI media is
-now permitted, with explicit provenance and preview approval before import.
+No headset connected. Stereo, physical reach, grip tracking, two-hand feel, haptics,
+comfort and on-device performance remain NOT RUN. The inherited 0.4 m HUD needs a
+headset comfort pass. Desktop pull units are not measured human movement. The climb
+follows constrained ancestor branches, not unrestricted bark physics. No APK tested.
 
-Hardware owner: follow VRValidation.md, particularly close grips/HUD, sideways branch
-motion, two-hand averaging, stationary aerial overlook and complete replay.
-Art owner: complete the free horse/monkey and campus asset selection for approval before
-import. Use current named primitives as replacement points and preserve target contracts.
-Gameplay owner: retain single-flow completion and original tree structure; implement
-the approved small learning loop after the asset-selection decision.
+## Art follow-up
+Public source inventory confirms Horse.fbx and Horse_White.fbx. Google Drive refused
+the actual horse download due to quota. Do not import the HTML response as a model.
+No rig/animation inspection or model replacement was completed. Current horse and
+monkey remain project geometry. Source and licence links are in AssetRegister.md.
 
-## Published implementation
-Implementation commit eb6d436f317564696b30e9cd622fb428e39ddef9 was pushed to Fexas
-and verified against the remote. Main was verified unchanged at
-15279ec90778d1ff7e01b3e04f51e833d8b57184. This handoff receipt is a documentation-only
-follow-up; the tested gameplay implementation is the commit named above.
+## Collaboration and publication
+User authorizes normal uploads to https://github.com/isym444/BinaryLiftVR.git, Fexas
+only. Verify branch, origin and remote ancestry before pushing. Never main or force-push.
+No permission to message teammates. Preserve local .cursor and the pre-existing edits
+in XR settings, Packages/manifest.json, Packages/packages-lock.json and ProjectSettings.
+These unrelated files are outside this contribution. Do not commit Unity caches, account
+information, downloaded review pages or the full asset archive. Keep source .meta files.
+
+Next owner: perform VRValidation.md on hardware, especially physical connector reach,
+text readability, target-return fade and texture/frame cost. Extend route-memory
+content only while preserving per-node prerequisites and manual edge traversal.

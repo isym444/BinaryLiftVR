@@ -339,3 +339,55 @@ Preserved all these unrelated changes. Validation for this documentation-only st
 review official source statements, inspect diff, check English content and whitespace.
 No Unity or headset run is warranted for documentation changes. Next: user selection,
 then approved import/integration and the learning loop, with actual input walkthrough.
+
+
+## Session 08 - Approved assets and remembered connections (2026-10-18)
+User approved sandstone and furniture imports, continued horse review, and implementation
+of exploration, cones, two-edge/four-edge composition and target reuse. The generated
+funding poster preview was separately approved during this session. Scope: AdventureState,
+AdventureController/World, approved resource assets, validation and English documentation.
+Preserve existing package/XR/project-setting changes and local .cursor data.
+
+### First validation and presentation repair
+Logic tests passed and the first Unity integration passed the full new loop. Actual
+mouse play verified classroom assets, all chase checkpoints, manual partial-edge rest
+and the first cone. It exposed clipped workshop instructions and platform occlusion.
+Stopped Play and moved the route/workshop/results panels into a compact foreground
+dock; made the recovery balcony track the current target. The final input walkthrough
+will be repeated after these fixes. Horse download was blocked by the source quota.
+
+### Implementation and provenance
+AdventureState now stores observed parent edges and source-specific two/four-edge
+connections. Four individual exploration climbs yield two cones and two workshop
+constructions; a final 2+2 composition unlocks four. Subsequent targets retain memory
+and cones, with mission-relative counts and unchanged per-edge manual effort. Added
+workshop drag/endpoint interactions, animated threads, remembered branch traces,
+repeat-target fade, funding humour and one-flow results. Original tree generation,
+layout, chase and manual input remain. No automatic ascent was introduced.
+
+Imported the approved Poly Haven Sandstone Blocks 08 diffuse, Kenney Furniture Kit
+desk/chairDesk and the individually preview-approved AI funding poster. Kept original
+source files, licences, hashes and poster prompt in the repository. Texture imports
+cap at 1024 with mipmaps; furniture imports omit unused animation/material/collider
+data. Added a simple planar sandstone shader. Horse source inventory was checked,
+but Google Drive returned a quota page instead of FBX; no horse replacement imported.
+
+### Final actual-input walkthrough
+Second integration passed after the dock repair. Starting from its clean classroom
+handoff at 00:11:07 UTC, real mouse inputs completed all seven waypoints, transition,
+four single climbs, both cone pickups, two two-edge joins and four-edge composition.
+A partial pull followed by release did not advance while idle. On the next target,
+4+1+1 physically traversed all six levels and recovered cone three at 00:19:17.
+New Target / Keep Memory then completed five levels using 2+2+1 and recovered cone
+four at 00:20:29. Replay cleared all state at 00:20:40. No second game was reached.
+Saved sanitized manual events and five screenshots. A final presentation-only change
+lowers the new-target panel 0.08 world units; its text bounds are checked in the final
+Unity integration. Gameplay methods and input did not change after the manual pass.
+
+Updated README, Design, Handoff, TeamWorkflow, AdventureValidation, VRValidation,
+AssetRegister, selection status, source hashes and poster generation record in English.
+No headset or APK validation is claimed. Existing XR/package/project-setting changes
+and .cursor data remain outside this contribution. Publication target is Fexas only.
+Final integration passed, including the new-target viewport-margin check. Trimmed
+generated metadata whitespace. Git attributes preserve original FBX/licence bytes
+without normalizing vendor formatting; approved asset checksums remain unchanged.

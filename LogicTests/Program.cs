@@ -30,35 +30,56 @@ static class Program
         return failures == 0 ? 0 : 1;
     }
 
+    static void ClimbSelection(AdventureState s,int span)
+    {
+        int from=s.Node,levels=s.TotalLevels;
+        Check(s.Choose(span)&&s.Node==from&&s.TotalLevels==levels,"selection never moves player");
+        Check(!s.Pull(0)&&!s.Pull(-1)&&!s.Pull(float.NaN)&&!s.Pull(float.PositiveInfinity)&&!s.Pull(.21f),"invalid pulls rejected");
+        s.Pull(.1f);Check(s.Node==from&&s.TotalLevels==levels&&s.EdgeProgress>0,"partial edge not counted");
+        int guard=0;
+        while(s.Phase==AdventurePhase.Climbing&&guard++<1000)
+        {
+            int old=s.Node,oldLevels=s.TotalLevels;s.Pull(.1f);
+            if(s.Node!=old)Check(s.Node==s.Tree.Parent[old]&&s.TotalLevels==oldLevels+1,"each ancestor crossing counted once");
+        }
+        Check(guard<1000&&s.Node==s.Tree.KthAncestor(from,span),"physical ancestor chain completed");
+    }
     static void AdventureFlow()
     {
         for(int seed=0;seed<40;seed++)
         {
             var s=new AdventureState(seed);
-            var original=TreeGenerator.Generate(seed,16,18);
-            Check(string.Join(",",s.Tree.Parent)==string.Join(",",original.Parent),"original tree topology retained");
-            Check(!s.BeginChase()&&!s.Choose(1)&&!s.EnterTree(),"classroom cannot be skipped");
-            Check(s.ExitClassroom()&&!s.ExitClassroom()&&s.BeginChase()&&!s.BeginChase(),"exit and theft occur once");
-            Check(s.ReachGate()&&s.EnterTree(),"mapping precedes tree");
-            while(s.Remaining>0)
+            Check(string.Join(",",s.Tree.Parent)==string.Join(",",TreeGenerator.Generate(seed,16,18).Parent),"original topology retained");
+            Check(!s.BeginChase()&&!s.Choose(1)&&!s.EnterTree()&&!s.Weave()&&!s.NextTarget(),"phases cannot be skipped");
+            Check(s.ExitClassroom()&&!s.ExitClassroom()&&s.BeginChase()&&!s.BeginChase(),"exit and theft once");
+            Check(s.ReachGate()&&s.EnterTree(),"map before tree");
+            Check(!s.CanChoose(2)&&!s.CanChoose(4)&&!s.Choose(3)&&!s.Choose(8),"no global upgrades before exploration");
+            for(int pair=0;pair<2;pair++)
             {
-                int span=8;while(span>s.Remaining)span/=2;
-                int from=s.Node,levels=s.TotalLevels;
-                Check(!s.Choose(3)&&!s.Choose(16),"only valid powers of two");
-                Check(s.Choose(span)&&s.Node==from&&s.TotalLevels==levels,"selection never moves player");
-                Check(!s.Pull(0)&&!s.Pull(-1)&&!s.Pull(float.NaN)&&!s.Pull(float.PositiveInfinity)&&!s.Pull(.21f),"invalid or discontinuous pulls rejected");
-                s.Pull(.1f);Check(s.TotalLevels==levels&&s.Node==from&&s.EdgeProgress>0,"partial edge is not a completed level");
-                int guard=0;
-                while(s.Phase==AdventurePhase.Climbing&&guard++<1000)
-                {
-                    int old=s.Node,oldLevels=s.TotalLevels;s.Pull(.1f);
-                    if(old!=s.Node)Check(s.Node==s.Tree.Parent[old]&&s.TotalLevels==oldLevels+1,"each crossed edge is counted once");
-                }
-                Check(guard<1000&&s.Node==s.Tree.KthAncestor(from,span)&&s.CompletedInSelection==span,"multi-level selection traverses every ancestor");
+                ClimbSelection(s,1);ClimbSelection(s,1);
+                Check(s.Phase==AdventurePhase.Clue&&!s.Choose(1),"stop at a physical cone");
+                Check(s.CollectCone()&&!s.CollectCone(),"unique cone collection");
+                int from=s.PendingStart,mid=s.PendingMiddle,end=s.PendingEnd;
+                Check(s.PendingSpan==2&&s.Knows(from,1)&&s.Knows(mid,1),"two observed adjacent edges required");
+                Check(s.Tree.Parent[mid]==end&&s.Weave()&&s.Knows(from,2),"store a node-specific two-edge connection");
             }
-            Check(s.Phase==AdventurePhase.Clue&&s.Node==s.Goal&&s.TotalLevels==s.RequiredLevels,"full route reaches original target");
-            Check(Math.Abs(s.TotalPull-s.RequiredLevels*AdventureState.PullPerEdge)<.001f,"selection length does not bypass physical effort");
-            Check(s.CollectCone()&&!s.CollectCone()&&!s.Pull(.1f)&&!s.Choose(1)&&!s.BeginChase(),"single terminal ending");
+            Check(s.PendingSpan==4&&s.PendingMiddle==s.Tree.KthAncestor(s.StartNode,2),"four-edge composition keeps middle ancestor");
+            Check(s.Weave()&&!s.Weave()&&s.Phase==AdventurePhase.Retargeting,"compose once and offer new target");
+            Check(!s.Knows(s.Tree.Parent[s.StartNode],2),"memory is not a universal two-level power");
+            Check(s.Cones==2&&s.MissionSelections==4&&s.TotalLevels==4,"four physical discoveries and two cones");
+            Check(s.NextTarget()&&!s.NextTarget()&&s.Node==s.StartNode&&s.Goal==s.OriginalGoal,"new target preserves original final goal");
+            Check(s.TotalLevels==4&&s.MissionLevels==0&&s.CanChoose(4),"return preserves memory and lifetime effort");
+            ClimbSelection(s,4);
+            Check(s.MissionSelections==1&&s.MissionLevels==4,"one decision replaces four, same physical distance");
+            while(s.Remaining>0)ClimbSelection(s,1);
+            Check(s.CollectCone()&&!s.CollectCone()&&s.Phase==AdventurePhase.Complete,"single terminal results");
+            Check(s.Cones==3&&s.ReusedConnections==1,"recovery and reuse recorded");
+            Check(Math.Abs(s.TotalPull-s.TotalLevels*AdventureState.PullPerEdge)<.003f,"no upgrade bypasses physical effort");
+            Check(s.NextTarget()&&s.Knows(s.StartNode,4)&&s.Cones==3,"another target keeps learned routes");
+            ClimbSelection(s,4);
+            while(s.Remaining>0){Check(!s.CanChoose(4),"overshoot refused");ClimbSelection(s,1);}
+            Check(s.CollectCone()&&s.Cones==4,"repeat search completes in same game");
+            Check(new AdventureState(seed).Cones==0&&!new AdventureState(seed).Knows(s.StartNode,4),"classroom restart resets memory");
         }
     }
 

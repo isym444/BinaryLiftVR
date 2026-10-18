@@ -1,0 +1,22 @@
+[
+  {
+    "file": "Assets/Resources/Approved/chairDesk.fbx",
+    "bytes": 94274,
+    "sha256": "61015377194c58d7371e30f718f9bf04332dfa8295949ad5de49f764d3f1a1ed"
+  },
+  {
+    "file": "Assets/Resources/Approved/desk.fbx",
+    "bytes": 34207,
+    "sha256": "eb09dd20820cf755394a27459ae05bceebbda016a0a9e295fe3b89fb7dc06322"
+  },
+  {
+    "file": "Assets/Resources/Approved/FundingPoster.png",
+    "bytes": 3448412,
+    "sha256": "8063d85eaa31942b089aab32b54cdc421bfddd793d2a313d90bb1d73c3b39e4c"
+  },
+  {
+    "file": "Assets/Resources/Approved/Sandstone.jpg",
+    "bytes": 242776,
+    "sha256": "0cac65461ba33003b8a27b03c2b87f3393a824a9a98036c4c8de6182a1449369"
+  }
+]
