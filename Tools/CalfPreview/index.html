@@ -1,0 +1,11 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Highland Calf · Character Review</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#202b2b;color:#f6ebd7;font:15px system-ui}canvas{display:block;width:100vw;height:100vh}header{position:absolute;top:30px;left:36px;pointer-events:none}small{letter-spacing:.2em;color:#b9d0c1}h1{font-size:36px;margin:8px 0}p{color:#c6c9b8;margin:5px 0;max-width:410px;line-height:1.5}footer{position:absolute;bottom:25px;left:36px;right:36px;display:flex;gap:12px;align-items:center;flex-wrap:wrap}button,select{background:#e5b77c;color:#30291f;border:0;border-radius:24px;padding:11px 20px;font:inherit;cursor:pointer}button.secondary{background:#384743;color:#f6ebd7}a{color:#e5b77c}#status{position:absolute;right:30px;top:30px;text-align:right;font-size:13px;line-height:1.7;color:#bccdc4}.credit{margin-left:auto;font-size:12px;text-align:right;max-width:310px}#error{color:#ffbbbb}
+@media(max-width:800px){header{top:20px;left:24px}h1{font-size:28px}header p{font-size:12px}small{font-size:10px}#status{display:none}footer{left:24px;right:24px;bottom:16px;gap:6px}button,select{padding:9px 13px;font-size:13px}.credit{font-size:10px;max-width:270px;margin-top:4px}}</style>
+<header><small>CONE COURIER / ART REVIEW 01</small><h1>A wee funding thief.</h1><p>Highland calf adaptation • warm, stylized coat<br>Character preview only. Not yet in the game.</p></header>
+<div id="status">Loading the animated base…</div><canvas id="view"></canvas>
+<footer><select id="clip" aria-label="Animation"><option>Idle</option><option>Walk</option><option>Gallop</option><option>Eating</option></select><button id="pause">Pause</button><button class="secondary" id="front">Front</button><button class="secondary" id="side">Side</button><button class="secondary" id="threequarter">Three-quarter</button><span class="credit">Base: Quaternius / CC0<br>Authored coat, horns and proportion study • No AI imagery</span></footer>
+<script type="importmap">{"imports":{"three":"./vendor/three.module.js","three/addons/":"./vendor/addons/"}}</script>
+<script type="module" src="preview.js"></script></html>

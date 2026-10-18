@@ -196,3 +196,9 @@ human hand travel. Geometry and character animation remain development blockouts
 there are no imported character rigs or audio assets. Approved environment textures
 were added in the subsequent learning-loop revision. This does not establish
 final-art quality or parity with a commercial third-person game.
+
+## Campus life expansion - 2026-10-18
+Read CampusLifeValidation-2026-10-18.md for actual mouse interaction timestamps,
+CampusLifeManual-2026-10-18.log for events, and CampusLifeSmoke-2026-10-18.txt for the
+method-driven whole-adventure regression. New physical campus tasks do not gate the
+original route-memory/manual-climbing loop. Hardware reach and performance remain open.

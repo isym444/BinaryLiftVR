@@ -1,4 +1,96 @@
-# Handoff - Funding and route memory (2026-10-18)
+# Handoff - Highland calf integration (2026-10-18)
+
+## Session 12 changes
+The user approved the revised calf and explicitly requested its integration everywhere,
+including poster art and all later appearances/copy. Session 11 approval restrictions
+below are historical. Hamish remains unused; this is the Quaternius-based adaptation.
+
+Tools/CalfPreview/CalfModel.js is shared by the browser and offline Export.mjs. The
+export hashes the original CC0 source and writes HighlandCalf.calf. The narrow editor
+importer creates a native prefab, one skinned mesh/material, vertex palette, 42 bones
+and all 13 source animation clips. No runtime parser or package is added. Keep native
+asset IDs/metas stable. Do not hand-edit the exported JSON. Rebuild with Prepare.ps1
+then node Tools/CalfPreview/Export.mjs. Shader: Resources/CalfCoat.shader.
+
+HighlandCalf owns clip crossfades, head proportions and mouth-attached funding.
+CampusWorld instantiates it for all controllers, including dormant historical modes.
+AdventureController uses grounded locomotion, faces actual travel, idles when stopped,
+transfers the envelope during theft, removes it on recovery and restores it on a new
+search. Replay resets pose/carrying. Tree topology, holds and progression are unchanged.
+The poster edit uses the built-in imagegen tool at the user's explicit request;
+see PosterGeneration-2026-10-18.md and AssetRegister.md for provenance.
+
+Validation: HighlandCalfValidation-2026-10-18.md. Native asset checks passed (18),
+logic tests passed, final game/editor compilation passed. Actual input covered exit,
+theft and first checkpoint only. The user prohibited further computer-controlled
+UI testing and requested direct push. Do not resume it without renewed consent.
+Next permitted QA: full AdventureValidation and headset playthrough. Neither was
+completed for this integration; do not claim headset performance certification.
+
+## Session 11 changes
+CampusDetail adds pointed stone window frames, mullions, sills, guttering, a moving
+evening clock, a dressed coffee kiosk, pavement menu, entry mat, noticeboard, umbrella
+stand, two gently moving banners and six pooled puddle/ripple effects. Static masonry
+and trim are combined by material. Custom meshes/materials are owned and disposed by
+CampusWorld. Cones now use three continuous tapered bands instead of stacked cylinders.
+CampusLife adds rounded machine sides, vents, a pressure needle and a brewing status
+light; only existing coffee state drives them. Coffee hints fit on shorter lines.
+No new external assets, packages, sounds or AI media were imported in this pass.
+
+Hamish The Highland Cow was preview-approved, including blocky appearance. The user
+then could not complete the required Sketchfab account flow and requested another
+candidate after campus work. It is NOT imported. Keep monkey naming coherent until
+an accessible approved character is actually integrated. Do not automate sign-up.
+Latest verification and remaining art limits: CampusDetailValidation-2026-10-18.md.
+
+The user then approved a Quaternius Bull adaptation PREVIEW. Tools/CalfPreview contains
+the authored local review and setup; source files stay in ignored Logs outside Assets.
+The calf has compact proportions, short horns and head/neck/torso-bound coat locks.
+Actual browser review covered Idle, Walk, Gallop and Eating. It is not yet a Unity
+asset or a finished groom/skin. Next character step: obtain appearance approval for
+the revised calf, then export/import, optimise coat meshes, validate all required
+clips and update chase/text coherently. Preserve the horse companion and algorithm.
+Session 11 regression: 138 assertions passed, plus actual mouse coffee/exit input.
+Saved calf review: Evidence/HighlandCalf-Preview-2026-10-18.png and
+Evidence/HighlandCalf-Front-2026-10-18.png. The review viewer is reproducible using
+Tools/CalfPreview/Prepare.ps1; downloaded base/vendor files are intentionally ignored.
+
+## Campus life baseline
+The user prioritized environment and campus interaction while a free animated Highland
+calf is sought. Keep the existing monkey until a suitable model is approved and inspected.
+The current approved cow has no animations and its official download requires login.
+See AssetRegister.md for the decision and approved environment provenance.
+
+CampusLifeState owns optional coffee and archive progression independently of the
+algorithm. CampusLife owns physical props, input, docking, brewing, stamp impression,
+drawer animation and clue. Cup/Stamp/Form/Drawer transforms are test-visible. Build takes
+AdventureWorld, XRRig, AdventureState and a local event logger; the route clue derives
+from actual parent IDs. Tick advances only during Arrival; Reset clears the entire task.
+Do not replace mouse dragging or tracked near-grip with text-only buttons.
+
+New CampusAssets loads approved FBX, preserves native materials where present, fits to
+named footprints and applies the Food Kit atlas. CampusPBR combines diffuse/normal/
+roughness for wood and bark. Import rules cap texture resolution at 1024 with mipmaps.
+Four desks remain: the middle row is removed for approach space at the two worktops.
+Movement collision bounds must match this arrangement and retain the centre exit aisle.
+Warm point lights cast no additional real-time shadows; the existing sun retains shadows.
+No mobile GPU, draw-call budget, headset comfort or seated reach measurement is claimed.
+
+Interaction contract: invalid drop returns safely; coffee cannot move while brewing;
+form requires stamp; drawer requires submission; clue requires opening. All are optional.
+Holding pauses movement/snap; tracking/focus loss cancels. R/replay resets props alongside
+AdventureState. Trigger rays only operate BREW/card; physical items use near grip in VR.
+Desktop drawer pulls downward on screen. No free-throw rigidbody simulation is present.
+
+Remaining art is explicit: architecture, tree shape/platforms, horse, monkey, climbing
+apparatus, coffee-machine housing, stamp and form use project-authored geometry. Imported
+materials and dressing improve them; they are not final bespoke models. No new AI media.
+
+Latest verification: CampusLifeValidation-2026-10-18.md; actual mouse flow and reset
+passed. Final integration report: CampusLifeSmoke-2026-10-18.txt. Read
+CampusArtCoverage-2026-10-18.md before claiming all models/textures are final.
+
+## Prior gameplay contracts (still apply)
 
 ## Three-cycle improvement contracts
 See ImprovementCycles-2026-10-18.md for per-cycle changes, evidence and decisions.
@@ -8,7 +100,7 @@ The user now permits small optional algorithm quizzes; do not gate the core clim
 Cycle 2 adds a Quiz phase, entered only from Complete and returning there on skip.
 AnswerQuiz permits retries, awards one ResearchStamp per search and preserves all
 climb/cone counters. The next target resets QuizSolved but keeps earned stamps.
-Coffee/Paperwork are arrival-only interactions; GreetHorse is available while resting.
+CampusLife now owns arrival-only physical tasks; GreetHorse remains available while resting.
 Optional audits cover composition, remaining-distance bounds and actual ancestors.
 
 ## Current scope
@@ -56,7 +148,8 @@ external asset is approved by implication. University photographs remain referen
 - AdventureWorld owns workshop, remembered branch traces, counts, world choices and
   the approved classroom art. CampusWorld supplies common art and sandstone material.
 - ApprovedAssetImport bounds texture dimensions to 1024 and disables furniture animation,
-  generated colliders and embedded materials. No new dependency or package was added.
+  generated colliders. New nature/furniture folders retain embedded materials; food uses
+  its approved atlas. No new dependency or package was added by this revision.
 
 ## Validation
 Current three-cycle revision: all three Unity reports pass. Actual mouse input passed

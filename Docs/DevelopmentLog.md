@@ -1,5 +1,130 @@
 # Development log
 
+## Session 12 - Approved Highland calf integration (2026-10-18)
+Baseline: Fexas 91018bd. User approved the revised Quaternius-based calf for game
+integration, chase animation and English copy updates. Preserve manual climbing,
+algorithm progression, horse companion and unrelated settings/import metadata edits.
+Share the approved adaptation geometry between the browser review and offline export.
+Import as native Unity meshes, skin and clips without a runtime glTF dependency.
+Validate mouth-attached funding, locomotion, tree transition, recovery and replay;
+perform desktop input walkthrough and integration checks before pushing Fexas.
+
+### Completed implementation and verification
+Imported the approved calf using a shared adaptation/export and native Unity importer:
+one skinned mesh/material, 7,594 triangles, 42 bones, 13 clips. Added grounded chase,
+head-bound funding and recovery/new-search/replay state. Replaced runtime character
+references, later appearances, quiz wording and poster art (NOT FOR HAY).
+An initial shader discovery issue was fixed with an explicit asset dependency.
+Native asset checks passed all 18 assertions; logic tests passed. Actual input covered
+classroom exit, theft and first chase checkpoint. The user then stopped computer use,
+prohibited further UI testing and requested a quick push. Final game/editor C# sources
+compiled successfully from the command line without operating Unity. Full adventure
+regression and headset checks were not run for this integration. Exact boundaries:
+HighlandCalfValidation-2026-10-18.md. Publish only Fexas; preserve unrelated local edits.
+
+## Session 11 - Campus modelling and Hamish selection (2026-10-18)
+Baseline: Fexas 65b4094. Preserve existing XR, package, project-setting and imported
+metadata edits, and .cursor. User approved Hamish The Highland Cow by Harvey.Eggleton
+after preview, including its blocky style. Public metadata lists two animations and
+CC BY 4.0. Official download requires user sign-in; actual files remain uninspected.
+Continue independently with authored facade, cone, kiosk, clock and coffee-machine
+detail using existing approved materials. Preserve progression, physical tasks and
+manual climbing. Verify in Unity, update handoff and push only Fexas.
+
+User subsequently reported that Sketchfab requires another account and requested
+another model after finishing campus work. Hamish is therefore deferred, not imported.
+Do not substitute a static cow or claim the monkey has been replaced. Search for a
+free animated option with an accessible download and show its preview before import.
+
+### Implementation
+Added CampusDetail.cs and its Unity metadata. CampusWorld owns runtime custom meshes
+and now constructs tapered cone bands with shared smooth radial normals. AdventureWorld
+builds the finishing layer without changing tree nodes, player colliders or targets.
+The layer combines static masonry/trim by material and independently animates two
+banners, clock hands and six pooled ripples. CampusLife adds machine side panels,
+vents, needle and status lamp driven by the existing brew state. Shortened hints
+after Play Mode review found the original long coffee line overlapped the poster.
+Reuse approved wood, furniture and food models only; no new external/AI media.
+
+### Validation and character review
+Scripts/Test-Logic.ps1 passed. Unity desktop manual cup docking, brewing, serving and
+classroom exit/theft passed; local event evidence is CampusDetailManual-2026-10-18.log.
+Complete AdventureValidation passed 138 assertions at 09:31:28 UTC, including all
+checkpoints, 35 nodes, memory composition, repeat targets, results and clean replay.
+See CampusDetailValidation-2026-10-18.md for separate manual/method-driven coverage.
+Headset and target-device performance tests were not run.
+
+Research found no verified ready-made Highland calf satisfying free, animated and
+accessible download together. Inspected Quaternius Bull from the creator's public
+Drive without authentication: CC0, 2,418 triangles, 42 joints, 13 clips. Kept the
+file in ignored Logs, outside Unity Assets. User approved making a second adaptation
+preview, not immediate game replacement. Tools/CalfPreview reproduces the local
+viewer with a verified source hash and pinned Three.js 0.160.1. Authored shorter
+proportions/muzzle, larger head, curved short horns and bone-attached coat locks.
+Revised rigid-looking locks to softer rounded forms after actual browser review.
+Observed Idle, Walk, Gallop and Eating; controls, bone following and console checked.
+Added geometry: 5,448 triangles before any integration optimisation. This is a
+preview with art, clipping, export and headset QA still outstanding. No AI imagery.
+The revised calf has NOT been imported into Unity; game character remains the monkey.
+Saved front and three-quarter browser captures in Docs/Evidence. Publication scope
+includes the campus pass, reproducible preview tools and English evidence/handoff.
+Verified remote Fexas at 65b4094 and main at 15279ec before publication. Push only
+Fexas without force; preserve existing settings, packages and imported metadata edits.
+
+## Session 10 - Campus life and approved art expansion (2026-10-18)
+User selected warm stylized art and hands-on campus life. Approved free Kenney Food
+and Nature kits, Poly Haven Bark Brown 02 and Wood Planks. Existing furniture kit
+approval remains. Highland cow appearance approved for further inspection only.
+Sketchfab public metadata: 46,812 faces, zero animation clips, CC BY 4.0; official
+download requires authentication (401). User chose to prioritize environment and
+campus interactions while continuing the search for a free animated cow. Do not
+claim the cow is replaced or the candidate rig has been inspected.
+Implement cup placement/brewing/serving and stamp/submission/drawer/clue actions,
+with desktop dragging and tracked VR grip support. Preserve original climbing and
+all unrelated settings/package edits. Test logic, Unity integration and actual input.
+
+### Implementation and review
+Added CampusLifeState (Unity-free guards) and CampusLife (desktop tabletop dragging,
+tracked near-grip, forgiving docking, visible coffee fill/stream/steam, stamp impression,
+form submission, drawer pull and parent-route card). AdventureController owns its
+lifecycle, records local events, cancels grabs on focus loss and prevents movement/snap
+while holding. Campus tasks stay optional and award no algorithm progress.
+
+Imported only the approved Food/Nature/Furniture subset and two Poly Haven 1K material
+sets, with unchanged publisher licences and updated source hashes. CampusAssets preserves
+embedded nature/furniture colours and uses the food atlas; CampusPBR combines diffuse,
+normal and roughness. Added books, lamps, shelves, plants, benches and courtyard trees.
+Removed the middle desk row for approach space; matched the controller's movement bounds.
+Fixed startup overwriting warm ambient lighting; added shadowless local light pools.
+
+The first real mouse test revealed that a camera-facing drag plane rejected cup docking
+from a turned view. Changed to a tabletop plane and added a visible drip tray. Retested
+the full coffee and archive sequences successfully using actual mouse input. Verified
+R clears all completed tasks and exiting with tasks skipped still triggers the chase.
+See CampusLifeValidation-2026-10-18.md and its UTC event log/screenshots. No supported
+recording tool was available; no video or headset test is claimed.
+
+### Documentation and handoff
+Updated README controls, Design, Handoff, AdventureValidation, VRValidation, AssetRegister
+and ApprovedAssetHashes. Added CampusArtCoverage to distinguish imported finished source
+assets from remaining authored geometry. All source/game/documentation additions are
+English. Cow remains deferred by user choice; no suitable free animated Highland calf
+has been verified, and the static appearance candidate was not downloaded or imported.
+
+### Verification and publication scope
+Scripts/Test-Logic.ps1 returned ALL PASSED. Whole-adventure Unity checks include PBR
+shader compilation, prop instantiation, unchanged algorithm progression, no legacy
+controller handoff, quiz/research and clean replay. Save the final report alongside the
+manual evidence before publication. Stage only this revision's gameplay/editor/assets,
+licences, tests and English docs. Preserve unrelated XR/package/project-setting edits
+and .cursor. Upload only to the user-authorized Fexas branch with a normal push.
+
+Final Unity integration: PASS at 09:08:06 UTC. Saved CampusLifeSmoke-2026-10-18.txt;
+stopped Play afterward. No legacy game controller was instantiated.
+Extended .gitattributes to preserve nested FBX/licence source bytes. Renormalization
+also restores original CRLF bytes for the two existing desk/chair FBX files, matching
+their already-recorded source hashes; diff ignoring line endings confirms no model change.
+
 All development records, source comments, game text, and handoffs are written in English.
 Entries describe meaningful work steps, evidence, and unresolved work. Do not claim a
 headset test based on desktop Play Mode.

@@ -1,9 +1,18 @@
 # Cone Courier - Classroom to Canopy
 
 English-only Unity VR project set in a University of Glasgow-inspired electronic campus.
-Current flow: classroom exploration -> exit -> monkey theft -> seven connected chase
+Current flow: classroom exploration -> exit -> Highland calf theft -> seven connected chase
 waypoints -> aerial route reveal -> original generated tree -> manual exploration -> cone collection -> two/four-edge route memory
 -> new funding target -> manual reuse -> results -> replay from the classroom. There is no second-game handoff.
+
+The campus detail pass adds stone window frames, a moving clock, kiosk/entrance
+dressing, gentle banners, rain puddles and a more detailed coffee machine. Cones
+have continuous tapered surfaces. All existing physical tasks and climbing remain.
+The approved warm Highland calf now carries the funding throughout the chase and
+later searches. Its native rig plays idle, walk, gallop and head-lowered animations;
+recovery removes the carried envelope and replay resets both character and funding.
+Classroom posters and audit copy use the same calf/hay theme. The shared approved
+adaptation is in Tools/CalfPreview, with the original CC0 source in SourceArt/HighlandCalf.
 
 ## Run
 Open Assets/Scenes/Main.unity in Unity 6000.0.85f1 and press Play. Scenery is generated
@@ -29,11 +38,14 @@ Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
 - Recover the final cone. NEW TARGET keeps memory and cycles 3/5/7/4/6-level goals;
   REPLAY FROM CLASSROOM clears progress. Neither launches the legacy game.
 - R restarts with a fade. There is no chase timer or falling penalty.
-- OPTIONAL QUIZ at results opens a short monkey-auditing challenge. Wrong answers
+- OPTIONAL QUIZ at results opens a short calf-auditing challenge. Wrong answers
   explain the concept and permit retry; BACK / SKIP always returns to results. One
   audit stamp can be earned per search. Stamps never substitute for physical climbing.
-- In the classroom, click COFFEE STATUS or STAMP FORM; point at the horse's head to
-  greet the companion. VR uses the same trigger-ray targets.
+- In the classroom, drag the cup below the spout, click BREW, wait for the visible
+  fill, then drag it to the saucer. Drag the stamp onto the form, then the stamped
+  form into the in tray. Pull the drawer downward on screen and click the route card.
+  Invalid drops return props safely. These activities are optional; exit at any time.
+  Point at the horse's head to greet the companion.
 - RECORD NEW ROUTES at results builds further twos/fours from the edges you explored.
   BACK cancels safely. Research keeps existing memory and returns to the same results.
   MEMORY BEST compares decisions with the connections available at mission start.
@@ -49,6 +61,10 @@ The branch workbench shows FROM / VIA / TO anchors and animates the shared middl
 Desktop reveal raises and tilts the camera. VR fades to a stationary overlook, preserving
 tracked head rotation; look down at the campus. Map/tree changes use a fade.
 No forced head bob, camera roll or falling. Device comfort and reach still need testing.
+At campus worktops, grip within 12 cm of a prop to pick it up, move your hand and
+release at the destination. Pull the drawer toward you. Trigger rays operate BREW
+and collect the card; physical props use near grip. Movement and snap turn pause
+while holding a prop. Tracking loss, focus loss and restart safely release it.
 
 ## Original tree contract
 TreeGenerator.Generate(13,16,18), RaceState.Create and TreeLayout.ComputeX(tree,1.3)
@@ -63,12 +79,16 @@ button or completion path that launches them.
 Run Scripts/Test-Logic.ps1 (Unity Mono; optional -UnityEditorRoot for another installation).
 BinaryLift > Validate Adventure (Ctrl+Shift+J) runs method-driven integration.
 BinaryLift > Capture Adventure Screenshot (Ctrl+Shift+K) records the current view.
-Read Docs/AdventureValidation.md for actual input evidence and hardware limitations.
+Read Docs/AdventureValidation.md and Docs/CampusLifeValidation-2026-10-18.md for
+actual input evidence and hardware limitations.
 No headset or APK validation is claimed; Android modules are not installed.
 
-Approved Poly Haven sandstone, Kenney desks/chairs and a separately preview-approved
+Approved Poly Haven sandstone, bark and wood maps, Kenney food, planting and furniture,
+and a separately preview-approved
 AI funding poster are now used. Characters and architecture remain project-built.
-Read Docs/AssetRegister.md for provenance, licences and the pending horse review.
+Read Docs/AssetRegister.md for provenance, licences and pending character reviews.
+The user selected environment and interactions first; a suitable free animated Highland
+calf is still being sought. The monkey remains until a replacement passes review.
 The learning loop is specified in Docs/Design.md. No audio or university-photo pixels
 are imported. This remains a stylized campus prototype, not a surveyed reconstruction.
 

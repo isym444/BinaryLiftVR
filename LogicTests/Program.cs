@@ -27,6 +27,7 @@ static class Program
         AdventureFlow();
         LoomLabels();
         LoomLabelsStayConsistent();
+        CampusLifeFlow();
 
         Console.WriteLine(failures == 0 ? "ALL PASSED" : failures + " FAILURE(S)");
         return failures == 0 ? 0 : 1;
@@ -98,6 +99,18 @@ static class Program
         }
     }
 
+    static void CampusLifeFlow()
+    {
+        var s=new CampusLifeState();
+        Check(!s.Brew()&&!s.PlaceCup(CupPlace.Coaster)&&!s.Submit()&&!s.OpenDrawer()&&!s.TakeClue(),"campus tasks require real ordered actions");
+        Check(!s.PlaceCup((CupPlace)99)&&s.PlaceCup(CupPlace.Brewer)&&s.Brew()&&!s.Brew(),"cup must dock before brewing once");
+        Check(!s.PlaceCup(CupPlace.Tray)&&!s.Advance(float.NaN)&&!s.Advance(10),"brewing locks cup and rejects invalid time");
+        for(int i=0;i<26;i++)s.Advance(.1f);
+        Check(s.Fill==1&&!s.Brewing&&s.PlaceCup(CupPlace.Coaster)&&s.CoffeeServed&&!s.PlaceCup(CupPlace.Tray),"coffee fills and serving is persistent");
+        Check(s.Stamp()&&!s.Stamp()&&s.Submit()&&!s.Submit()&&s.OpenDrawer()&&s.TakeClue()&&!s.TakeClue(),"stamp submit drawer clue cannot be farmed");
+        var reset=new CampusLifeState();Check(!reset.CoffeeServed&&!reset.ClueFound&&!reset.Stamped&&reset.Fill==0,"campus replay starts clean");
+        var optional=new AdventureState();Check(optional.ExitClassroom(),"campus chores never gate departure");
+    }
     static void CheckQuiz(AdventureState s)
     {
         int cones=s.Cones,levels=s.TotalLevels,stamps=s.ResearchStamps;

@@ -1,0 +1,141 @@
+Adventure integration checks
+PASS arrival waits in classroom
+PASS campus surface shader compiles
+PASS approved PBR shader compiles
+PASS hands-on classroom props instantiated
+PASS selection cannot skip classroom
+PASS walk through classroom exit
+PASS walk checkpoint 0
+PASS walk checkpoint 1
+PASS walk checkpoint 2
+PASS walk checkpoint 3
+PASS walk checkpoint 4
+PASS walk checkpoint 5
+PASS walk checkpoint 6
+PASS all checkpoints precede tree reveal
+PASS original 35-node structure
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS physical cone collected once
+PASS socket requires a grabbed connector
+PASS join discovered route segments
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS physical cone collected once
+PASS socket requires a grabbed connector
+PASS join discovered route segments
+PASS socket requires a grabbed connector
+PASS join discovered route segments
+PASS four-edge memory built
+PASS new-target text has viewport margins
+PASS change target in same tree
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS select available connection
+PASS selection does not climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS stationary grip cannot climb
+PASS physical cone collected once
+PASS single complete state
+PASS two discovery cones and one reused route recovery
+PASS all target levels physically climbed
+PASS approved artwork available
+PASS approved furniture instantiated
+PASS results and collected cone visible
+PASS no second game controller
+PASS optional quiz opens with readable bounds
+PASS wrong answer remains retryable
+PASS correct answer earns one audit stamp
+PASS stamp cannot be collected twice
+PASS quiz returns to same results
+PASS route efficiency benchmark uses current memory
+PASS results text has viewport margins
+PASS newly explored branches support more research
+PASS optional research can be cancelled
+PASS construct additional branch memory
+PASS research completes inside original results
+PASS new memory improves future routes without rewriting past score
+PASS continue to short target after research
+PASS short target offers valid remembered route only
+PASS repeat search retains cones and controls
+PASS reuse short valid route
+PASS reuse short valid route
+PASS repeat search cone
+PASS replay accepted
+PASS replay returns to clean classroom
+PASS one adventure controller after replay
+PASS campus props reset with replay
+Result: PASS
+Headset validation: NOT RUN

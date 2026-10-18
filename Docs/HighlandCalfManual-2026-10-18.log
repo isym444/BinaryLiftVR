@@ -1,0 +1,5 @@
+2026-10-18T10:21:27.0957355Z event=arrival phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T10:21:59.8169854Z event=classroom_exited phase=Courtyard node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T10:22:01.3491093Z event=theft_anticipation phase=Chase node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T10:22:03.1365199Z event=funding_snatched phase=Chase node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T10:22:36.3944906Z event=chase_checkpoint_0 phase=Chase node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0

@@ -2,7 +2,7 @@
 
 ## Continuous journey
 Keep the classroom, proximity-triggered theft, seven chase markers, aerial campus-tree
-reveal and original generated tree. The monkey steals a fictional research funding
+reveal and original generated tree. The Highland calf steals a fictional research funding
 envelope. English humour stays in brief flavour lines and decorations. There are no
 quiz gates, automatic ascents or transitions into the historical race game.
 
@@ -58,10 +58,30 @@ available, and taking it is not penalized as a wrong answer.
 ## Presentation
 Approved Poly Haven masonry, selected Kenney desks/chairs, and one preview-approved AI
 poster enrich the existing classroom/campus. Source files and licences are tracked in
-AssetRegister.md. Horse and monkey remain project-authored placeholders; external horse
+AssetRegister.md. The Highland calf uses the approved adapted Quaternius rig. Horse remains a project-authored placeholder; external horse
 review is pending download availability. No university photograph is imported.
 
 VR retains tracked rotation, manual grip input, stationary faded map/target changes,
 no forced camera pitch or roll, and no head bob. Mouse drag is the desktop analogue.
 Actual desktop input and method-driven integration are separate validation categories;
 headset comfort, reach, stereo, haptics and device performance remain hardware checks.
+
+## Optional hands-on campus life (2026-10-18)
+CampusLifeState is separate from AdventureState. Coffee and archive tasks never unlock
+climbing, award cones, reveal stored connections or gate the classroom exit.
+Coffee: move empty cup to brewer, press BREW, watch a 2.5-second fill/stream, then serve
+on the saucer. A full cup shows steam. Stamp: press the movable stamp onto the form;
+move the visibly stamped form into the in tray; pull the now-unlocked drawer and take
+the route card. The card displays the current tree's start, parent and grandparent.
+It suggests composition but still requires observing and constructing the actual edges.
+
+Desktop uses tabletop-plane dragging with forgiving docking radii. Drawer drag is downward
+on screen; VR uses the hand's physical pull toward the player. VR props require a grip
+within 12 cm; BREW and the route card also accept trigger rays. Invalid releases return
+to the last valid dock. No thrown props or loose-object physics are simulated. Holding
+pauses locomotion and snap turns; focus/tracking loss cancels safely. Reset clears both
+state machines. Only Arrival advances brewing or accepts campus interaction input.
+
+The middle desk row is removed to create an approach aisle; four classroom desks remain.
+A 1.2-metre centre gap keeps the exit route open. Authored movement bounds reject the
+worktops and remaining desk rows. Real seated/standing controller reach remains untested.

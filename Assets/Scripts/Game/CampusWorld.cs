@@ -7,7 +7,7 @@ namespace BinaryLift
     /// <summary>Campus geometry with registered approved art. All dimensions are metres.</summary>
     public sealed class CampusWorld : MonoBehaviour
     {
-        public Transform Station, Horse, Monkey, Cone, Saddle, MapRoot;
+        public Transform Station, Horse, Calf, Cone, Saddle, MapRoot;
         public TextMesh Objective, Status, Hint, Chapter, CompanionLine;
         public QuestTarget BeginButton, ConeTarget, SaddleTarget;
         public readonly List<QuestTarget> Targets = new List<QuestTarget>();
@@ -61,7 +61,7 @@ namespace BinaryLift
             }
             if (climbing)
             {
-                Monkey = BuildMonkey(transform, new Vector3(0, 9, 5));
+                Calf = BuildCalf(transform, new Vector3(0, 9, 5));
                 CombineArchitecture();
                 return;
             }
@@ -75,7 +75,7 @@ namespace BinaryLift
             Targets.Add(ConeTarget);
             Text("CLUE COLLECTION", Station, new Vector3(-1.9f,.52f,.90f), .05f, White.color);
             BuildMap(state);
-            Monkey = BuildMonkey(transform, new Vector3(-2.4f,.9f,6f));
+            Calf = BuildCalf(transform, new Vector3(-2.4f,.9f,6f));
             RouteLine = Line("Route preview", transform, Cyan, .035f);
             RouteLine.enabled = false;
             CombineArchitecture();
@@ -149,7 +149,7 @@ namespace BinaryLift
             Text("UNIVERSITY OF\nGLASGOW",transform,new Vector3(-5.4f,1.65f,4.38f),.18f,White.color);
             Text("GILMOREHILL  /  AFTER HOURS",transform,new Vector3(-5.4f,1.18f,4.38f),.055f,Cyan.color);
             Box("Coffee kiosk",architecture,new Vector3(7.5f,1.4f,9),new Vector3(3,2.8f,2.5f),Dark);
-            Text("LATE LAB\nCOFFEE",transform,new Vector3(7.5f,2,7.7f),.18f,White.color);
+            Text("LATE LAB / COFFEE",transform,new Vector3(7.5f,2.3f,7.7f),.14f,White.color);
             Box("Kiosk orange canopy",architecture,new Vector3(7.5f,2.9f,8.6f),new Vector3(3.3f,.16f,3.4f),Orange);
             for(int i=0;i<=20;i++)
             {
@@ -208,12 +208,15 @@ namespace BinaryLift
 
         public Transform BuildCone(Transform parent,Vector3 position,float height)
         {
-            Transform root=Root("Cone placeholder",parent); root.localPosition=position;
+            Transform root=Root("Traffic cone",parent); root.localPosition=position;
             Box("Cone base",root,new Vector3(0,height*.035f,0),new Vector3(height*.85f,height*.07f,height*.85f),Dark);
-            for(int i=0;i<7;i++)
+            float[] rings={.07f,.38f,.58f,1f};
+            for(int i=0;i<3;i++)
             {
-                float diameter=height*(.7f-i*.085f);
-                Primitive("Cone band",PrimitiveType.Cylinder,root,new Vector3(0,height*(.13f+i*.12f),0),new Vector3(diameter,height*.065f,diameter),(i==2||i==3)?White:Orange);
+                float low=rings[i], high=rings[i+1];
+                CampusDetail.Frustum(this,root,"Continuous cone band",new Vector3(0,height*low,0),
+                    height*(high-low),height*Mathf.Lerp(.36f,.035f,(low-.07f)/.93f),
+                    height*Mathf.Lerp(.36f,.035f,(high-.07f)/.93f),i==1?White:Orange);
             }
             return root;
         }
@@ -241,24 +244,14 @@ namespace BinaryLift
             return horse;
         }
 
-        Transform BuildMonkey(Transform parent,Vector3 pos)
+        public HighlandCalf CalfActor { get; private set; }
+        Transform BuildCalf(Transform parent,Vector3 pos)
         {
-            Transform monkey=Root("Monkey placeholder",parent);monkey.localPosition=pos;
-            Material plum=Mat(new Color(.36f,.22f,.31f));
-            Primitive("Body",PrimitiveType.Capsule,monkey,new Vector3(0,.4f,0),new Vector3(.4f,.42f,.35f),plum);
-            Primitive("Head",PrimitiveType.Sphere,monkey,new Vector3(0,.92f,0),Vector3.one*.45f,plum);
-            Primitive("Face",PrimitiveType.Sphere,monkey,new Vector3(0,.89f,-.17f),new Vector3(.32f,.26f,.14f),Sand);
-            for(int side=-1;side<=1;side+=2)
-            {
-                Primitive("Ear",PrimitiveType.Sphere,monkey,new Vector3(side*.25f,.94f,0),Vector3.one*.19f,plum);
-                Box("Arm",monkey,new Vector3(side*.27f,.47f,-.03f),new Vector3(.12f,.6f,.13f),plum);
-                Box("Foot",monkey,new Vector3(side*.13f,.05f,-.09f),new Vector3(.15f,.15f,.3f),plum);
-                Primitive("Eye",PrimitiveType.Sphere,monkey,new Vector3(side*.08f,.95f,-.23f),Vector3.one*.04f,Dark);
-            }
-            Box("Stolen route notebook",monkey,new Vector3(0,.47f,-.3f),new Vector3(.38f,.28f,.07f),Orange);
-            var tail=Line("Curled tail",monkey,plum,.07f);tail.useWorldSpace=false;tail.positionCount=12;
-            for(int i=0;i<12;i++)tail.SetPosition(i,new Vector3(Mathf.Sin(i*.35f)*.24f,.2f+i*.035f,.15f+i*.045f));
-            return monkey;
+            var prefab=Resources.Load<GameObject>("Approved/HighlandCalf");
+            if(prefab==null)throw new System.InvalidOperationException("Approved Highland calf asset is missing. Reimport HighlandCalf.calf.");
+            var instance=Instantiate(prefab,parent);instance.name="Highland calf / funding courier";
+            instance.transform.localPosition=pos;CalfActor=instance.GetComponent<HighlandCalf>();
+            CalfActor.BuildFunding(this);return instance.transform;
         }
 
         public QuestTarget Button(string label,Transform parent,Vector3 pos,Vector3 scale,QuestAction action,int value)
@@ -292,6 +285,16 @@ namespace BinaryLift
 
         public GameObject Box(string name,Transform parent,Vector3 pos,Vector3 scale,Material mat)
             => Primitive(name,PrimitiveType.Cube,parent,pos,scale,mat);
+
+        public GameObject MeshObject(string name,Transform parent,Mesh mesh,Material material)
+        {
+            ownedMeshes.Add(mesh);
+            var go=Root(name,parent).gameObject;
+            go.AddComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;
+            renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;
+            return go;
+        }
 
         public GameObject Primitive(string name,PrimitiveType type,Transform parent,Vector3 pos,Vector3 scale,Material mat)
         {
