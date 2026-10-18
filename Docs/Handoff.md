@@ -1,6 +1,34 @@
-# Handoff - Hands-on campus life (2026-10-18)
+# Handoff - Campus detail pass (2026-10-18)
 
-## Latest revision
+## Session 11 changes
+CampusDetail adds pointed stone window frames, mullions, sills, guttering, a moving
+evening clock, a dressed coffee kiosk, pavement menu, entry mat, noticeboard, umbrella
+stand, two gently moving banners and six pooled puddle/ripple effects. Static masonry
+and trim are combined by material. Custom meshes/materials are owned and disposed by
+CampusWorld. Cones now use three continuous tapered bands instead of stacked cylinders.
+CampusLife adds rounded machine sides, vents, a pressure needle and a brewing status
+light; only existing coffee state drives them. Coffee hints fit on shorter lines.
+No new external assets, packages, sounds or AI media were imported in this pass.
+
+Hamish The Highland Cow was preview-approved, including blocky appearance. The user
+then could not complete the required Sketchfab account flow and requested another
+candidate after campus work. It is NOT imported. Keep monkey naming coherent until
+an accessible approved character is actually integrated. Do not automate sign-up.
+Latest verification and remaining art limits: CampusDetailValidation-2026-10-18.md.
+
+The user then approved a Quaternius Bull adaptation PREVIEW. Tools/CalfPreview contains
+the authored local review and setup; source files stay in ignored Logs outside Assets.
+The calf has compact proportions, short horns and head/neck/torso-bound coat locks.
+Actual browser review covered Idle, Walk, Gallop and Eating. It is not yet a Unity
+asset or a finished groom/skin. Next character step: obtain appearance approval for
+the revised calf, then export/import, optimise coat meshes, validate all required
+clips and update chase/text coherently. Preserve the horse companion and algorithm.
+Session 11 regression: 138 assertions passed, plus actual mouse coffee/exit input.
+Saved calf review: Evidence/HighlandCalf-Preview-2026-10-18.png and
+Evidence/HighlandCalf-Front-2026-10-18.png. The review viewer is reproducible using
+Tools/CalfPreview/Prepare.ps1; downloaded base/vendor files are intentionally ignored.
+
+## Campus life baseline
 The user prioritized environment and campus interaction while a free animated Highland
 calf is sought. Keep the existing monkey until a suitable model is approved and inspected.
 The current approved cow has no animations and its official download requires login.

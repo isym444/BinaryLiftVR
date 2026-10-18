@@ -17,7 +17,8 @@ namespace BinaryLift
         readonly Vector3 cupHome=new Vector3(-2.85f,1.08f,-5.35f),brewSpot=new Vector3(-1.95f,1.08f,-5.35f),coaster=new Vector3(-1.05f,1.08f,-5.35f);
         readonly Vector3 stampHome=new Vector3(.8f,1.08f,-5.35f),formHome=new Vector3(1.55f,1.09f,-5.35f),inbox=new Vector3(2.7f,1.10f,-5.35f),drawerHome=new Vector3(1.6f,.65f,-5.3f);
         CampusWorld art;XRRig rig;Action<string> record;
-        Transform liquid,seal,stream;readonly List<Transform> steam=new List<Transform>();
+        Transform liquid,seal,stream,pressureNeedle;readonly List<Transform> steam=new List<Transform>();
+        Renderer readyLamp;MaterialPropertyBlock lampProperties;
         CampusProp grabbed;Vector3 grabStart,handStart;Plane dragPlane;int hand=-1;float mouseY;
         bool active,wasBrewing;float stampUntil;Vector3 stampRest;string routeHint;
         public void Build(AdventureWorld world,XRRig player,AdventureState quest,Action<string> log)
@@ -32,10 +33,23 @@ namespace BinaryLift
             }
             art.Text("THE DAILY GRIND",transform,new Vector3(-1.95f,2.25f,-5.05f),.16f,art.White.color);
             art.Text("EXPENSES / NO HAY CLAIMS",transform,new Vector3(1.8f,2.25f,-5.05f),.14f,art.White.color);
-            CoffeeHint=art.Text("DRAG CUP UNDER SPOUT, THEN PRESS BREW",transform,new Vector3(-1.95f,1.95f,-5.4f),.065f,art.Cyan.color);
+            CoffeeHint=art.Text("CUP UNDER SPOUT\nTHEN PRESS BREW",transform,new Vector3(-1.95f,2.02f,-5.4f),.065f,art.Cyan.color);
             PaperHint=art.Text("DRAG STAMP ONTO FORM",transform,new Vector3(1.8f,1.95f,-5.4f),.075f,art.Cyan.color);
             art.Box("Coffee machine",transform,new Vector3(-1.95f,1.4f,-4.85f),new Vector3(.62f,.7f,.42f),art.Dark);
             art.Box("Copper machine trim",transform,new Vector3(-1.95f,1.7f,-5.08f),new Vector3(.55f,.10f,.05f),art.Orange);
+            for(int side=-1;side<=1;side+=2)
+            {
+                art.Primitive("Rounded machine side",PrimitiveType.Capsule,transform,new Vector3(-1.95f+side*.30f,1.41f,-4.85f),new Vector3(.14f,.34f,.42f),art.Bronze);
+                for(int vent=0;vent<4;vent++)art.Box("Machine ventilation",transform,new Vector3(-1.95f+side*.23f,1.26f+vent*.065f,-5.075f),new Vector3(.06f,.018f,.015f),art.Muted);
+            }
+            var gauge=art.Root("Brew pressure gauge",transform);gauge.localPosition=new Vector3(-1.95f,1.59f,-5.09f);
+            var face=art.Primitive("Pressure dial",PrimitiveType.Cylinder,gauge,Vector3.zero,new Vector3(.15f,.014f,.15f),art.White);
+            face.transform.localRotation=Quaternion.Euler(90,0,0);
+            pressureNeedle=art.Root("Pressure needle",gauge);
+            art.Box("Dial pointer",pressureNeedle,new Vector3(0,.025f,-.02f),new Vector3(.008f,.063f,.006f),art.Orange);
+            readyLamp=art.Primitive("Brew status light",PrimitiveType.Sphere,transform,new Vector3(-1.74f,1.65f,-5.1f),Vector3.one*.035f,art.Cyan).GetComponent<Renderer>();
+            lampProperties=new MaterialPropertyBlock();
+            art.Text("GRANT FUEL",transform,new Vector3(-1.95f,1.20f,-5.09f),.038f,art.White.color);
             art.Box("Coffee spout",transform,new Vector3(-1.95f,1.52f,-5.25f),new Vector3(.10f,.07f,.3f),art.Bronze);
             art.Box("Cup docking tray",transform,brewSpot-Vector3.up*.015f,new Vector3(.42f,.02f,.34f),art.Bronze);
             for(int i=-2;i<=2;i++)art.Box("Drip tray groove",transform,brewSpot+new Vector3(i*.065f,0,0),new Vector3(.02f,.005f,.29f),art.Dark);
@@ -79,12 +93,14 @@ namespace BinaryLift
             active=enabled;if(!enabled&&Holding)CancelHold();
             if(enabled)State.Advance(Mathf.Min(Time.deltaTime,.1f));
             if(wasBrewing&&!State.Brewing)record("coffee_brewed");wasBrewing=State.Brewing;
+            pressureNeedle.localRotation=Quaternion.Euler(0,0,State.Brewing?Mathf.Lerp(60,-60,State.Fill):60);
+            lampProperties.SetColor("_Color",State.Brewing?art.Orange.color:art.Cyan.color);readyLamp.SetPropertyBlock(lampProperties);
             liquid.localPosition=new Vector3(0,.04f+State.Fill*.16f,0);liquid.gameObject.SetActive(State.Fill>0);stream.gameObject.SetActive(State.Brewing);
             seal.gameObject.SetActive(State.Stamped);Clue.gameObject.SetActive(State.DrawerOpen&&!State.ClueFound);
             for(int i=0;i<steam.Count;i++){steam[i].gameObject.SetActive(enabled&&State.Fill>=1);float k=Mathf.Repeat(Time.time*.5f+i*.25f,1);steam[i].position=Cup.position+new Vector3(Mathf.Sin(i+Time.time)*.025f,.28f+k*.22f,0);steam[i].localScale=Vector3.one*(.012f+k*.018f);}
             if(stampUntil>Time.time)Stamp.position=stampRest+Vector3.up*Mathf.Abs(Mathf.Sin((stampUntil-Time.time)*Mathf.PI/.45f))*.1f;
             else if(grabbed==null||grabbed.Kind!=CampusPropKind.Stamp)Stamp.localPosition=stampHome;
-            CoffeeHint.text=State.CoffeeServed?"COFFEE SECURED. THE DEADLINE REMAINS.":State.Brewing?"BREWING / PLEASE DO NOT BOIL THE BUDGET":State.Fill>=1?"DRAG FULL CUP TO THE SAUCER":State.Cup==CupPlace.Brewer?"PRESS BREW":"DRAG CUP UNDER SPOUT, THEN PRESS BREW";
+            CoffeeHint.text=State.CoffeeServed?"COFFEE SECURED.\nDEADLINE STILL HERE.":State.Brewing?"BREWING...\nDO NOT BOIL THE BUDGET.":State.Fill>=1?"FULL CUP TO SAUCER":State.Cup==CupPlace.Brewer?"PRESS BREW":"CUP UNDER SPOUT\nTHEN PRESS BREW";
             PaperHint.text=State.ClueFound?routeHint:State.DrawerOpen?"TAKE THE ROUTE CARD":State.Submitted?"PULL THE DRAWER OPEN":State.Stamped?"DRAG STAMPED FORM INTO THE IN TRAY":"DRAG STAMP ONTO FORM";
             if(!rig.XRActive)return;
             for(int i=0;i<2;i++)

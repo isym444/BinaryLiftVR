@@ -5,6 +5,14 @@ Current flow: classroom exploration -> exit -> monkey theft -> seven connected c
 waypoints -> aerial route reveal -> original generated tree -> manual exploration -> cone collection -> two/four-edge route memory
 -> new funding target -> manual reuse -> results -> replay from the classroom. There is no second-game handoff.
 
+The campus detail pass adds stone window frames, a moving clock, kiosk/entrance
+dressing, gentle banners, rain puddles and a more detailed coffee machine. Cones
+have continuous tapered surfaces. All existing physical tasks and climbing remain.
+The Highland cow replacement is still pending an accessible, approved animated asset;
+the preview-approved Hamish download required an account the user could not complete.
+An independently reviewable Quaternius-based calf adaptation is in Tools/CalfPreview;
+it runs outside Unity and awaits appearance approval before game integration.
+
 ## Run
 Open Assets/Scenes/Main.unity in Unity 6000.0.85f1 and press Play. Scenery is generated
 at runtime; Edit Mode intentionally has no game camera. Stop Play before editing C#.

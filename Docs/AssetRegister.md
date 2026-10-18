@@ -111,6 +111,31 @@ No claim of measured headset performance. The new model imports disable animatio
 and generated colliders; interaction colliders are deliberately authored in code.
 
 ## Highland calf: not imported
+Session 11 candidate: Hamish The Highland Cow, Harvey.Eggleton, CC BY 4.0, free:
+https://sketchfab.com/3d-models/hamish-the-highland-cow-9852ee70678b402cb54dfb2f9396b6a0
+Public model metadata: 144 triangles, 96 vertices, two animation clips. Viewer lists
+animation.high.baby_transform and animation.high.walk. Blockbench/Minecraft style.
+The user approved the preview, then deferred this asset when its official download
+required another account. No source file, texture or animation has been imported.
+The actual rig, downloaded clip contents and Unity compatibility remain unverified.
+Any future use must credit the author, source and CC BY 4.0 and describe modifications.
+Seek an accessible download; do not bypass Sketchfab authentication or scrape its viewer.
+
+Alternative inspected and approved FOR ADAPTATION PREVIEW ONLY: Quaternius Bull,
+Ultimate Animated Animals, CC0, zero cost. Author source:
+https://quaternius.com/packs/ultimateanimatedanimals.html
+Creator file: https://drive.google.com/file/d/1M9gyr2UikIDW_Ynp-OfgiK-JjI7ziPd3/view
+Downloaded without credentials to ignored Logs/AssetReview; not Unity Assets.
+Source hash and reproduction instructions: Tools/CalfPreview/README.md.
+Original clips: Attack_Headbutt, Attack_Kick, Death, Eating, Gallop, Gallop_Jump,
+Idle, Idle_2, Idle_Headlow, Idle_HitReact1, Idle_HitReact2, Jump_toIdle, Walk.
+42 joints, 2,418 source triangles. This is a generic bull, not a publisher-supplied
+Highland calf. The authored adaptation adds coat locks, short horns, compact scale,
+larger head, shortened muzzle and warm materials. Original clips remain unchanged.
+User must review this second preview before game integration. No generated image.
+Preview renderer: Three.js 0.160.1, MIT, downloaded only into ignored Logs; setup
+retains the library licence. The game gains no package dependency from this review.
+
 Appearance candidate: JessSwynn, Highland Cow, CC BY 4.0:
 https://sketchfab.com/3d-models/highland-cow-63b31445ac7249d3a02e1242d0a9be15
 User approved appearance for further inspection, not a final rigged replacement.

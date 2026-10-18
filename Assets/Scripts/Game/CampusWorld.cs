@@ -149,7 +149,7 @@ namespace BinaryLift
             Text("UNIVERSITY OF\nGLASGOW",transform,new Vector3(-5.4f,1.65f,4.38f),.18f,White.color);
             Text("GILMOREHILL  /  AFTER HOURS",transform,new Vector3(-5.4f,1.18f,4.38f),.055f,Cyan.color);
             Box("Coffee kiosk",architecture,new Vector3(7.5f,1.4f,9),new Vector3(3,2.8f,2.5f),Dark);
-            Text("LATE LAB\nCOFFEE",transform,new Vector3(7.5f,2,7.7f),.18f,White.color);
+            Text("LATE LAB / COFFEE",transform,new Vector3(7.5f,2.3f,7.7f),.14f,White.color);
             Box("Kiosk orange canopy",architecture,new Vector3(7.5f,2.9f,8.6f),new Vector3(3.3f,.16f,3.4f),Orange);
             for(int i=0;i<=20;i++)
             {
@@ -208,12 +208,15 @@ namespace BinaryLift
 
         public Transform BuildCone(Transform parent,Vector3 position,float height)
         {
-            Transform root=Root("Cone placeholder",parent); root.localPosition=position;
+            Transform root=Root("Traffic cone",parent); root.localPosition=position;
             Box("Cone base",root,new Vector3(0,height*.035f,0),new Vector3(height*.85f,height*.07f,height*.85f),Dark);
-            for(int i=0;i<7;i++)
+            float[] rings={.07f,.38f,.58f,1f};
+            for(int i=0;i<3;i++)
             {
-                float diameter=height*(.7f-i*.085f);
-                Primitive("Cone band",PrimitiveType.Cylinder,root,new Vector3(0,height*(.13f+i*.12f),0),new Vector3(diameter,height*.065f,diameter),(i==2||i==3)?White:Orange);
+                float low=rings[i], high=rings[i+1];
+                CampusDetail.Frustum(this,root,"Continuous cone band",new Vector3(0,height*low,0),
+                    height*(high-low),height*Mathf.Lerp(.36f,.035f,(low-.07f)/.93f),
+                    height*Mathf.Lerp(.36f,.035f,(high-.07f)/.93f),i==1?White:Orange);
             }
             return root;
         }
@@ -292,6 +295,16 @@ namespace BinaryLift
 
         public GameObject Box(string name,Transform parent,Vector3 pos,Vector3 scale,Material mat)
             => Primitive(name,PrimitiveType.Cube,parent,pos,scale,mat);
+
+        public GameObject MeshObject(string name,Transform parent,Mesh mesh,Material material)
+        {
+            ownedMeshes.Add(mesh);
+            var go=Root(name,parent).gameObject;
+            go.AddComponent<MeshFilter>().sharedMesh=mesh;
+            var renderer=go.AddComponent<MeshRenderer>();renderer.sharedMaterial=material;
+            renderer.shadowCastingMode=ShadowCastingMode.On;renderer.receiveShadows=true;
+            return go;
+        }
 
         public GameObject Primitive(string name,PrimitiveType type,Transform parent,Vector3 pos,Vector3 scale,Material mat)
         {

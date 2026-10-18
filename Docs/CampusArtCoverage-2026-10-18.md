@@ -1,6 +1,11 @@
 # Campus art and interaction coverage - 2026-10-18
 
 ## Completed in this revision
+- Session 11: continuous tapered cone surfaces; pointed window frames, mullions,
+  sills, eaves, gutters and pipes; moving tower clock; kiosk counter/menu; noticeboard,
+  entrance mat, umbrella stand; gentle banners and six fixed-pool water ripples.
+- Coffee-machine rounded side panels, ventilation slots, dial/needle, status light
+  and short multi-line hints. The existing physical task and targets are retained.
 - Classroom floor and two worktops: approved diffuse, normal and roughness wood maps.
 - Climbing branch surfaces: approved diffuse, normal and roughness bark maps. Original
   35-node topology, dimensions, holds and per-edge movement remain unchanged.
@@ -23,6 +28,10 @@ The current improvement is a coherent art/interaction pass, not a completed art 
 No sound asset was imported. Steam is a small stylized mesh effect, not volumetric fluid.
 
 ## Character decision
+Hamish The Highland Cow by Harvey.Eggleton was subsequently preview-approved, but
+the user could not complete Sketchfab's account flow and requested an alternative.
+No files were imported and no Unity rig/clip compatibility is claimed for Hamish.
+
 The user selected warm stylized Highland calf art, then explicitly prioritized the
 above work while a free animated model is sought. The appearance-approved Sketchfab
 candidate has zero advertised animation clips and needs authenticated download. It is

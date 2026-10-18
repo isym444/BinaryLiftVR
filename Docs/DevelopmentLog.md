@@ -1,5 +1,54 @@
 # Development log
 
+## Session 11 - Campus modelling and Hamish selection (2026-10-18)
+Baseline: Fexas 65b4094. Preserve existing XR, package, project-setting and imported
+metadata edits, and .cursor. User approved Hamish The Highland Cow by Harvey.Eggleton
+after preview, including its blocky style. Public metadata lists two animations and
+CC BY 4.0. Official download requires user sign-in; actual files remain uninspected.
+Continue independently with authored facade, cone, kiosk, clock and coffee-machine
+detail using existing approved materials. Preserve progression, physical tasks and
+manual climbing. Verify in Unity, update handoff and push only Fexas.
+
+User subsequently reported that Sketchfab requires another account and requested
+another model after finishing campus work. Hamish is therefore deferred, not imported.
+Do not substitute a static cow or claim the monkey has been replaced. Search for a
+free animated option with an accessible download and show its preview before import.
+
+### Implementation
+Added CampusDetail.cs and its Unity metadata. CampusWorld owns runtime custom meshes
+and now constructs tapered cone bands with shared smooth radial normals. AdventureWorld
+builds the finishing layer without changing tree nodes, player colliders or targets.
+The layer combines static masonry/trim by material and independently animates two
+banners, clock hands and six pooled ripples. CampusLife adds machine side panels,
+vents, needle and status lamp driven by the existing brew state. Shortened hints
+after Play Mode review found the original long coffee line overlapped the poster.
+Reuse approved wood, furniture and food models only; no new external/AI media.
+
+### Validation and character review
+Scripts/Test-Logic.ps1 passed. Unity desktop manual cup docking, brewing, serving and
+classroom exit/theft passed; local event evidence is CampusDetailManual-2026-10-18.log.
+Complete AdventureValidation passed 138 assertions at 09:31:28 UTC, including all
+checkpoints, 35 nodes, memory composition, repeat targets, results and clean replay.
+See CampusDetailValidation-2026-10-18.md for separate manual/method-driven coverage.
+Headset and target-device performance tests were not run.
+
+Research found no verified ready-made Highland calf satisfying free, animated and
+accessible download together. Inspected Quaternius Bull from the creator's public
+Drive without authentication: CC0, 2,418 triangles, 42 joints, 13 clips. Kept the
+file in ignored Logs, outside Unity Assets. User approved making a second adaptation
+preview, not immediate game replacement. Tools/CalfPreview reproduces the local
+viewer with a verified source hash and pinned Three.js 0.160.1. Authored shorter
+proportions/muzzle, larger head, curved short horns and bone-attached coat locks.
+Revised rigid-looking locks to softer rounded forms after actual browser review.
+Observed Idle, Walk, Gallop and Eating; controls, bone following and console checked.
+Added geometry: 5,448 triangles before any integration optimisation. This is a
+preview with art, clipping, export and headset QA still outstanding. No AI imagery.
+The revised calf has NOT been imported into Unity; game character remains the monkey.
+Saved front and three-quarter browser captures in Docs/Evidence. Publication scope
+includes the campus pass, reproducible preview tools and English evidence/handoff.
+Verified remote Fexas at 65b4094 and main at 15279ec before publication. Push only
+Fexas without force; preserve existing settings, packages and imported metadata edits.
+
 ## Session 10 - Campus life and approved art expansion (2026-10-18)
 User selected warm stylized art and hands-on campus life. Approved free Kenney Food
 and Nature kits, Poly Haven Bark Brown 02 and Wood Planks. Existing furniture kit

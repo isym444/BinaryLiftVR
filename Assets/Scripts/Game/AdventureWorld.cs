@@ -69,6 +69,8 @@ namespace BinaryLift
             if(surface!=null){bark.shader=surface;bark.SetColor("_Color",new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.10f);bark.SetFloat("_Grain",1);}
             bark=CampusAssets.Surface(Art,"bark_brown_02",new Vector2(1,2));
             BuildCourtyard();BuildClassroom();BuildCampusDressing();
+            var detail=Art.Root("Campus finishing and ambient life",transform).gameObject.AddComponent<CampusDetail>();
+            detail.Build(Art);
             Intro=Art.Root("Classroom welcome",Classroom);
             Panel("CONE COURIER", "UNIVERSITY OF GLASGOW / AFTER HOURS\nExplore the classroom, then head outside.",Intro,new Vector3(0,2.85f,-1.18f),new Vector2(3.7f,1.1f));
             Button("EXIT TO COURTYARD",Intro,new Vector3(0,1.4f,-1.17f),AdventureAction.Exit,2.1f);
