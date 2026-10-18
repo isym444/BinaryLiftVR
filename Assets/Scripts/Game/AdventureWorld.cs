@@ -67,7 +67,8 @@ namespace BinaryLift
             silver=Art.Mat(new Color(.35f,.48f,.52f));bark=Art.Mat(new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.05f);
             var surface=Resources.Load<Shader>("CampusSurface");
             if(surface!=null){bark.shader=surface;bark.SetColor("_Color",new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.10f);bark.SetFloat("_Grain",1);}
-            BuildCourtyard();BuildClassroom();
+            bark=CampusAssets.Surface(Art,"bark_brown_02",new Vector2(1,2));
+            BuildCourtyard();BuildClassroom();BuildCampusDressing();
             Intro=Art.Root("Classroom welcome",Classroom);
             Panel("CONE COURIER", "UNIVERSITY OF GLASGOW / AFTER HOURS\nExplore the classroom, then head outside.",Intro,new Vector3(0,2.85f,-1.18f),new Vector2(3.7f,1.1f));
             Button("EXIT TO COURTYARD",Intro,new Vector3(0,1.4f,-1.17f),AdventureAction.Exit,2.1f);
@@ -104,7 +105,8 @@ namespace BinaryLift
                     Art.Box("Window sill",details,new Vector3(side*10.25f,1.3f,z),new Vector3(.3f,.12f,1.7f),Art.White);
                     Art.Box("Stone course",details,new Vector3(side*10.28f,5.8f,z),new Vector3(.15f,.13f,5.8f),Art.White);
                     Art.Primitive("Planter rim",PrimitiveType.Cylinder,details,new Vector3(side*5.3f,.35f,z),new Vector3(1,.35f,1),Art.Sand);
-                    Art.Primitive("Trimmed planting",PrimitiveType.Sphere,details,new Vector3(side*5.3f,.85f,z),new Vector3(1.2f,.8f,1.2f),Art.Mat(new Color(.10f,.25f,.18f)));
+                    CampusAssets.Place(Art,"nature","plant_bushDetailed",details,new Vector3(side*5.3f,.6f,z),new Vector3(1.2f,.8f,1.2f));
+                    CampusAssets.Place(Art,"nature","flower_purpleA",details,new Vector3(side*5.05f,.66f,z-.3f),new Vector3(.3f,.42f,.3f));
                 }
             }
             for(int z=13;z<=37;z+=12)
@@ -144,7 +146,7 @@ namespace BinaryLift
         void BuildClassroom()
         {
             Classroom=Art.Root("Computing classroom",transform);
-            Art.Box("Timber floor",Classroom,new Vector3(0,-.1f,-6),new Vector3(10,.2f,12),bark).GetComponent<Renderer>().receiveShadows=true;
+            Art.Box("Timber floor",Classroom,new Vector3(0,-.1f,-6),new Vector3(10,.2f,12),CampusAssets.Surface(Art,"wood_planks",new Vector2(5,6))).GetComponent<Renderer>().receiveShadows=true;
             Art.Box("Ceiling",Classroom,new Vector3(0,3.5f,-6),new Vector3(10,.18f,12),Art.Dark);
             Art.Box("Rear wall",Classroom,new Vector3(0,1.7f,-12),new Vector3(10,3.4f,.2f),Art.Sand);
             for(int side=-1;side<=1;side+=2)
@@ -155,19 +157,17 @@ namespace BinaryLift
                 {
                     Art.Box("Window glass",Classroom,new Vector3(side*4.88f,2.1f,z),new Vector3(.02f,1.6f,2),Art.Muted);
                     Art.Box("Window mullion",Classroom,new Vector3(side*4.84f,2.1f,z),new Vector3(.06f,1.6f,.06f),Art.White);
+                    if(z==-6)continue; // Keep a reachable aisle in front of the campus worktops.
                     PlaceFurniture("desk",new Vector3(side*2.8f,0,z),new Vector3(2.3f,.80f,.85f));
                     Art.Box("Computer screen",Classroom,new Vector3(side*2.8f,1.12f,z+.15f),new Vector3(.8f,.45f,.05f),Art.Dark);
                     Art.Box("Screen glow",Classroom,new Vector3(side*2.8f,1.12f,z+.117f),new Vector3(.7f,.35f,.01f),Art.Cyan);
                     Art.Box("Keyboard",Classroom,new Vector3(side*2.8f,.82f,z-.18f),new Vector3(.55f,.03f,.19f),Art.Dark);
                     for(int line=0;line<4;line++)Art.Box("Code line",Classroom,new Vector3(side*2.8f-.07f,1.23f-line*.065f,z+.105f),new Vector3(.35f-line*.055f,.018f,.006f),Art.White);
                     var notes=Art.Box("Lecture notes",Classroom,new Vector3(side*2.8f+.8f,.82f,z-.12f),new Vector3(.36f,.012f,.29f),Art.White);
-                    var cup=Art.Primitive("Coffee cup",PrimitiveType.Cylinder,Classroom,new Vector3(side*2.8f-.78f,.89f,z),new Vector3(.13f,.1f,.13f),Art.Orange);
+                    var cup=CampusAssets.Place(Art,"food","mug",Classroom,new Vector3(side*2.8f-.78f,.81f,z),new Vector3(.17f,.18f,.16f));
                     if(side==1&&z==-3)
                     {
-                        CoffeeProp=cup.transform;FormProp=notes.transform;
-                        Target(cup,AdventureAction.Coffee,new Vector3(2,3,2));Target(notes,AdventureAction.Paperwork,new Vector3(1.4f,10,1.4f));
-                        Button("COFFEE STATUS",Classroom,new Vector3(2.0f,1.12f,-3.4f),AdventureAction.Coffee,.95f);
-                        Button("STAMP FORM",Classroom,new Vector3(3.8f,1.12f,-3.4f),AdventureAction.Paperwork,.95f);
+                        CoffeeProp=cup;FormProp=notes.transform;
                     }
                     PlaceFurniture("chairDesk",new Vector3(side*2.8f,0,z-.85f),new Vector3(.60f,1.05f,.60f));
                 }
@@ -182,6 +182,32 @@ namespace BinaryLift
             Art.Box("Door leaf",Door,new Vector3(0,1.25f,0),new Vector3(2.4f,2.5f,.08f),Art.Muted);
             Art.Box("Door light",Door,new Vector3(0,2.55f,-.06f),new Vector3(2.4f,.04f,.03f),Art.Cyan);
             Panel("COMPUTING SCIENCE", "CS / ROUTES AND ANCESTORS\nOffice hours: 09:00 - 17:00",Classroom,new Vector3(3,2,-1.15f),new Vector2(2.7f,.9f));
+        }
+        void BuildCampusDressing()
+        {
+            var dressing=Art.Root("Approved campus dressing",transform);
+            for(int side=-1;side<=1;side+=2)
+            {
+                CampusAssets.Place(Art,"furniture","bookcaseOpen",dressing,new Vector3(side*4.1f,0,-10.9f),new Vector3(1.25f,2.3f,.48f));
+                CampusAssets.Place(Art,"furniture","pottedPlant",dressing,new Vector3(side*4.35f,0,-1.85f),new Vector3(.65f,1.4f,.65f));
+                for(int z=8;z<42;z+=12)
+                {
+                    CampusAssets.Place(Art,"nature","tree_oak",dressing,new Vector3(side*8,0,z),new Vector3(3.3f,5,3.3f));
+                    CampusAssets.Place(Art,"furniture","bench",dressing,new Vector3(side*5.7f,0,z+2),new Vector3(2.1f,.9f,.7f));
+                }
+                for(int z=-9;z<=-3;z+=3)
+                {
+                    if(z==-6)continue;
+                    CampusAssets.Place(Art,"furniture","books",dressing,new Vector3(side*2.8f+.6f,.81f,z+.20f),new Vector3(.35f,.25f,.24f));
+                    CampusAssets.Place(Art,"furniture","lampRoundTable",dressing,new Vector3(side*2.8f-.6f,.81f,z+.24f),new Vector3(.28f,.5f,.28f));
+                }
+            }
+            RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Trilight;
+            RenderSettings.ambientSkyColor=new Color(.28f,.36f,.45f);RenderSettings.ambientEquatorColor=new Color(.32f,.28f,.23f);RenderSettings.ambientGroundColor=new Color(.12f,.10f,.08f);
+            var lightObject=new GameObject("Warm classroom fill");lightObject.transform.SetParent(dressing,false);lightObject.transform.localPosition=new Vector3(0,2.9f,-6);
+            var light=lightObject.AddComponent<Light>();light.type=LightType.Point;light.range=8;light.intensity=1.5f;light.color=new Color(1,.78f,.5f);light.shadows=LightShadows.None;
+            for(int side=-1;side<=1;side+=2)
+            {var lamp=new GameObject("Courtyard lamp pool");lamp.transform.SetParent(dressing,false);lamp.transform.localPosition=new Vector3(side*3.7f,2.7f,9);var l=lamp.AddComponent<Light>();l.type=LightType.Point;l.range=5;l.intensity=1.4f;l.color=new Color(1,.65f,.3f);l.shadows=LightShadows.None;}
         }
         void BuildCourse()
         {

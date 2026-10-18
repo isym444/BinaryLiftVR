@@ -58,3 +58,12 @@ Record device model, runtime, controller type, build, date and tester; no serial
 - Verify coffee/form response and horse nods remain comfortable and do not move the head.
 
 Desktop tests do not validate these hardware conditions. No headset run is claimed.
+
+## Campus life hardware checks added 2026-10-18
+NOT RUN on hardware. Verify seated and standing approach to the new worktops, left/right
+near-grip selection at 12 cm, cup docking, brew movement lock, stamp contact, tray release,
+drawer pull and card pickup. Confirm tracking/focus loss returns held props, and snap/move
+cannot displace the player during a grab. Check stereo readability of worktop hints and
+whether drawer/card reach needs a seated accessibility adjustment. Measure CPU/GPU frame
+time after the new imported meshes, normal/roughness maps and three shadowless point lights.
+Desktop input evidence is in CampusLifeValidation-2026-10-18.md; it does not satisfy these.

@@ -27,7 +27,7 @@ Checksums and source byte sizes are recorded in ApprovedAssetHashes.json.
 - Files: desk.fbx and chairDesk.fbx only, from the archive's Models/FBX format directory.
 - Retained licence: Assets/ThirdParty/Kenney/License.txt, unchanged.
 - Approval: user approved the furniture pack on 2026-10-18.
-- Use: six classroom desks and six desk chairs. Project-authored solid-colour finishes,
+- Use: four classroom desks and four desk chairs (middle row removed for campus tasks). Project-authored solid-colour finishes,
   fitted to the existing furniture footprint; original model files unchanged.
 - Import: no animation, generated colliders or embedded materials. No new package needed.
 - Kenney's publisher bundle page declares no generative AI use. No paid bundle purchased.
@@ -75,3 +75,50 @@ patches, warm windows, lamps, noticeboards and the branch apparatus use project
 geometry/materials. These additions contain no new external or AI-generated media.
 The shader uses Unity's built-in Standard lighting with SurfaceOutputStandard.
 Existing approved sandstone, furniture and poster provenance above still applies.
+
+## Imported: campus life expansion (2026-10-18)
+The user approved these environment sources after preview, then prioritized their
+integration while the animated Highland calf search continues. All cost zero.
+
+- Kenney Food Kit, CC0: https://kenney.nl/assets/food-kit
+  Imported unchanged FBX models: mug, cup-saucer, cookie, donut; original colormap.png.
+  Use: movable coffee cup, serving saucer and decorative snacks. Runtime atlas material.
+  Download: https://kenney.nl/media/pages/assets/food-kit/83086fa91c-1719418518/kenney_food-kit.zip
+  Unchanged bundled licence: Assets/ThirdParty/Kenney/food/License.txt.
+- Kenney Nature Kit, CC0: https://kenney.nl/assets/nature-kit
+  Imported unchanged FBX: plant_bushDetailed, flower_purpleA, tree_oak.
+  Use: courtyard planting and six trees. Embedded solid-colour materials retained.
+  Download: https://kenney.nl/media/pages/assets/nature-kit/37ac38a37b-1677698939/kenney_nature-kit.zip
+  Unchanged bundled licence: Assets/ThirdParty/Kenney/nature/License.txt.
+- Previously approved Kenney Furniture Kit: additionally imported books, bookcaseOpen,
+  lampRoundTable, pottedPlant and bench. Embedded materials retained for this subfolder.
+  Use: shelves, desk dressing, entrance plants and courtyard seating.
+  Unchanged bundled licence: Assets/ThirdParty/Kenney/furniture/License.txt.
+- Poly Haven Bark Brown 02, Rob Tuytel, CC0: https://polyhaven.com/a/bark_brown_02
+  Use: existing climbing-tree geometry, without changing its topology or holds.
+- Poly Haven Wood Planks, Amal Kumar, CC0: https://polyhaven.com/a/wood_planks
+  Use: classroom flooring, campus worktops and sliding drawer.
+  Each Poly Haven material uses original 1K diffuse, OpenGL normal and roughness JPGs.
+  Source URL pattern: https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/{id}/{id}_{map}_1k.jpg
+  Map names are diff, nor_gl and rough. Local names omit the final _1k suffix.
+  Publisher licence: https://polyhaven.com/license ; retained CC0 text remains in
+  Assets/ThirdParty/PolyHaven/CC0-1.0.txt. No source image edits or AI generation.
+
+All imported source files are under Assets/Resources/Approved. Unity enables mipmaps,
+compression and a 1024-pixel cap; normal maps import as normals, roughness as linear
+and repeatable surfaces as Repeat. CampusPBR uses all three maps under Standard lighting.
+No claim of measured headset performance. The new model imports disable animations
+and generated colliders; interaction colliders are deliberately authored in code.
+
+## Highland calf: not imported
+Appearance candidate: JessSwynn, Highland Cow, CC BY 4.0:
+https://sketchfab.com/3d-models/highland-cow-63b31445ac7249d3a02e1242d0a9be15
+User approved appearance for further inspection, not a final rigged replacement.
+Public metadata reports 46,812 faces and zero animation clips. Official download
+requires login (401); no authentication bypass attempted. Rig compatibility is unknown.
+The user chose environment and campus interactions first, while searching for a free
+animated calf. The current monkey therefore remains intentionally in this revision.
+Quaternius Ultimate Animated Animals lists an animated generic cow/bull, but its shape
+is not a shaggy Highland calf; it remains an unapproved alternative, not an imported
+replacement. Paid rigged offers and unapproved AI/static cows were excluded. A suitable
+free animated Highland calf has not yet been verified. Keep this decision open.

@@ -78,7 +78,9 @@ namespace BinaryLift.EditorTools
                     Check(game.State.Phase==AdventurePhase.Arrival,"arrival waits in classroom");
                     var surface=Resources.Load<Shader>("CampusSurface");
                     Check(surface!=null&&!ShaderUtil.ShaderHasError(surface),"campus surface shader compiles");
-                    Check(game.Activate(AdventureAction.Coffee),"classroom coffee responds");
+                    var pbr=Resources.Load<Shader>("CampusPBR");
+                    Check(pbr!=null&&!ShaderUtil.ShaderHasError(pbr),"approved PBR shader compiles");
+                    Check(game.Life!=null&&game.Life.Cup!=null&&game.Life.Stamp!=null&&game.Life.Drawer!=null,"hands-on classroom props instantiated");
                     Check(!game.Activate(AdventureAction.TwoLevels),"selection cannot skip classroom");
                     Check(game.Activate(AdventureAction.Exit),"walk through classroom exit");stage=1;
                 }
@@ -168,6 +170,7 @@ namespace BinaryLift.EditorTools
                 {
                     Check(game.State.Phase==AdventurePhase.Arrival&&game.State.TotalLevels==0&&game.State.Cones==0&&!game.State.Knows(game.State.StartNode,4)&&game.Rig.transform.position.z<0,"replay returns to clean classroom");
                     Check(UnityEngine.Object.FindObjectsByType<AdventureController>(FindObjectsSortMode.None).Length==1,"one adventure controller after replay");
+                    Check(game.Life.State.Fill==0&&!game.Life.State.Stamped&&!game.Life.State.DrawerOpen&&!game.Life.Holding,"campus props reset with replay");
                     Finish();
                 }
             }

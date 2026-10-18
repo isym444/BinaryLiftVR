@@ -1,5 +1,59 @@
 # Development log
 
+## Session 10 - Campus life and approved art expansion (2026-10-18)
+User selected warm stylized art and hands-on campus life. Approved free Kenney Food
+and Nature kits, Poly Haven Bark Brown 02 and Wood Planks. Existing furniture kit
+approval remains. Highland cow appearance approved for further inspection only.
+Sketchfab public metadata: 46,812 faces, zero animation clips, CC BY 4.0; official
+download requires authentication (401). User chose to prioritize environment and
+campus interactions while continuing the search for a free animated cow. Do not
+claim the cow is replaced or the candidate rig has been inspected.
+Implement cup placement/brewing/serving and stamp/submission/drawer/clue actions,
+with desktop dragging and tracked VR grip support. Preserve original climbing and
+all unrelated settings/package edits. Test logic, Unity integration and actual input.
+
+### Implementation and review
+Added CampusLifeState (Unity-free guards) and CampusLife (desktop tabletop dragging,
+tracked near-grip, forgiving docking, visible coffee fill/stream/steam, stamp impression,
+form submission, drawer pull and parent-route card). AdventureController owns its
+lifecycle, records local events, cancels grabs on focus loss and prevents movement/snap
+while holding. Campus tasks stay optional and award no algorithm progress.
+
+Imported only the approved Food/Nature/Furniture subset and two Poly Haven 1K material
+sets, with unchanged publisher licences and updated source hashes. CampusAssets preserves
+embedded nature/furniture colours and uses the food atlas; CampusPBR combines diffuse,
+normal and roughness. Added books, lamps, shelves, plants, benches and courtyard trees.
+Removed the middle desk row for approach space; matched the controller's movement bounds.
+Fixed startup overwriting warm ambient lighting; added shadowless local light pools.
+
+The first real mouse test revealed that a camera-facing drag plane rejected cup docking
+from a turned view. Changed to a tabletop plane and added a visible drip tray. Retested
+the full coffee and archive sequences successfully using actual mouse input. Verified
+R clears all completed tasks and exiting with tasks skipped still triggers the chase.
+See CampusLifeValidation-2026-10-18.md and its UTC event log/screenshots. No supported
+recording tool was available; no video or headset test is claimed.
+
+### Documentation and handoff
+Updated README controls, Design, Handoff, AdventureValidation, VRValidation, AssetRegister
+and ApprovedAssetHashes. Added CampusArtCoverage to distinguish imported finished source
+assets from remaining authored geometry. All source/game/documentation additions are
+English. Cow remains deferred by user choice; no suitable free animated Highland calf
+has been verified, and the static appearance candidate was not downloaded or imported.
+
+### Verification and publication scope
+Scripts/Test-Logic.ps1 returned ALL PASSED. Whole-adventure Unity checks include PBR
+shader compilation, prop instantiation, unchanged algorithm progression, no legacy
+controller handoff, quiz/research and clean replay. Save the final report alongside the
+manual evidence before publication. Stage only this revision's gameplay/editor/assets,
+licences, tests and English docs. Preserve unrelated XR/package/project-setting edits
+and .cursor. Upload only to the user-authorized Fexas branch with a normal push.
+
+Final Unity integration: PASS at 09:08:06 UTC. Saved CampusLifeSmoke-2026-10-18.txt;
+stopped Play afterward. No legacy game controller was instantiated.
+Extended .gitattributes to preserve nested FBX/licence source bytes. Renormalization
+also restores original CRLF bytes for the two existing desk/chair FBX files, matching
+their already-recorded source hashes; diff ignoring line endings confirms no model change.
+
 All development records, source comments, game text, and handoffs are written in English.
 Entries describe meaningful work steps, evidence, and unresolved work. Do not claim a
 headset test based on desktop Play Mode.

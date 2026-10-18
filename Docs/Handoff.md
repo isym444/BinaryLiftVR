@@ -1,4 +1,41 @@
-# Handoff - Funding and route memory (2026-10-18)
+# Handoff - Hands-on campus life (2026-10-18)
+
+## Latest revision
+The user prioritized environment and campus interaction while a free animated Highland
+calf is sought. Keep the existing monkey until a suitable model is approved and inspected.
+The current approved cow has no animations and its official download requires login.
+See AssetRegister.md for the decision and approved environment provenance.
+
+CampusLifeState owns optional coffee and archive progression independently of the
+algorithm. CampusLife owns physical props, input, docking, brewing, stamp impression,
+drawer animation and clue. Cup/Stamp/Form/Drawer transforms are test-visible. Build takes
+AdventureWorld, XRRig, AdventureState and a local event logger; the route clue derives
+from actual parent IDs. Tick advances only during Arrival; Reset clears the entire task.
+Do not replace mouse dragging or tracked near-grip with text-only buttons.
+
+New CampusAssets loads approved FBX, preserves native materials where present, fits to
+named footprints and applies the Food Kit atlas. CampusPBR combines diffuse/normal/
+roughness for wood and bark. Import rules cap texture resolution at 1024 with mipmaps.
+Four desks remain: the middle row is removed for approach space at the two worktops.
+Movement collision bounds must match this arrangement and retain the centre exit aisle.
+Warm point lights cast no additional real-time shadows; the existing sun retains shadows.
+No mobile GPU, draw-call budget, headset comfort or seated reach measurement is claimed.
+
+Interaction contract: invalid drop returns safely; coffee cannot move while brewing;
+form requires stamp; drawer requires submission; clue requires opening. All are optional.
+Holding pauses movement/snap; tracking/focus loss cancels. R/replay resets props alongside
+AdventureState. Trigger rays only operate BREW/card; physical items use near grip in VR.
+Desktop drawer pulls downward on screen. No free-throw rigidbody simulation is present.
+
+Remaining art is explicit: architecture, tree shape/platforms, horse, monkey, climbing
+apparatus, coffee-machine housing, stamp and form use project-authored geometry. Imported
+materials and dressing improve them; they are not final bespoke models. No new AI media.
+
+Latest verification: CampusLifeValidation-2026-10-18.md; actual mouse flow and reset
+passed. Final integration report: CampusLifeSmoke-2026-10-18.txt. Read
+CampusArtCoverage-2026-10-18.md before claiming all models/textures are final.
+
+## Prior gameplay contracts (still apply)
 
 ## Three-cycle improvement contracts
 See ImprovementCycles-2026-10-18.md for per-cycle changes, evidence and decisions.
@@ -8,7 +45,7 @@ The user now permits small optional algorithm quizzes; do not gate the core clim
 Cycle 2 adds a Quiz phase, entered only from Complete and returning there on skip.
 AnswerQuiz permits retries, awards one ResearchStamp per search and preserves all
 climb/cone counters. The next target resets QuizSolved but keeps earned stamps.
-Coffee/Paperwork are arrival-only interactions; GreetHorse is available while resting.
+CampusLife now owns arrival-only physical tasks; GreetHorse remains available while resting.
 Optional audits cover composition, remaining-distance bounds and actual ancestors.
 
 ## Current scope
@@ -56,7 +93,8 @@ external asset is approved by implication. University photographs remain referen
 - AdventureWorld owns workshop, remembered branch traces, counts, world choices and
   the approved classroom art. CampusWorld supplies common art and sandstone material.
 - ApprovedAssetImport bounds texture dimensions to 1024 and disables furniture animation,
-  generated colliders and embedded materials. No new dependency or package was added.
+  generated colliders. New nature/furniture folders retain embedded materials; food uses
+  its approved atlas. No new dependency or package was added by this revision.
 
 ## Validation
 Current three-cycle revision: all three Unity reports pass. Actual mouse input passed

@@ -30,7 +30,7 @@ namespace BinaryLift
         StreamWriter journal;
         Quaternion horseFacing;
         float propCooldown,horseNodUntil;
-        int coffeeChecks;
+        public CampusLife Life { get; private set; }
 
         void Awake()
         {
@@ -39,8 +39,7 @@ namespace BinaryLift
             route=new Vector3[State.OriginalLevels+1];
             for(int i=0,n=State.StartNode;i<route.Length;i++,n=State.Tree.Parent[n]){route[i]=World.CampusNodes[n];route[i].y=0;}
             foreach(var camera in FindObjectsByType<Camera>(FindObjectsSortMode.None))if(camera!=Rig.Head)Destroy(camera.gameObject);
-            RenderSettings.skybox=null;RenderSettings.ambientMode=UnityEngine.Rendering.AmbientMode.Flat;
-            RenderSettings.ambientLight=new Color(.57f,.64f,.70f);
+            RenderSettings.skybox=null;
             Rig.Head.backgroundColor=new Color(.055f,.10f,.15f);
             RenderSettings.fog=true;RenderSettings.fogMode=FogMode.Linear;RenderSettings.fogStartDistance=55;RenderSettings.fogEndDistance=120;RenderSettings.fogColor=Rig.Head.backgroundColor;
             var sun=new GameObject("Late afternoon light").AddComponent<Light>();sun.transform.SetParent(transform);
@@ -60,21 +59,23 @@ namespace BinaryLift
             Rig.TeleportFeet(new Vector3(0,0,-8));horseFacing=World.Art.Horse.rotation;
             string directory=Path.Combine(Application.persistentDataPath,"QuestLogs");Directory.CreateDirectory(directory);
             journal=new StreamWriter(Path.Combine(directory,"adventure-"+System.DateTime.UtcNow.ToString("yyyyMMdd-HHmmss-fff")+".log")){AutoFlush=true};
+            Life=new GameObject("Hands-on campus life").AddComponent<CampusLife>();Life.transform.SetParent(World.transform,false);Life.Build(World,Rig,State,Record);
             Record("arrival");Refresh();
         }
         void Update()
         {
             Rig.Poll();
+            Life.Tick(!Busy&&State.Phase==AdventurePhase.Arrival);
             if(Rig.RightSelectPressed)activeRight=true;else if(Rig.LeftSelectPressed)activeRight=false;
             UpdatePointer();
             if(!Busy)
             {
                 if(Rig.RestartPressed){StartCoroutine(Restart());return;}
                 if(Rig.XRActive && State.Phase!=AdventurePhase.Climbing && (Rig.RightSelectPressed||Rig.LeftSelectPressed) && hover!=null)Activate(hover.Action);
-                if(State.Phase==AdventurePhase.Arrival||State.Phase==AdventurePhase.Courtyard||State.Phase==AdventurePhase.Chase)Walk();
+                if(!Life.Holding&&(State.Phase==AdventurePhase.Arrival||State.Phase==AdventurePhase.Courtyard||State.Phase==AdventurePhase.Chase))Walk();
                 if(State.Phase==AdventurePhase.Climbing)ClimbInput();
                 else CheckNearInteraction();
-                if(!held[0]&&!held[1]&&!desktopHeld&&Rig.SnapDirection!=0)StartCoroutine(Snap(Rig.SnapDirection));
+                if(!held[0]&&!held[1]&&!desktopHeld&&!Life.Holding&&Rig.SnapDirection!=0)StartCoroutine(Snap(Rig.SnapDirection));
             }
             float doorOpen=Rig.transform.position.z>-4 ? 2.6f : 0;
             World.Door.localPosition=Vector3.Lerp(World.Door.localPosition,new Vector3(doorOpen,0,-1),Time.deltaTime*3);
@@ -87,11 +88,11 @@ namespace BinaryLift
             Ray ray;
             if(Rig.XRActive){if(!Rig.TryGetHandRay(activeRight,out ray))ray=Rig.GazeRay;}
             else ray=Rig.MouseRay;
-            Vector3 point=ray.GetPoint(40);
+            Vector3 point=ray.GetPoint(40);bool campusProp=false;
             if(!Busy&&Physics.Raycast(ray,out var hit,70))
-            {hover=hit.collider.GetComponentInParent<AdventureTarget>();point=hit.point;}
+            {hover=hit.collider.GetComponentInParent<AdventureTarget>();point=hit.point;campusProp=State.Phase==AdventurePhase.Arrival&&hit.distance<=6&&hit.collider.GetComponentInParent<CampusProp>()!=null;}
             if(hover!=null)hover.Highlight(true);
-            cursor.gameObject.SetActive(hover!=null&&!Busy);cursor.position=point;
+            cursor.gameObject.SetActive((hover!=null||campusProp)&&!Busy);cursor.position=point;
             cursor.localScale=Vector3.one*Mathf.Clamp(Vector3.Distance(ray.origin,point)*.008f,.012f,.10f);
             rayLine.enabled=Rig.XRActive&&!Busy;rayLine.SetPosition(0,ray.origin);rayLine.SetPosition(1,point);
             if(State.Phase==AdventurePhase.Weaving && linkArmed && !Busy)
@@ -120,14 +121,6 @@ namespace BinaryLift
             if(action==AdventureAction.CloseQuiz&&State.CloseQuiz()){Refresh();Record("optional_quiz_closed");return true;}
             if((action==AdventureAction.QuizA||action==AdventureAction.QuizB)&&State.AnswerQuiz(action==AdventureAction.QuizA?0:1))
             {Refresh();Rig.Pulse(activeRight,.25f,.06f);Record(State.QuizSolved?"quiz_stamp_earned":"quiz_retry_explained");return true;}
-            if((action==AdventureAction.Coffee||action==AdventureAction.Paperwork)&&State.Phase==AdventurePhase.Arrival&&Time.time>=propCooldown)
-            {
-                propCooldown=Time.time+1;
-                if(action==AdventureAction.Coffee)
-                {coffeeChecks++;Say(coffeeChecks%2==1?"COFFEE: CONSTANT TIME. DEADLINES: NOT SO MUCH.":"COLD BREW. THE GLASGOW ROOM-TEMPERATURE EDITION.",5);StartCoroutine(PropBounce(World.CoffeeProp));}
-                else{Say("EXPENSE STAMPED. BANANAS ARE STILL NOT EQUIPMENT.",5);StartCoroutine(PropBounce(World.FormProp));}
-                Record(action==AdventureAction.Coffee?"coffee_inspected":"paperwork_stamped");return true;
-            }
             if(action==AdventureAction.GreetHorse&&State.Phase!=AdventurePhase.Climbing&&Time.time>=propCooldown)
             {propCooldown=Time.time+1;horseNodUntil=Time.time+1.2f;Say("NEIGH. I AM YOUR STABLE ALGORITHM ADVISER.",4);Record("horse_greeted");return true;}
             if(action==AdventureAction.LinkStart && State.Phase==AdventurePhase.Weaving)
@@ -194,8 +187,9 @@ namespace BinaryLift
             if(next.z<-.8f && next.z>-1.25f && Mathf.Abs(next.x)>1.05f)next=Rig.transform.position;
             if(next.z<-1.2f && next.z>-10.5f && Mathf.Abs(next.x)>1.3f && Mathf.Abs(next.x)<4.1f)
             {
-                for(int z=-9;z<=-3;z+=3)if(Mathf.Abs(next.z-z)<1.3f){next=Rig.transform.position;break;}
+                for(int z=-9;z<=-3;z+=6)if(Mathf.Abs(next.z-z)<1.3f){next=Rig.transform.position;break;}
             }
+            if(next.z>-5.8f&&next.z<-4.4f&&Mathf.Abs(next.x)>.5f&&Mathf.Abs(next.x)<3.5f)next=Rig.transform.position;
             Rig.transform.position=next;
             if(State.Phase==AdventurePhase.Arrival && next.z>-.5f){State.ExitClassroom();Record("classroom_exited");Refresh();}
             if(State.Phase==AdventurePhase.Courtyard && next.z>2.1f){State.BeginChase();StartCoroutine(Theft());return;}
@@ -325,6 +319,7 @@ namespace BinaryLift
         {
             if(Rig==null||Rig.XRActive||Busy)return;
             Event input=Event.current;
+            if(Life.Desktop(input)){input.Use();return;}
             if(input.button!=0)return;
             Vector3 screen=new Vector3(input.mousePosition.x,Screen.height-input.mousePosition.y,0);
             if(input.type==EventType.MouseDown)
@@ -356,7 +351,7 @@ namespace BinaryLift
                 input.Use();
             }
         }
-        void OnApplicationFocus(bool focused){if(!focused){ReleaseHands();linkArmed=false;if(World!=null)World.Thread.enabled=false;}}
+        void OnApplicationFocus(bool focused){if(!focused){ReleaseHands();if(Life!=null)Life.CancelHold();linkArmed=false;if(World!=null)World.Thread.enabled=false;}}
         public bool ApplyPull(float metres)
         {
             int before=State.TotalLevels;
@@ -429,7 +424,7 @@ namespace BinaryLift
         IEnumerator Restart()
         {
             Busy=true;ReleaseHands();walking=false;yield return Fade(0,1,.25f);
-            State=new AdventureState();Checkpoint=0;flashUntil=0;coffeeChecks=0;propCooldown=0;horseNodUntil=0;linkArmed=false;World.Thread.enabled=false;World.RefreshMemory(State);
+            State=new AdventureState();Life.Reset();Checkpoint=0;flashUntil=0;propCooldown=0;horseNodUntil=0;linkArmed=false;World.Thread.enabled=false;World.RefreshMemory(State);
             World.Course.gameObject.SetActive(false);World.Intro.gameObject.SetActive(true);World.Notebook.gameObject.SetActive(true);
             World.Cone.gameObject.SetActive(true);World.EndCard.gameObject.SetActive(false);World.Marker.gameObject.SetActive(false);World.MapLine.enabled=false;
             World.Grips.gameObject.SetActive(false);World.Preview.enabled=false;foreach(var trophy in World.Art.TrophyCones)trophy.gameObject.SetActive(false);
@@ -508,7 +503,7 @@ namespace BinaryLift
             string hint;
             switch(State.Phase)
             {
-                case AdventurePhase.Arrival:hint="WASD / left stick. Check coffee, stamp forms, then exit.";break;
+                case AdventurePhase.Arrival:hint="Drag / grip props. Brew coffee, file expenses, or exit.";break;
                 case AdventurePhase.Courtyard:hint="Walk towards the research funding in the courtyard.";break;
                 case AdventurePhase.Chase:hint="Follow the orange marker. Walk or click to move.";break;
                 case AdventurePhase.Mapping:hint="Look down: the monkey followed these ancestor paths.";break;
