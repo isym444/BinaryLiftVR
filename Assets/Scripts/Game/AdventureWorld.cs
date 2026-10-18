@@ -323,6 +323,12 @@ namespace BinaryLift
                 line.gameObject.SetActive(Course.gameObject.activeSelf);remembered.Add(line);
             }
         }
+        // Platforms and labels share these colours so a loom label can be matched to its platform on the tree.
+        public static Color LoomRoleColor(LoomRole role)
+        {
+            return role == LoomRole.Start ? new Color(.45f,.95f,.40f) : role == LoomRole.Middle ? new Color(.95f,.95f,.95f)
+                 : role == LoomRole.End ? new Color(.30f,.85f,1f) : Color.white;
+        }
         public void RefreshWorkshop(AdventureState model)
         {
             workshopMarkers.gameObject.SetActive(model.Phase==AdventurePhase.Weaving);
@@ -331,7 +337,8 @@ namespace BinaryLift
             for(int i=0;i<3;i++)
             {
                 branchAnchors[i].localPosition=Positions[nodes[i]]+new Vector3(0,.12f,-.18f);
-                AnchorLabels[i].text=(i==1?"VIA ":i==0?"FROM ":"TO ")+nodes[i];
+                AnchorLabels[i].text=model.LoomAnchorText(i);
+                AnchorLabels[i].color=LoomRoleColor(model.LoomRoleOf(nodes[i]));
             }
             workshopPath.SetPosition(0,LinkStart.transform.position);workshopPath.SetPosition(1,LinkMiddle.position);workshopPath.SetPosition(2,LinkEnd.transform.position);
         }

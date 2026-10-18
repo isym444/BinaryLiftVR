@@ -3,6 +3,8 @@ using System.Collections.Generic;
 namespace BinaryLift
 {
     public enum AdventurePhase { Arrival, Courtyard, Chase, Mapping, Choosing, Climbing, Clue, Weaving, Retargeting, Complete, Quiz }
+    /// <summary>Part of the connection being woven: FROM node, shared VIA node, TO node.</summary>
+    public enum LoomRole { None, Start, Middle, End }
     /// <summary>Physical exploration teaches node-specific binary-lifting connections.</summary>
     public sealed class AdventureState
     {
@@ -55,6 +57,34 @@ namespace BinaryLift
         public int PendingStart { get; private set; } = -1;
         public int PendingMiddle => PendingStart < 0 ? -1 : Tree.KthAncestor(PendingStart, PendingSpan / 2);
         public int PendingEnd => PendingStart < 0 ? -1 : Tree.KthAncestor(PendingStart, PendingSpan);
+        /// <summary>Which end of the pending connection a node is. Only meaningful while weaving.</summary>
+        public LoomRole LoomRoleOf(int node)
+        {
+            if (Phase != AdventurePhase.Weaving || PendingStart < 0) return LoomRole.None;
+            if (node == PendingStart) return LoomRole.Start;
+            if (node == PendingMiddle) return LoomRole.Middle;
+            if (node == PendingEnd) return LoomRole.End;
+            return LoomRole.None;
+        }
+        /// <summary>Plain-language markers: START is the node every mission begins from, YOU ARE HERE is the player's current node.</summary>
+        public string LoomTag(int node)
+        {
+            bool start = node == StartNode, here = node == Node;
+            return start && here ? "START / YOU ARE HERE" : start ? "START" : here ? "YOU ARE HERE" : "";
+        }
+        /// <summary>Two lines for the workshop: node numbers, then each node's depth. Empty outside weaving.</summary>
+        public string LoomNodesText => Phase != AdventurePhase.Weaving || PendingStart < 0 ? "" :
+            "NODE " + PendingStart + "   >   " + PendingMiddle + "   >   " + PendingEnd + "\n" +
+            "DEPTH " + Tree.Depth[PendingStart] + "   >   " + Tree.Depth[PendingMiddle] + "   >   " + Tree.Depth[PendingEnd];
+        /// <summary>Label under plug (0), anchor (1) or socket (2): role and node, depth, then START / YOU ARE HERE if it applies.</summary>
+        public string LoomAnchorText(int index)
+        {
+            if (Phase != AdventurePhase.Weaving || PendingStart < 0 || index < 0 || index > 2) return "";
+            int node = index == 0 ? PendingStart : index == 1 ? PendingMiddle : PendingEnd;
+            string text = (index == 1 ? "VIA " : index == 0 ? "FROM " : "TO ") + node + "\nDEPTH " + Tree.Depth[node];
+            string tag = LoomTag(node);
+            return tag.Length == 0 ? text : text + "\n" + tag;
+        }
         public float EdgeProgress { get; private set; }
         public float TotalPull { get; private set; }
         public float Progress => Span == 0 ? 0 : (CompletedInSelection + EdgeProgress) / Span;

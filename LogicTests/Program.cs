@@ -25,6 +25,8 @@ static class Program
         CampusQuestProgression();
         PhysicalClimbProgression();
         AdventureFlow();
+        LoomLabels();
+        LoomLabelsStayConsistent();
 
         Console.WriteLine(failures == 0 ? "ALL PASSED" : failures + " FAILURE(S)");
         return failures == 0 ? 0 : 1;
@@ -288,5 +290,69 @@ static class Program
             Check(q.Tree.Depth[visited[i]] >= q.Tree.Depth[visited[i-1]], "BFS visits nondecreasing depth");
         var reset = new CampusQuestState();
         Check(reset.Node == 20 && reset.Cones == 0 && reset.Moves == 0 && reset.Phase == QuestPhase.Briefing, "fresh session resets progression");
+    }
+
+    // Replays the weaving screens a player sees on the default tree (start node 23, goal node 10).
+    static void LoomLabels()
+    {
+        var s=new AdventureState(13);
+        s.ExitClassroom();s.BeginChase();s.ReachGate();s.EnterTree();
+        Check(s.StartNode==23&&s.Goal==10,"default tree has start 23 and goal 10");
+        Check(s.LoomNodesText==""&&s.LoomAnchorText(0)==""&&s.LoomRoleOf(23)==LoomRole.None,"loom text and roles are empty outside weaving");
+
+        ClimbSelection(s,1);ClimbSelection(s,1);
+        Check(s.CollectCone()&&s.Phase==AdventurePhase.Weaving,"first weave after two levels");
+        Check(s.LoomNodesText=="NODE 23   >   13   >   12\nDEPTH 14   >   13   >   12","first loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 23\nDEPTH 14\nSTART","first loom: the start node is marked START");
+        Check(s.LoomAnchorText(1)=="VIA 13\nDEPTH 13","first loom: the middle node has no marker");
+        Check(s.LoomAnchorText(2)=="TO 12\nDEPTH 12\nYOU ARE HERE","first loom: the player's node is marked YOU ARE HERE");
+        Check(s.LoomRoleOf(23)==LoomRole.Start&&s.LoomRoleOf(13)==LoomRole.Middle&&s.LoomRoleOf(12)==LoomRole.End&&s.LoomRoleOf(11)==LoomRole.None,"first loom: three platforms have roles");
+        Check(s.Weave(),"first connection woven");
+
+        ClimbSelection(s,1);ClimbSelection(s,1);
+        Check(s.Node==10&&s.CollectCone()&&s.Phase==AdventurePhase.Weaving,"second weave at the goal, node 10 depth 10");
+        Check(s.LoomNodesText=="NODE 12   >   11   >   10\nDEPTH 12   >   11   >   10","second loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 12\nDEPTH 12"&&s.LoomAnchorText(2)=="TO 10\nDEPTH 10\nYOU ARE HERE","second loom: only the player's node is tagged");
+        Check(s.Weave()&&s.Phase==AdventurePhase.Weaving&&s.PendingSpan==4,"second connection leads to the four-level loom");
+
+        // The screen that looked like a teleport to node 23: the player is still on node 10, depth 10.
+        Check(s.Node==10&&s.Tree.Depth[s.Node]==10,"four-level loom does not move the player");
+        Check(s.LoomNodesText=="NODE 23   >   12   >   10\nDEPTH 14   >   12   >   10","four-level loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 23\nDEPTH 14\nSTART","four-level loom: node 23 is the START, not the player's position");
+        Check(s.LoomAnchorText(1)=="VIA 12\nDEPTH 12","four-level loom: shared middle ancestor");
+        Check(s.LoomAnchorText(2)=="TO 10\nDEPTH 10\nYOU ARE HERE","four-level loom: the player is at node 10");
+        Check(s.LoomTag(23)=="START"&&s.LoomTag(10)=="YOU ARE HERE"&&s.LoomTag(12)=="","tags for start, player and others");
+        Check(s.Weave()&&s.LoomNodesText=="","loom text clears once woven");
+    }
+
+    // For many trees: displayed depths are real depths, markers sit on the right nodes, no placeholder values leak.
+    static void LoomLabelsStayConsistent()
+    {
+        for(int seed=1;seed<=40;seed++)
+        {
+            var s=new AdventureState(seed);
+            s.ExitClassroom();s.BeginChase();s.ReachGate();s.EnterTree();
+            Check(s.LoomTag(s.StartNode).Contains("START"),"start node always tagged START, seed "+seed);
+            Check(s.LoomTag(s.Node).Contains("YOU ARE HERE"),"player node always tagged, seed "+seed);
+            while(s.Phase!=AdventurePhase.Weaving&&s.Phase!=AdventurePhase.Retargeting&&s.Phase!=AdventurePhase.Complete&&s.Remaining>0)
+            {
+                if(s.Phase==AdventurePhase.Clue){s.CollectCone();continue;}
+                ClimbSelection(s,1);
+            }
+            for(int guard=0;guard<6&&s.Phase==AdventurePhase.Weaving;guard++)
+            {
+                int[] nodes={s.PendingStart,s.PendingMiddle,s.PendingEnd};
+                Check(s.LoomNodesText.Contains("NODE "+nodes[0])&&!s.LoomNodesText.Contains("-1"),"loom text names real nodes, seed "+seed);
+                Check(s.LoomNodesText.EndsWith(s.Tree.Depth[nodes[0]]+"   >   "+s.Tree.Depth[nodes[1]]+"   >   "+s.Tree.Depth[nodes[2]]),"loom depths match the tree, seed "+seed);
+                for(int i=0;i<3;i++)
+                {
+                    Check(s.LoomAnchorText(i).Contains("DEPTH "+s.Tree.Depth[nodes[i]]),"anchor depth matches, seed "+seed);
+                    Check(s.LoomAnchorText(i).Contains("YOU ARE HERE")==(nodes[i]==s.Node),"YOU ARE HERE only on the player's node, seed "+seed);
+                    Check(s.LoomAnchorText(i).Contains("START")==(nodes[i]==s.StartNode),"START only on the start node, seed "+seed);
+                }
+                Check(s.LoomRoleOf(nodes[0])==LoomRole.Start&&s.LoomRoleOf(nodes[1])==LoomRole.Middle&&s.LoomRoleOf(nodes[2])==LoomRole.End,"roles map to the three nodes, seed "+seed);
+                s.Weave();
+            }
+        }
     }
 }

@@ -442,3 +442,28 @@ Publication scope: gameplay/controller/world/state, editor validation, logic tes
 CampusSurface shader/meta and English documentation/evidence. Preserve and exclude
 the existing XR/package/project-setting edits and .cursor. Destination remains Fexas;
 remote Fexas was 495c764 and main was 15279ec before publication. No force push.
+
+
+### Weave workbench clarity (2026-10-18, branch quest-fixes)
+Report: after climbing 12 -> 10 the workbench switched to "NODE 23 > 12 > 10" and the
+depth around the player still read 10, which looked like an unexplained teleport.
+Investigation: replayed the sequence through AdventureState (seed 13, start 23, goal 10).
+The player never leaves node 10. The second connection is the four-level link from the
+START node (23 -> 12 -> 10, up[2][23] = up[1][up[1][23]]); NextTarget() later returns the
+player to node 23 on purpose. The workbench simply did not say which node was which.
+Change: AdventureState now provides LoomRoleOf, LoomTag, LoomNodesText and LoomAnchorText
+(node, depth, START, YOU ARE HERE). The controller uses them for the workbench text and
+colours the three platforms (FROM green, VIA white, TO cyan); the three anchor labels use
+the same colours. No change to progression rules.
+Validation: LogicTests LoomLabels (exact strings for the three screens on seed 13) and
+LoomLabelsStayConsistent (40 seeds). Mutation check: three deliberate breakages were
+caught. The game scripts compile against the Unity assemblies. Not run in Unity Play Mode
+or on a headset, so layout and legibility of the extra depth line are unverified.
+
+### Faster opening walk (2026-10-18, branch quest-fixes)
+Request: walking felt slow in the start section. AdventureController.Walk (classroom,
+courtyard and chase phases only) now moves the player at StartWalkSpeed = 2.2 m/s
+(was 1.7) and the chasing monkey at MonkeyChaseSpeed = 4.5 m/s (was 3.5), about 30 percent
+faster each. Climbing and later phases are unchanged. Compiles against the Unity
+assemblies; not tried in Play Mode or on a headset, so the comfort of the new speed in VR
+is unverified.

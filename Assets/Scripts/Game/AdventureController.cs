@@ -7,6 +7,8 @@ namespace BinaryLift
 {
     public sealed class AdventureController : MonoBehaviour
     {
+        // Opening section (classroom, courtyard, chase): metres per second. Previously 1.7 and 3.5.
+        const float StartWalkSpeed = 2.2f, MonkeyChaseSpeed = 4.5f;
         public AdventureState State { get; private set; }
         public XRRig Rig { get; private set; }
         public AdventureWorld World { get; private set; }
@@ -188,7 +190,7 @@ namespace BinaryLift
             Vector3 movement=(forward*input.y+Vector3.Cross(Vector3.up,forward)*input.x);
             if(walking)movement=(walkDestination-Rig.transform.position).normalized;
             movement.y=0;movement=Vector3.ClampMagnitude(movement,1);
-            Vector3 next=Rig.transform.position+movement*Time.deltaTime*1.7f;
+            Vector3 next=Rig.transform.position+movement*Time.deltaTime*StartWalkSpeed;
             next.x=Mathf.Clamp(next.x,next.z<0?-4.4f:-2.6f,next.z<0?4.4f:2.6f);next.z=Mathf.Clamp(next.z,-11,43);next.y=0;
             // Keep the classroom exit and furniture solid without a moving camera collider.
             if(next.z<-.8f && next.z>-1.25f && Mathf.Abs(next.x)>1.05f)next=Rig.transform.position;
@@ -214,7 +216,7 @@ namespace BinaryLift
             Vector3 direction=(to-feet).normalized;
             Vector3 target=Vector3.Distance(to,feet)>4?feet+direction*4:to;
             Vector3 previous=World.Art.Monkey.position;
-            World.Art.Monkey.position=Vector3.MoveTowards(previous,new Vector3(target.x,.45f,target.z),Time.deltaTime*3.5f);
+            World.Art.Monkey.position=Vector3.MoveTowards(previous,new Vector3(target.x,.45f,target.z),Time.deltaTime*MonkeyChaseSpeed);
             animationClock+=Time.deltaTime;
             Vector3 p=World.Art.Monkey.position;p.y=.45f+Mathf.Abs(Mathf.Sin(animationClock*5))*.23f;World.Art.Monkey.position=p;
             if(direction.sqrMagnitude>.001f)World.Art.Monkey.rotation=Quaternion.Slerp(World.Art.Monkey.rotation,Quaternion.LookRotation(new Vector3(-direction.x,0,-direction.z)),Time.deltaTime*7);
@@ -463,7 +465,7 @@ namespace BinaryLift
             World.RecoveryBalcony.localPosition=World.Positions[State.Goal];
             World.Controls.gameObject.SetActive(choosing);DockPanel(World.Controls,State.Node);
             World.SafetyDeck.localPosition=World.Positions[State.Node]+AdventureWorld.ClimbOffset-Vector3.up*.09f;
-            for(int i=0;i<World.Platforms.Count;i++)World.Platforms[i].sharedMaterial.color=i==State.Node?new Color(.65f,.9f,.85f):i==State.Goal?new Color(.85f,.49f,.13f):new Color(.18f,.30f,.36f);
+            for(int i=0;i<World.Platforms.Count;i++)World.Platforms[i].sharedMaterial.color=State.LoomRoleOf(i)!=LoomRole.None?AdventureWorld.LoomRoleColor(State.LoomRoleOf(i)):i==State.Node?new Color(.65f,.9f,.85f):i==State.Goal?new Color(.85f,.49f,.13f):new Color(.18f,.30f,.36f);
             for(int i=0;i<World.Choices.Count;i++)
             {
                 var choice=World.Choices[i];bool available=State.CanChoose(1<<i);
@@ -478,7 +480,7 @@ namespace BinaryLift
             DockPanel(World.Loom,State.Node);
             int half=State.PendingSpan/2;
             World.LoomTitle.text=half+" + "+half+" = "+State.PendingSpan+" LEVEL CONNECTION";
-            World.LoomNodes.text="NODE "+State.PendingStart+"   >   "+State.PendingMiddle+"   >   "+State.PendingEnd;
+            World.LoomNodes.text=State.LoomNodesText;
             World.LoomHint.text=Rig.XRActive?"SELECT THE ORANGE PLUG, THEN THE CYAN SOCKET":"DRAG ORANGE PLUG TO CYAN SOCKET\nOr click the plug, then the socket.";
             World.LoomHint.transform.localPosition=new Vector3(0,.60f,1.50f);
             World.LoomHint.characterSize=.072f*.15f;
