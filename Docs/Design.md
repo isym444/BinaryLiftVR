@@ -2,7 +2,7 @@
 
 ## Continuous journey
 Keep the classroom, proximity-triggered theft, seven chase markers, aerial campus-tree
-reveal and original generated tree. The monkey steals a fictional research funding
+reveal and original generated tree. The Highland calf steals a fictional research funding
 envelope. English humour stays in brief flavour lines and decorations. There are no
 quiz gates, automatic ascents or transitions into the historical race game.
 
@@ -58,7 +58,7 @@ available, and taking it is not penalized as a wrong answer.
 ## Presentation
 Approved Poly Haven masonry, selected Kenney desks/chairs, and one preview-approved AI
 poster enrich the existing classroom/campus. Source files and licences are tracked in
-AssetRegister.md. Horse and monkey remain project-authored placeholders; external horse
+AssetRegister.md. The Highland calf uses the approved adapted Quaternius rig. Horse remains a project-authored placeholder; external horse
 review is pending download availability. No university photograph is imported.
 
 VR retains tracked rotation, manual grip input, stationary faded map/target changes,

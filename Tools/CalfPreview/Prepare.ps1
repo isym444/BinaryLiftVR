@@ -22,6 +22,6 @@ foreach ($entry in $files.GetEnumerator()) {
         Invoke-WebRequest ('https://cdn.jsdelivr.net/npm/three@0.160.1/' + $entry.Key) -OutFile $destination
     }
 }
-Copy-Item (Join-Path $PSScriptRoot 'index.html'),(Join-Path $PSScriptRoot 'preview.js') -Destination $previewRoot
+Copy-Item (Join-Path $PSScriptRoot 'index.html'),(Join-Path $PSScriptRoot 'preview.js'),(Join-Path $PSScriptRoot 'CalfModel.js') -Destination $previewRoot
 Write-Output ('Preview prepared: ' + $previewRoot)
 Write-Output 'Serve this directory on localhost only. No Unity asset has been imported.'

@@ -82,7 +82,7 @@ namespace BinaryLift
             Vector3 position = World.NodePosition(State.Node);
             Rig.TeleportFeet(position);
             World.Station.position = position;
-            World.Monkey.position = World.NodePosition(State.Goal) + new Vector3(3.4f,.6f,5);
+            World.Calf.position = World.NodePosition(State.Goal) + new Vector3(3.4f,.6f,5);
         }
 
         void UpdateTarget()
@@ -277,7 +277,7 @@ namespace BinaryLift
             }
             World.Chapter.text=complete?"CAMPUS CONNECTION RESTORED":"CONE COURIER / " + (State.Cones+1).ToString("00");
             if(briefing)
-                World.Objective.text="A monkey took our route notebook.\nFollow the trail. Recover four clue cones.\nYour horse will remember the shortcuts.";
+                World.Objective.text="A calf took our research funding.\nFollow the trail. Recover four clue cones.\nYour horse will remember the shortcuts.";
             else if(complete)
                 World.Objective.text="All four clues are back with your companion.\nYou restored the campus route memory.\nBinary lifting: combine powers of two.";
             else if(State.Phase==QuestPhase.CarryingCone)
@@ -326,9 +326,9 @@ namespace BinaryLift
             if(State.Phase==QuestPhase.Briefing)
             {
                 introClock=Mathf.Min(introClock+Time.deltaTime,5);
-                World.Monkey.position=Vector3.Lerp(new Vector3(-2.4f,.8f,5),new Vector3(3.4f,.8f,8),introClock/5);
+                World.Calf.position=Vector3.Lerp(new Vector3(-2.4f,.8f,5),new Vector3(3.4f,.8f,8),introClock/5);
             }
-            World.Monkey.localRotation=Quaternion.Euler(0,Mathf.Sin(Time.time)*12,0);
+            World.Calf.localRotation=Quaternion.Euler(0,Mathf.Sin(Time.time)*12,0);
         }
 
         void Say(string text,float seconds=3){message=text;messageUntil=Time.unscaledTime+seconds;}

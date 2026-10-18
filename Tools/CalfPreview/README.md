@@ -1,8 +1,8 @@
 # Highland calf adaptation review
 
-Local character review only. Nothing here loads in Unity or replaces the monkey.
-User approved adapting this free base for a second preview on 2026-10-18. The final
-appearance still needs their approval before game integration.
+The user approved the revised appearance and game integration on 2026-10-18.
+The browser viewer remains a separate review tool; the game loads a native Unity
+asset exported from the same CalfModel.js geometry.
 
 Base: Quaternius, Ultimate Animated Animals, Bull.gltf, CC0.
 https://quaternius.com/packs/ultimateanimatedanimals.html
@@ -32,3 +32,14 @@ The calf's enlarged head and lock density should receive art review before impor
 Saved review captures: [three-quarter](../../Docs/Evidence/HighlandCalf-Preview-2026-10-18.png)
 and [front](../../Docs/Evidence/HighlandCalf-Front-2026-10-18.png). These are actual
 browser renders of the animated study, not in-game screenshots.
+
+
+## Native Unity export
+After Prepare.ps1, run `node Tools/CalfPreview/Export.mjs` from the repository root.
+Requires Node.js. It uses the verified SourceArt/HighlandCalf/Bull.gltf and the pinned
+local Three.js files. No network calls occur during export. Output is
+Assets/Resources/Approved/HighlandCalf.calf. The editor importer handles handedness,
+vertex palette, skin bind poses and native animation curves. Geometry is combined
+into one submesh/material (7,594 triangles), retaining the approved coat and horns.
+Use BinaryLift > Validate Highland Calf to check the resulting rig and all clips.
+The source glTF is intentionally stored outside Assets; no glTF Unity plugin is needed.

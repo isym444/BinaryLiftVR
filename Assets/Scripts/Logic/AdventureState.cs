@@ -32,10 +32,10 @@ namespace BinaryLift
         public int ConnectionCount => connections.Count;
         public bool CanResearch { get { int from,span;return Phase==AdventurePhase.Complete&&FindResearch(out from,out span); } }
         public bool QuizSolved { get; private set; }
-        public string QuizFeedback { get; private set; } = "Optional. No grades, no banana-based penalties.";
+        public string QuizFeedback { get; private set; } = "Optional. No grades, no hay-based penalties.";
         public int QuizTopic => Math.Max(0,Searches-1)%3;
         public int CorrectQuizAnswer => QuizTopic==1?1:0;
-        public string QuizQuestion => QuizTopic==0?"The monkey claims 2 + 2 makes eight levels.\nWhat do two adjacent two-level routes make?":QuizTopic==1?"Three levels remain. You know routes of 1, 2 and 4.\nWhich longest route can fit without passing the goal?":"Start at node "+StartNode+". Follow two parent edges.\nWhich node receives the funding envelope?";
+        public string QuizQuestion => QuizTopic==0?"The calf claims 2 + 2 makes eight levels.\nWhat do two adjacent two-level routes make?":QuizTopic==1?"Three levels remain. You know routes of 1, 2 and 4.\nWhich longest route can fit without passing the goal?":"Start at node "+StartNode+". Follow two parent edges.\nWhich node receives the funding envelope?";
         public string QuizOption(int index)
         {
             if(QuizTopic==0)return index==0?"4 LEVELS":"8 LEVELS";
@@ -48,8 +48,8 @@ namespace BinaryLift
         {
             if(Phase!=AdventurePhase.Quiz||QuizSolved||index<0||index>1)return false;
             string explanation=QuizTopic==0?"Two adjacent twos cover FOUR parent edges.":QuizTopic==1?"Two fits inside three; four passes the target.":"parent(parent("+StartNode+")) = "+Tree.KthAncestor(StartNode,2)+".";
-            if(index!=CorrectQuizAnswer){QuizFeedback="The monkey's accounting needs work. Try again.\n"+explanation;return true;}
-            QuizSolved=true;ResearchStamps++;QuizFeedback="AUDIT STAMP EARNED. Banana fraud prevented.\n"+explanation;return true;
+            if(index!=CorrectQuizAnswer){QuizFeedback="The calf's accounting needs work. Try again.\n"+explanation;return true;}
+            QuizSolved=true;ResearchStamps++;QuizFeedback="AUDIT STAMP EARNED. Hay fraud prevented.\n"+explanation;return true;
         }
         public int PendingSpan { get; private set; }
         public int PendingStart { get; private set; } = -1;
@@ -123,7 +123,7 @@ namespace BinaryLift
             return true;
         }
         static readonly int[] targetLevels = {3,5,7,4,6};
-        static readonly string[] fundingNames = {"FIELDWORK FUND", "COFFEE CONTINGENCY", "LIBRARY LATE FEES", "BANANA-FREE EQUIPMENT", "CLOISTER WIFI FUND", "RAIN RESEARCH GRANT"};
+        static readonly string[] fundingNames = {"FIELDWORK FUND", "COFFEE CONTINGENCY", "LIBRARY LATE FEES", "HAY-FREE EQUIPMENT", "CLOISTER WIFI FUND", "RAIN RESEARCH GRANT"};
         public string FundingName => Searches==0 ? "ROUTE RESEARCH" : fundingNames[(Searches-1)%fundingNames.Length];
         public string NextFundingName => fundingNames[Searches%fundingNames.Length];
         public int NextTargetLevels => Searches == 0 ? OriginalLevels : targetLevels[(Searches-1)%targetLevels.Length];
@@ -162,7 +162,7 @@ namespace BinaryLift
             RequiredLevels = NextTargetLevels; Goal = Tree.KthAncestor(StartNode, RequiredLevels);
             BestRouteDecisions=MinimumDecisions(RequiredLevels);
             Searches++; Node = StartNode; MissionLevels = MissionSelections = CompletedInSelection = Span = 0;
-            QuizSolved=false;QuizFeedback="Optional. No grades, no banana-based penalties.";
+            QuizSolved=false;QuizFeedback="Optional. No grades, no hay-based penalties.";
             Destination = -1; EdgeProgress = 0; Phase = AdventurePhase.Choosing; return true;
         }
     }

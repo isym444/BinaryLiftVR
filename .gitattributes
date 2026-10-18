@@ -3,3 +3,6 @@ Assets/Resources/Approved/*.fbx binary
 Assets/Resources/Approved/**/*.fbx binary
 Assets/ThirdParty/Kenney/License.txt -text -whitespace
 Assets/ThirdParty/Kenney/**/License.txt -text -whitespace
+
+# Preserve the verified Quaternius source hash across checkouts.
+SourceArt/HighlandCalf/Bull.gltf -text

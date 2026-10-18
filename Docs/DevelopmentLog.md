@@ -1,5 +1,27 @@
 # Development log
 
+## Session 12 - Approved Highland calf integration (2026-10-18)
+Baseline: Fexas 91018bd. User approved the revised Quaternius-based calf for game
+integration, chase animation and English copy updates. Preserve manual climbing,
+algorithm progression, horse companion and unrelated settings/import metadata edits.
+Share the approved adaptation geometry between the browser review and offline export.
+Import as native Unity meshes, skin and clips without a runtime glTF dependency.
+Validate mouth-attached funding, locomotion, tree transition, recovery and replay;
+perform desktop input walkthrough and integration checks before pushing Fexas.
+
+### Completed implementation and verification
+Imported the approved calf using a shared adaptation/export and native Unity importer:
+one skinned mesh/material, 7,594 triangles, 42 bones, 13 clips. Added grounded chase,
+head-bound funding and recovery/new-search/replay state. Replaced runtime character
+references, later appearances, quiz wording and poster art (NOT FOR HAY).
+An initial shader discovery issue was fixed with an explicit asset dependency.
+Native asset checks passed all 18 assertions; logic tests passed. Actual input covered
+classroom exit, theft and first chase checkpoint. The user then stopped computer use,
+prohibited further UI testing and requested a quick push. Final game/editor C# sources
+compiled successfully from the command line without operating Unity. Full adventure
+regression and headset checks were not run for this integration. Exact boundaries:
+HighlandCalfValidation-2026-10-18.md. Publish only Fexas; preserve unrelated local edits.
+
 ## Session 11 - Campus modelling and Hamish selection (2026-10-18)
 Baseline: Fexas 65b4094. Preserve existing XR, package, project-setting and imported
 metadata edits, and .cursor. User approved Hamish The Highland Cow by Harvey.Eggleton

@@ -1,17 +1,18 @@
 # Cone Courier - Classroom to Canopy
 
 English-only Unity VR project set in a University of Glasgow-inspired electronic campus.
-Current flow: classroom exploration -> exit -> monkey theft -> seven connected chase
+Current flow: classroom exploration -> exit -> Highland calf theft -> seven connected chase
 waypoints -> aerial route reveal -> original generated tree -> manual exploration -> cone collection -> two/four-edge route memory
 -> new funding target -> manual reuse -> results -> replay from the classroom. There is no second-game handoff.
 
 The campus detail pass adds stone window frames, a moving clock, kiosk/entrance
 dressing, gentle banners, rain puddles and a more detailed coffee machine. Cones
 have continuous tapered surfaces. All existing physical tasks and climbing remain.
-The Highland cow replacement is still pending an accessible, approved animated asset;
-the preview-approved Hamish download required an account the user could not complete.
-An independently reviewable Quaternius-based calf adaptation is in Tools/CalfPreview;
-it runs outside Unity and awaits appearance approval before game integration.
+The approved warm Highland calf now carries the funding throughout the chase and
+later searches. Its native rig plays idle, walk, gallop and head-lowered animations;
+recovery removes the carried envelope and replay resets both character and funding.
+Classroom posters and audit copy use the same calf/hay theme. The shared approved
+adaptation is in Tools/CalfPreview, with the original CC0 source in SourceArt/HighlandCalf.
 
 ## Run
 Open Assets/Scenes/Main.unity in Unity 6000.0.85f1 and press Play. Scenery is generated
@@ -37,7 +38,7 @@ Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
 - Recover the final cone. NEW TARGET keeps memory and cycles 3/5/7/4/6-level goals;
   REPLAY FROM CLASSROOM clears progress. Neither launches the legacy game.
 - R restarts with a fade. There is no chase timer or falling penalty.
-- OPTIONAL QUIZ at results opens a short monkey-auditing challenge. Wrong answers
+- OPTIONAL QUIZ at results opens a short calf-auditing challenge. Wrong answers
   explain the concept and permit retry; BACK / SKIP always returns to results. One
   audit stamp can be earned per search. Stamps never substitute for physical climbing.
 - In the classroom, drag the cup below the spout, click BREW, wait for the visible

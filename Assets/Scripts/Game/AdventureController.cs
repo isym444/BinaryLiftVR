@@ -25,7 +25,7 @@ namespace BinaryLift
         Vector3 walkDestination;
         bool walking,activeRight=true,desktopHeld,linkArmed;
         Vector3 mousePrevious;
-        float animationClock,flashUntil;
+        float flashUntil;
         string flash="";
         StreamWriter journal;
         Quaternion horseFacing;
@@ -79,7 +79,7 @@ namespace BinaryLift
             }
             float doorOpen=Rig.transform.position.z>-4 ? 2.6f : 0;
             World.Door.localPosition=Vector3.Lerp(World.Door.localPosition,new Vector3(doorOpen,0,-1),Time.deltaTime*3);
-            AnimateMonkey();AnimateCompanion();UpdateGloves();UpdateInstructions();
+            AnimateCalf();AnimateCompanion();UpdateGloves();UpdateInstructions();
             previousGrip[0]=Rig.LeftGrip;previousGrip[1]=Rig.RightGrip;
         }
         void UpdatePointer()
@@ -144,6 +144,7 @@ namespace BinaryLift
             if(action==AdventureAction.Cone && State.CollectCone())
             {
                 World.Cone.gameObject.SetActive(false);
+                if(State.Phase==AdventurePhase.Complete)World.Art.CalfActor.SetCarrying(false);
                 for(int i=0;i<World.Art.TrophyCones.Count;i++)World.Art.TrophyCones[i].gameObject.SetActive(i<State.Cones);
                 horseNodUntil=Time.time+1.2f;
                 Rig.Pulse(activeRight,.45f,.12f);Refresh();Record(State.Phase==AdventurePhase.Complete?"funding_recovered_journey_complete":"cone_recovered_memory_ready");return true;
@@ -153,22 +154,28 @@ namespace BinaryLift
         IEnumerator Theft()
         {
             Busy=true;walking=false;World.Intro.gameObject.SetActive(false);Record("theft_anticipation");
-            Transform monkey=World.Art.Monkey;
-            monkey.rotation=Quaternion.LookRotation(monkey.position-World.Notebook.position);
-            Vector3 from=monkey.position;
-            for(float t=0;t<.55f;t+=Time.deltaTime)
-            {monkey.position=from+Vector3.up*Mathf.Sin(t/.55f*Mathf.PI)*.12f;yield return null;}
-            Vector3 snatch=World.Notebook.position+new Vector3(.35f,-.4f,.25f);
-            for(float t=0;t<.65f;t+=Time.deltaTime)
-            {
-                monkey.position=Vector3.Lerp(from,snatch,Mathf.SmoothStep(0,1,t/.65f));
-                foreach(Transform limb in monkey)if(limb.name=="Arm")limb.localRotation=Quaternion.Euler(-65*t/.65f,0,0);
-                yield return null;
-            }
-            World.Notebook.gameObject.SetActive(false);monkey.Find("Stolen route notebook").gameObject.SetActive(true);Record("funding_snatched");
-            Quaternion facing=monkey.rotation,target=Quaternion.LookRotation(monkey.position-route[0]);
-            for(float t=0;t<.45f;t+=Time.deltaTime){monkey.rotation=Quaternion.Slerp(facing,target,t/.45f);yield return null;}
-            World.Art.Horse.rotation=Quaternion.LookRotation(new Vector3(-1,0,3));World.Art.CompanionLine.text="OUR FUNDING HAS DEVELOPED LEGS!";
+            Transform calf=World.Art.Calf;var actor=World.Art.CalfActor;
+            Vector3 from=calf.position;
+            Vector3 toward=Vector3.ProjectOnPlane(World.Notebook.position-from,Vector3.up).normalized;
+            calf.rotation=Quaternion.LookRotation(toward);actor.Play("Idle",true);
+            Say("A WEE COUP. KEEP AN EYE ON THE FUNDING.",3);
+            yield return new WaitForSeconds(.55f);
+            // Stop the muzzle at the near edge of the pedestal; hooves stay grounded.
+            Vector3 snatch=World.Notebook.position-toward*.95f;snatch.y=0;
+            actor.Play("Walk",false,.85f);
+            for(float t=0;t<.7f;t+=Time.deltaTime)
+            {calf.position=Vector3.Lerp(from,snatch,Mathf.SmoothStep(0,1,t/.7f));yield return null;}
+            calf.position=snatch;actor.Play("Idle_Headlow",true);
+            yield return new WaitForSeconds(.2f);
+            Vector3 envelopeFrom=World.Notebook.position;Vector3 envelopeScale=World.Notebook.localScale;
+            for(float t=0;t<.3f;t+=Time.deltaTime)
+            {World.Notebook.position=Vector3.Lerp(envelopeFrom,actor.Mouth.position,t/.3f);World.Notebook.localScale=Vector3.Lerp(envelopeScale,Vector3.one*.7f,t/.3f);yield return null;}
+            World.Notebook.gameObject.SetActive(false);World.Notebook.position=envelopeFrom;World.Notebook.localScale=envelopeScale;
+            actor.SetCarrying(true);actor.Play("Idle");Record("funding_snatched");
+            Quaternion facing=calf.rotation;Vector3 exit=Vector3.ProjectOnPlane(route[0]-calf.position,Vector3.up);
+            Quaternion target=exit.sqrMagnitude>.001f?Quaternion.LookRotation(exit):facing;
+            for(float t=0;t<.45f;t+=Time.deltaTime){calf.rotation=Quaternion.Slerp(facing,target,t/.45f);yield return null;}
+            World.Art.Horse.rotation=Quaternion.LookRotation(new Vector3(-1,0,3));World.Art.CompanionLine.text="OUR FUNDING HAS GROWN HOOVES!";
             World.Marker.gameObject.SetActive(true);World.Marker.position=route[0];Busy=false;Refresh();
         }
         void Walk()
@@ -201,24 +208,24 @@ namespace BinaryLift
                 World.Marker.position=route[Checkpoint];Refresh();
             }
         }
-        void AnimateMonkey()
+        void AnimateCalf()
         {
-            if(Busy||State.Phase!=AdventurePhase.Chase)return;
-            Vector3 to=route[Checkpoint];Vector3 feet=Rig.transform.position;
-            Vector3 direction=(to-feet).normalized;
-            Vector3 target=Vector3.Distance(to,feet)>4?feet+direction*4:to;
-            Vector3 previous=World.Art.Monkey.position;
-            World.Art.Monkey.position=Vector3.MoveTowards(previous,new Vector3(target.x,.45f,target.z),Time.deltaTime*3.5f);
-            animationClock+=Time.deltaTime;
-            Vector3 p=World.Art.Monkey.position;p.y=.45f+Mathf.Abs(Mathf.Sin(animationClock*5))*.23f;World.Art.Monkey.position=p;
-            if(direction.sqrMagnitude>.001f)World.Art.Monkey.rotation=Quaternion.Slerp(World.Art.Monkey.rotation,Quaternion.LookRotation(new Vector3(-direction.x,0,-direction.z)),Time.deltaTime*7);
-            var head=World.Art.Monkey.Find("Head");if(head!=null)head.localRotation=Quaternion.Euler(0,Mathf.Sin(animationClock*1.7f)*28,0);
-            foreach(Transform child in World.Art.Monkey)
-                if(child.name=="Arm")child.localRotation=Quaternion.Euler(Mathf.Sin(animationClock*7+child.localPosition.x*5)*28,0,0);
+            if(Busy)return;
+            var actor=World.Art.CalfActor;
+            if(State.Phase!=AdventurePhase.Chase){actor.Play(State.Phase==AdventurePhase.Complete?"Eating":"Idle");return;}
+            Vector3 to=route[Checkpoint],feet=Rig.transform.position;
+            Vector3 direction=Vector3.ProjectOnPlane(to-feet,Vector3.up).normalized;
+            Vector3 target=Vector3.Distance(to,feet)>4?feet+direction*4:to;target.y=0;
+            Vector3 previous=World.Art.Calf.position;
+            Vector3 next=Vector3.MoveTowards(previous,target,Time.deltaTime*3.5f);
+            World.Art.Calf.position=next;
+            Vector3 travel=next-previous;float speed=travel.magnitude/Mathf.Max(Time.deltaTime,.0001f);
+            actor.Play(speed>.1f?"Gallop":"Idle",false,speed>.1f?Mathf.Clamp(speed/3.5f,.55f,1.15f):1);
+            if(travel.sqrMagnitude>.000001f)World.Art.Calf.rotation=Quaternion.Slerp(World.Art.Calf.rotation,Quaternion.LookRotation(travel),Time.deltaTime*7);
         }
         IEnumerator MapTransition()
         {
-            Busy=true;walking=false;World.Marker.gameObject.SetActive(false);Record("aerial_reveal_started");
+            Busy=true;walking=false;World.Art.CalfActor.Play("Idle");World.Marker.gameObject.SetActive(false);Record("aerial_reveal_started");
             Vector3 start=Rig.transform.position;
             Vector3 aerial=new Vector3(0,32,9);
             if(Rig.XRActive)
@@ -261,7 +268,8 @@ namespace BinaryLift
             yield return Fade(1,0,.4f);yield return new WaitForSeconds(2.5f);yield return Fade(0,1,.35f);
             State.EnterTree();
             Rig.TeleportFeet(World.CourseOrigin+World.Positions[State.Node]+AdventureWorld.ClimbOffset);
-            World.Art.Monkey.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(-1.8f,.1f,1.8f);
+            World.Art.Calf.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(-1.8f,.1f,1.8f);
+            FaceCalfTowardPlayer();
             World.Art.Horse.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(1.8f,0,2);
             World.Art.CompanionLine.transform.position=World.Art.Horse.position+Vector3.up*2.3f;
             World.Art.CompanionLine.text="FOLLOW THE BRANCHES. I WILL MEET YOU ABOVE.";
@@ -413,13 +421,20 @@ namespace BinaryLift
             yield return Fade(0,1,.35f);
             if(State.NextTarget())
             {
+                World.Art.CalfActor.SetCarrying(true);World.Art.CalfActor.Play("Idle",true);
                 Rig.TeleportFeet(World.CourseOrigin+World.Positions[State.Node]+AdventureWorld.ClimbOffset);
                 if(!Rig.XRActive){Rig.transform.rotation=Quaternion.identity;Rig.SetDesktopView(0);}
                 World.Art.Horse.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(1.8f,0,2);
-                World.Art.Monkey.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(-1.8f,.1f,1.8f);
+                World.Art.Calf.position=World.CourseOrigin+World.Positions[State.Goal]+new Vector3(-1.8f,.1f,1.8f);
+                FaceCalfTowardPlayer();
                 Refresh();Record("new_target_memory_preserved");
             }
             yield return Fade(1,0,.45f);Busy=false;
+        }
+        void FaceCalfTowardPlayer()
+        {
+            Vector3 facing=Vector3.ProjectOnPlane(Rig.transform.position-World.Art.Calf.position,Vector3.up);
+            if(facing.sqrMagnitude>.001f)World.Art.Calf.rotation=Quaternion.LookRotation(facing);
         }
         IEnumerator Restart()
         {
@@ -430,10 +445,10 @@ namespace BinaryLift
             World.Grips.gameObject.SetActive(false);World.Preview.enabled=false;foreach(var trophy in World.Art.TrophyCones)trophy.gameObject.SetActive(false);
             World.Art.Horse.position=new Vector3(1.95f,0,3);World.Art.Horse.rotation=horseFacing;
             World.Art.CompanionLine.transform.position=new Vector3(1.95f,2.35f,3);World.Art.CompanionLine.text="YOUR CAMPUS COMPANION";
-            World.Art.Monkey.position=new Vector3(-1,.4f,4.2f);if(!Rig.XRActive)Rig.transform.rotation=Quaternion.identity;Rig.SetDesktopView(0);Rig.TeleportFeet(new Vector3(0,0,-8));
+            World.Art.Calf.position=new Vector3(-1,0,4.2f);if(!Rig.XRActive)Rig.transform.rotation=Quaternion.identity;Rig.SetDesktopView(0);Rig.TeleportFeet(new Vector3(0,0,-8));
             for(int i=1;i<State.Tree.Count;i++){var road=World.Roads[i-1];road.SetPosition(0,World.CampusNodes[i]);road.SetPosition(1,World.CampusNodes[State.Tree.Parent[i]]);road.startWidth=road.endWidth=.07f;}
             Refresh();
-            World.Art.Monkey.Find("Stolen route notebook").gameObject.SetActive(false);
+            World.Art.CalfActor.ResetPose();
             yield return Fade(1,0,.35f);Busy=false;Record("story_restarted");
         }
         IEnumerator Snap(int direction)
@@ -466,7 +481,7 @@ namespace BinaryLift
                 choice.transform.parent.GetComponentInChildren<TextMesh>().color=available?World.Art.White.color:new Color(.4f,.42f,.44f);
             }
             World.RouteTitle.text=(State.Searches==0?"EXPLORE AND REMEMBER":State.FundingName)+"\n"+State.Remaining+" LEVEL"+(State.Remaining==1?"":"S")+" TO THE GOLD NODE\nSelect, then grab and pull along the branches.";
-            World.MemoryLabel.text=State.Searches==0?"Explore first. Even the monkey cannot skip the paperwork.":"MEMORY BEST: "+State.BestRouteDecisions+" DECISIONS / SAME HANDS-ON CLIMB";
+            World.MemoryLabel.text=State.Searches==0?"Explore first. Even the calf cannot skip the paperwork.":"MEMORY BEST: "+State.BestRouteDecisions+" DECISIONS / SAME HANDS-ON CLIMB";
             World.Cone.localPosition=World.Positions[State.Phase==AdventurePhase.Clue?State.Node:State.ConeNode]+AdventureWorld.ClimbOffset+new Vector3(0,1.15f,.85f);
             World.Cone.gameObject.SetActive(State.Phase==AdventurePhase.Clue);
             World.Loom.gameObject.SetActive(State.Phase==AdventurePhase.Weaving);
@@ -482,7 +497,7 @@ namespace BinaryLift
             World.NewSearch.gameObject.SetActive(State.Phase==AdventurePhase.Retargeting);
             DockPanel(World.NewSearch,State.Node);
             World.NewSearch.localPosition-=Vector3.up*.08f;
-            World.SearchTitle.text=State.NextFundingName+"\nNEW TARGET: "+State.NextTargetLevels+" LEVELS FROM THE START\nThe monkey has submitted another expense claim.";
+            World.SearchTitle.text=State.NextFundingName+"\nNEW TARGET: "+State.NextTargetLevels+" LEVELS FROM THE START\nThe calf has claimed hay as lab equipment.";
             World.EndCard.gameObject.SetActive(State.Phase==AdventurePhase.Complete);
             World.ResearchButton.GetComponent<Collider>().enabled=State.CanResearch;
             World.ResearchCaption.text=State.CanResearch?"RECORD NEW ROUTES":"ALL ROUTES RECORDED";
@@ -495,18 +510,18 @@ namespace BinaryLift
             DockPanel(World.EndCard,State.Goal);
             World.Outcome.text="FUNDING RECOVERED / "+State.Cones+" CONES\n"+State.MissionLevels+" LEVELS / "+State.MissionSelections+" DECISIONS / MEMORY BEST "+State.BestRouteDecisions+"\n"+(State.MissionSelections==State.BestRouteDecisions?"LEAN ROUTE!":"TRY A SHORTER PLAN!")+" / "+State.EfficientRecoveries+" EFFICIENT RECOVERIES\n"+State.ConnectionCount+" CONNECTIONS / "+State.ResearchStamps+" AUDIT STAMPS";
             World.Outcome.characterSize=.085f*.15f;
-            World.MarkerLabel.text="FOLLOW THE MONKEY / "+Mathf.Min(Checkpoint+1,route.Length)+" OF "+route.Length+"\nCLICK TO WALK HERE";
+            World.MarkerLabel.text="FOLLOW THE CALF / "+Mathf.Min(Checkpoint+1,route.Length)+" OF "+route.Length+"\nCLICK TO WALK HERE";
         }
         void UpdateInstructions()
         {
-            World.Status.text=State.Phase==AdventurePhase.Arrival?"01 / AFTER CLASS":State.Phase==AdventurePhase.Courtyard?"02 / THE COURTYARD":State.Phase==AdventurePhase.Chase?"03 / FOLLOW THE MONKEY":State.Phase==AdventurePhase.Mapping?"04 / THE ROUTE REVEALED":"CLIMBED "+State.MissionLevels+" / "+State.RequiredLevels+" LEVELS / CONES "+State.Cones;
+            World.Status.text=State.Phase==AdventurePhase.Arrival?"01 / AFTER CLASS":State.Phase==AdventurePhase.Courtyard?"02 / THE COURTYARD":State.Phase==AdventurePhase.Chase?"03 / FOLLOW THE CALF":State.Phase==AdventurePhase.Mapping?"04 / THE ROUTE REVEALED":"CLIMBED "+State.MissionLevels+" / "+State.RequiredLevels+" LEVELS / CONES "+State.Cones;
             string hint;
             switch(State.Phase)
             {
                 case AdventurePhase.Arrival:hint="Drag / grip props. Brew coffee, file expenses, or exit.";break;
                 case AdventurePhase.Courtyard:hint="Walk towards the research funding in the courtyard.";break;
                 case AdventurePhase.Chase:hint="Follow the orange marker. Walk or click to move.";break;
-                case AdventurePhase.Mapping:hint="Look down: the monkey followed these ancestor paths.";break;
+                case AdventurePhase.Mapping:hint="Look down: the calf followed these ancestor paths.";break;
                 case AdventurePhase.Choosing:hint="Choose a connection, then climb it yourself.";break;
                 case AdventurePhase.Climbing:hint=(Rig.XRActive?"GRIP + PULL DOWN":"DRAG AN ORANGE HOLD DOWN")+" / THIS ROUTE "+State.CompletedInSelection+" OF "+State.Span;break;
                 case AdventurePhase.Clue:hint="Cone secured. Grip or click it. Expenses remain suspicious.";break;

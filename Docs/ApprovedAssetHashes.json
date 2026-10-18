@@ -1,5 +1,20 @@
 [
   {
+    "file": "Assets/Resources/Approved/FundingPoster.png",
+    "bytes": 3134993,
+    "sha256": "f345b8e86dd088005b530781f7a5181a09ca2feebb2b99a4b5b8c250877df423"
+  },
+  {
+    "file": "Assets/Resources/Approved/HighlandCalf.calf",
+    "bytes": 8796873,
+    "sha256": "3632f041fa8f283dadd1a53aeb0d99662ad5403080a2524104507a8d929e486c"
+  },
+  {
+    "file": "Assets/Resources/Approved/Sandstone.jpg",
+    "bytes": 242776,
+    "sha256": "0cac65461ba33003b8a27b03c2b87f3393a824a9a98036c4c8de6182a1449369"
+  },
+  {
     "file": "Assets/Resources/Approved/bark_brown_02_diff.jpg",
     "bytes": 659592,
     "sha256": "920fa0bed0c9d78c1d530e99795113afd532d7db746de440f4a85d7c83ed0f1a"
@@ -50,11 +65,6 @@
     "sha256": "664c1a810335ffcddf57515d47d27bde18cd147d8fedca29731c91f795b9fa70"
   },
   {
-    "file": "Assets/Resources/Approved/FundingPoster.png",
-    "bytes": 3448412,
-    "sha256": "8063d85eaa31942b089aab32b54cdc421bfddd793d2a313d90bb1d73c3b39e4c"
-  },
-  {
     "file": "Assets/Resources/Approved/furniture/bench.fbx",
     "bytes": 25079,
     "sha256": "2c570d3a665509f8f246b7dae42900f07a285b2db86743f0fccce7ad6cdf262f"
@@ -95,11 +105,6 @@
     "sha256": "efa277f3467e6102cce7d35381a4e8256e2346f86c6ce83a0fd02f5586b7c9fe"
   },
   {
-    "file": "Assets/Resources/Approved/Sandstone.jpg",
-    "bytes": 242776,
-    "sha256": "0cac65461ba33003b8a27b03c2b87f3393a824a9a98036c4c8de6182a1449369"
-  },
-  {
     "file": "Assets/Resources/Approved/wood_planks_diff.jpg",
     "bytes": 609525,
     "sha256": "3b0669f683e4bf10f5a55a381cfa9669a7b8dfd921901829daa3b35acc2bbdec"
@@ -113,5 +118,10 @@
     "file": "Assets/Resources/Approved/wood_planks_rough.jpg",
     "bytes": 299757,
     "sha256": "1b7f115bfa25619b0a2db554eb1ab88a6fc5ef0b74ba4890611eae04d00b9829"
+  },
+  {
+    "file": "SourceArt/HighlandCalf/Bull.gltf",
+    "bytes": 3110158,
+    "sha256": "535da2992eb125d517725159a2eddeb520b72595bcb3021985fc43d2c84bff76"
   }
 ]

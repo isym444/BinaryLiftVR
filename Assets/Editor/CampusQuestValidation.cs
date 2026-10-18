@@ -53,7 +53,7 @@ namespace BinaryLift.EditorTools
                     Check(quest.State.Phase==QuestPhase.Briefing,"initial briefing");
                     Check(quest.World.Targets.Count==9,"nine interaction targets constructed");
                     Check(quest.World.MapNodes.Count==27,"route tree renders all nodes");
-                    Check(quest.World.Horse!=null && quest.World.Monkey!=null,"placeholder characters constructed");
+                    Check(quest.World.Horse!=null && quest.World.Calf!=null,"placeholder characters constructed");
                     quest.Activate(quest.World.BeginButton); stage=1;
                 }
                 else if(stage==1)

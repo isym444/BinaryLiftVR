@@ -1,4 +1,31 @@
-# Handoff - Campus detail pass (2026-10-18)
+# Handoff - Highland calf integration (2026-10-18)
+
+## Session 12 changes
+The user approved the revised calf and explicitly requested its integration everywhere,
+including poster art and all later appearances/copy. Session 11 approval restrictions
+below are historical. Hamish remains unused; this is the Quaternius-based adaptation.
+
+Tools/CalfPreview/CalfModel.js is shared by the browser and offline Export.mjs. The
+export hashes the original CC0 source and writes HighlandCalf.calf. The narrow editor
+importer creates a native prefab, one skinned mesh/material, vertex palette, 42 bones
+and all 13 source animation clips. No runtime parser or package is added. Keep native
+asset IDs/metas stable. Do not hand-edit the exported JSON. Rebuild with Prepare.ps1
+then node Tools/CalfPreview/Export.mjs. Shader: Resources/CalfCoat.shader.
+
+HighlandCalf owns clip crossfades, head proportions and mouth-attached funding.
+CampusWorld instantiates it for all controllers, including dormant historical modes.
+AdventureController uses grounded locomotion, faces actual travel, idles when stopped,
+transfers the envelope during theft, removes it on recovery and restores it on a new
+search. Replay resets pose/carrying. Tree topology, holds and progression are unchanged.
+The poster edit uses the built-in imagegen tool at the user's explicit request;
+see PosterGeneration-2026-10-18.md and AssetRegister.md for provenance.
+
+Validation: HighlandCalfValidation-2026-10-18.md. Native asset checks passed (18),
+logic tests passed, final game/editor compilation passed. Actual input covered exit,
+theft and first checkpoint only. The user prohibited further computer-controlled
+UI testing and requested direct push. Do not resume it without renewed consent.
+Next permitted QA: full AdventureValidation and headset playthrough. Neither was
+completed for this integration; do not claim headset performance certification.
 
 ## Session 11 changes
 CampusDetail adds pointed stone window frames, mullions, sills, guttering, a moving

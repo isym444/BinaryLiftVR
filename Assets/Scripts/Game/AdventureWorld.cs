@@ -62,8 +62,8 @@ namespace BinaryLift
             Art.SaddleTarget.enabled=false;Art.SaddleTarget.GetComponent<Collider>().enabled=false;
             Art.CompanionLine.text="YOUR CAMPUS COMPANION";
             Target(Art.Horse.Find("Head").gameObject,AdventureAction.GreetHorse,new Vector3(1.5f,1.5f,1.5f));
-            Art.Monkey.position=new Vector3(-1,.4f,4.2f);
-            Art.Monkey.Find("Stolen route notebook").gameObject.SetActive(false);
+            Art.Calf.position=new Vector3(-1,0,4.2f);
+            Art.CalfActor.ResetPose();
             silver=Art.Mat(new Color(.35f,.48f,.52f));bark=Art.Mat(new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.05f);
             var surface=Resources.Load<Shader>("CampusSurface");
             if(surface!=null){bark.shader=surface;bark.SetColor("_Color",new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.10f);bark.SetFloat("_Grain",1);}
@@ -78,12 +78,12 @@ namespace BinaryLift
             Art.Box("Grant paperwork",Notebook,Vector3.zero,new Vector3(.55f,.08f,.36f),Art.White);
             Art.Box("Grant envelope",Notebook,new Vector3(0,.06f,0),new Vector3(.58f,.045f,.39f),Art.Orange);
             Art.Box("Reading pedestal",transform,new Vector3(0,.52f,3.8f),new Vector3(.7f,1.04f,.5f),Art.Dark);
-            Art.Text("RESEARCH FUND\nNOT FOR BANANAS",Notebook,new Vector3(0,.35f,-.05f),.10f,Art.White.color);
+            Art.Text("RESEARCH FUND\nNOT FOR HAY",Notebook,new Vector3(0,.35f,-.05f),.10f,Art.White.color);
             Marker=Art.Root("Chase destination",transform);
             Art.Primitive("Waypoint ring",PrimitiveType.Cylinder,Marker,new Vector3(0,.035f,0),new Vector3(1.4f,.02f,1.4f),Art.Orange);
             var beacon=Art.Box("Waypoint beacon",Marker,new Vector3(0,.7f,0),new Vector3(.12f,1.4f,.12f),Art.Cyan);
             Target(beacon,AdventureAction.Waypoint,new Vector3(8,1.4f,8));
-            MarkerLabel=Art.Text("FOLLOW THE MONKEY",Marker,new Vector3(0,1.6f,0),.14f,Art.White.color);
+            MarkerLabel=Art.Text("FOLLOW THE CALF",Marker,new Vector3(0,1.6f,0),.14f,Art.White.color);
             Marker.gameObject.SetActive(false);
             MapLine=Art.Line("Roads becoming a tree",transform,Art.Cyan,.07f);MapLine.enabled=false;
             BuildCourse();
@@ -313,8 +313,8 @@ namespace BinaryLift
             ResearchCaption=ResearchButton.transform.parent.GetComponentInChildren<TextMesh>();ResearchCaption.characterSize=.075f*.15f;
             Button("REPLAY CLASSROOM",EndCard,new Vector3(.78f,.78f,1.6f),AdventureAction.Replay,1.4f);
             EndCard.gameObject.SetActive(false);Grips.gameObject.SetActive(false);Course.gameObject.SetActive(false);
-            QuizPanel=Art.Root("Optional monkey audit",Course);
-            Panel("AUDIT THE MONKEY", "",QuizPanel,new Vector3(0,1.43f,1.65f),new Vector2(3.15f,1.8f));
+            QuizPanel=Art.Root("Optional calf audit",Course);
+            Panel("AUDIT THE CALF", "",QuizPanel,new Vector3(0,1.43f,1.65f),new Vector2(3.15f,1.8f));
             QuizPrompt=Art.Text("",QuizPanel,new Vector3(0,1.68f,1.5f),.078f,Art.White.color);
             for(int i=0;i<2;i++)
             {

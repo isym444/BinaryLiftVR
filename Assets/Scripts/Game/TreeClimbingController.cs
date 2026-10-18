@@ -49,7 +49,7 @@ namespace BinaryLift
             World.Horse.position = new Vector3(2.7f,0,2.6f);
             World.CompanionLine.transform.position = new Vector3(2.7f,2.4f,2.6f);
             World.CompanionLine.text = "I WILL WATCH YOUR CONES.\nLook for orange among the branches.";
-            World.Monkey.position = Nodes[7] + new Vector3(.5f,.3f,.3f);
+            World.Calf.position = Nodes[7] + new Vector3(.5f,.3f,.3f);
             instruction = World.Text("GRAB THE BARK. PULL YOURSELF UP.\nAlternate hands. Rest whenever you need.\nFind the cones hidden in the forks.", transform,
                 new Vector3(-2,1.65f,4.5f), .10f, World.White.color);
             wrist = World.Text("", Rig.LeftHand, Vector3.zero, .065f, World.White.color);

@@ -34,7 +34,7 @@ Checksums and source byte sizes are recorded in ApprovedAssetHashes.json.
 
 ## Imported: Research Fund poster (AI-generated)
 - Tool: built-in image_gen, 2026-10-18; no external stock asset or university logo.
-- File: Assets/Resources/Approved/FundingPoster.png. Original output retained unchanged.
+- File: Assets/Resources/Approved/FundingPoster.png. Updated to the calf revision in Session 12; original retained in Git history.
 - Cost: no external purchase; generated through the current session. No claim about
   account billing or exclusive copyright. Not a CC0 stock asset.
 - Terms reference: https://openai.com/policies/terms-of-use/ (generation service terms;
@@ -42,7 +42,7 @@ Checksums and source byte sizes are recorded in ApprovedAssetHashes.json.
 - User preview approval: explicit reply, "can use this poster", on 2026-10-18.
 - Use: one framed decorative classroom notice. English gameplay prompts remain editable
   text, not baked into artwork. Unity maximum texture dimension 1024, mipmaps/compression.
-- Prompt: see PosterGeneration-2026-10-18.md. No uploaded reference image was used.
+- Prompt: see PosterGeneration-2026-10-18.md. The Session 12 edit references the previously approved poster.
 
 ## Horse candidate: review only
 - Quaternius Ultimate Animated Animal Pack, July 2021, CC0, free individual download.
@@ -110,7 +110,16 @@ and repeatable surfaces as Repeat. CampusPBR uses all three maps under Standard 
 No claim of measured headset performance. The new model imports disable animations
 and generated colliders; interaction colliders are deliberately authored in code.
 
-## Highland calf: not imported
+## Highland calf: approved and integrated in Session 12
+The user approved the revised calf on 2026-10-18 and requested replacement in the
+chase, later scenes, English copy and poster. Quaternius CC0 base and authored coat
+are now imported as Assets/Resources/Approved/HighlandCalf.calf. Original source and
+notice: SourceArt/HighlandCalf. Export: Tools/CalfPreview/Export.mjs. Native mesh has
+7,594 triangles, 42 bones, 13 clips, one material/submesh; palette replaces textures.
+No AI-generated 3D model or new runtime package. The following records describe
+previous candidates and decisions; they are superseded for the selected adaptation.
+
+### Earlier candidate history
 Session 11 candidate: Hamish The Highland Cow, Harvey.Eggleton, CC BY 4.0, free:
 https://sketchfab.com/3d-models/hamish-the-highland-cow-9852ee70678b402cb54dfb2f9396b6a0
 Public model metadata: 144 triangles, 96 vertices, two animation clips. Viewer lists
@@ -121,7 +130,7 @@ The actual rig, downloaded clip contents and Unity compatibility remain unverifi
 Any future use must credit the author, source and CC BY 4.0 and describe modifications.
 Seek an accessible download; do not bypass Sketchfab authentication or scrape its viewer.
 
-Alternative inspected and approved FOR ADAPTATION PREVIEW ONLY: Quaternius Bull,
+Session 11 alternative, initially approved for adaptation preview: Quaternius Bull,
 Ultimate Animated Animals, CC0, zero cost. Author source:
 https://quaternius.com/packs/ultimateanimatedanimals.html
 Creator file: https://drive.google.com/file/d/1M9gyr2UikIDW_Ynp-OfgiK-JjI7ziPd3/view
@@ -132,7 +141,7 @@ Idle, Idle_2, Idle_Headlow, Idle_HitReact1, Idle_HitReact2, Jump_toIdle, Walk.
 42 joints, 2,418 source triangles. This is a generic bull, not a publisher-supplied
 Highland calf. The authored adaptation adds coat locks, short horns, compact scale,
 larger head, shortened muzzle and warm materials. Original clips remain unchanged.
-User must review this second preview before game integration. No generated image.
+Second preview approved for integration in Session 12. No generated 3D imagery.
 Preview renderer: Three.js 0.160.1, MIT, downloaded only into ignored Logs; setup
 retains the library licence. The game gains no package dependency from this review.
 
@@ -142,8 +151,14 @@ User approved appearance for further inspection, not a final rigged replacement.
 Public metadata reports 46,812 faces and zero animation clips. Official download
 requires login (401); no authentication bypass attempted. Rig compatibility is unknown.
 The user chose environment and campus interactions first, while searching for a free
-animated calf. The current monkey therefore remains intentionally in this revision.
+animated calf. At the end of Session 10 the previous character was intentionally retained.
 Quaternius Ultimate Animated Animals lists an animated generic cow/bull, but its shape
-is not a shaggy Highland calf; it remains an unapproved alternative, not an imported
-replacement. Paid rigged offers and unapproved AI/static cows were excluded. A suitable
+is not a shaggy Highland calf; it was initially an unapproved alternative, later adapted and approved in Session 12. Paid rigged offers and unapproved AI/static cows were excluded. A suitable
 free animated Highland calf has not yet been verified. Keep this decision open.
+
+
+## Session 12 poster revision
+FundingPoster.png now shows the Highland calf carrying the funding, with NOT FOR HAY.
+User explicitly requested the replacement, including poster art. Edited with built-in
+image_gen from the previously approved poster and reviewed inline. No new external
+artist asset was purchased. Full prompt/output record: PosterGeneration-2026-10-18.md.

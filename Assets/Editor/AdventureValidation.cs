@@ -76,6 +76,9 @@ namespace BinaryLift.EditorTools
                 if(stage==0)
                 {
                     Check(game.State.Phase==AdventurePhase.Arrival,"arrival waits in classroom");
+                    var calf=game.World.Art.CalfActor;
+                    Check(calf!=null&&calf.Body!=null&&calf.Body.bones.Length==42,"approved calf rig instantiated");
+                    Check(!calf.Carrying&&calf.Motion.GetClipCount()==13,"calf starts without funding and retains source clips");
                     var surface=Resources.Load<Shader>("CampusSurface");
                     Check(surface!=null&&!ShaderUtil.ShaderHasError(surface),"campus surface shader compiles");
                     var pbr=Resources.Load<Shader>("CampusPBR");
@@ -87,7 +90,7 @@ namespace BinaryLift.EditorTools
                 else if(stage==1)
                 {
                     if(game.State.Phase==AdventurePhase.Chase&&lastCheckpoint!=game.Checkpoint)
-                    {lastCheckpoint=game.Checkpoint;Check(game.Activate(AdventureAction.Waypoint),"walk checkpoint "+lastCheckpoint);}
+                    {lastCheckpoint=game.Checkpoint;Check(game.World.Art.CalfActor.Carrying,"calf carries funding at checkpoint "+lastCheckpoint);Check(game.Activate(AdventureAction.Waypoint),"walk checkpoint "+lastCheckpoint);}
                     if(game.State.Phase==AdventurePhase.Choosing)
                     {Check(game.Checkpoint==game.CheckpointCount,"all checkpoints precede tree reveal");Check(game.World.Platforms.Count==35,"original 35-node structure");stage=2;}
                 }
@@ -130,6 +133,7 @@ namespace BinaryLift.EditorTools
                         Debug.Log("Results input fixture ready. Prior steps used direct methods; test optional quiz manually.");return;
                     }
                     Check(game.State.Phase==AdventurePhase.Complete,"single complete state");
+                    Check(!game.World.Art.CalfActor.Carrying,"funding leaves calf after recovery");
                     Check(game.State.Cones==3&&game.State.ReusedConnections==1,"two discovery cones and one reused route recovery");
                     Check(game.State.MissionLevels==game.State.RequiredLevels,"all target levels physically climbed");
                     Check(Resources.Load<Texture2D>("Approved/Sandstone")!=null&&Resources.Load<Texture2D>("Approved/FundingPoster")!=null,"approved artwork available");
@@ -156,6 +160,7 @@ namespace BinaryLift.EditorTools
                 else if(stage==6)
                 {
                     Check(game.State.RequiredLevels==3&&!game.State.CanChoose(4)&&game.State.CanChoose(2),"short target offers valid remembered route only");
+                    Check(game.World.Art.CalfActor.Carrying,"calf carries the new funding target");
                     Check(game.World.Controls.gameObject.activeSelf&&game.State.Cones==3,"repeat search retains cones and controls");
                     stage=7;
                 }
@@ -171,6 +176,7 @@ namespace BinaryLift.EditorTools
                     Check(game.State.Phase==AdventurePhase.Arrival&&game.State.TotalLevels==0&&game.State.Cones==0&&!game.State.Knows(game.State.StartNode,4)&&game.Rig.transform.position.z<0,"replay returns to clean classroom");
                     Check(UnityEngine.Object.FindObjectsByType<AdventureController>(FindObjectsSortMode.None).Length==1,"one adventure controller after replay");
                     Check(game.Life.State.Fill==0&&!game.Life.State.Stamped&&!game.Life.State.DrawerOpen&&!game.Life.Holding,"campus props reset with replay");
+                    Check(!game.World.Art.CalfActor.Carrying&&game.World.Notebook.gameObject.activeSelf&&game.World.Art.CalfActor.CurrentClip=="Idle","calf and funding reset with replay");
                     Finish();
                 }
             }
