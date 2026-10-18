@@ -12,7 +12,7 @@ namespace BinaryLift
     public sealed class XRRig : MonoBehaviour
     {
         /// <summary>Degrees to tilt the controller ray down (+) / up (-) from the grip pose. Tune on device.</summary>
-        public static float PointerPitch = 0f;
+        public static float PointerPitch = 70f;
 
         public Camera Head { get; private set; }
         public Transform LeftHand { get; private set; }
@@ -28,6 +28,9 @@ namespace BinaryLift
         public bool LeftGrip { get; private set; }
         public int SnapDirection { get; private set; }
 
+        // Rotation from each controller's tracked pose to its pointing direction. Reset by pressing the thumbstick.
+        Quaternion rightAim = Quaternion.identity, leftAim = Quaternion.identity;
+        bool prevRightClick, prevLeftClick;
         bool prevSelect, prevRestart, originSet;
         bool prevRightSelect, prevLeftSelect, turnLatched;
         float yaw, pitch;
@@ -67,6 +70,41 @@ namespace BinaryLift
             return hand.transform;
         }
 
+        void Start()
+        {
+            Quaternion fallback = Quaternion.Euler(PointerPitch, 0f, 0f);
+            rightAim = LoadAim("aimRight", fallback);
+            leftAim = LoadAim("aimLeft", fallback);
+        }
+
+        static Quaternion LoadAim(string key, Quaternion fallback)
+        {
+            if (!PlayerPrefs.HasKey(key + "X")) return fallback;
+            var q = new Quaternion(PlayerPrefs.GetFloat(key + "X"), PlayerPrefs.GetFloat(key + "Y"),
+                PlayerPrefs.GetFloat(key + "Z"), PlayerPrefs.GetFloat(key + "W"));
+            return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w > .5f ? q : fallback;
+        }
+
+        static void SaveAim(string key, Quaternion q)
+        {
+            PlayerPrefs.SetFloat(key + "X", q.x); PlayerPrefs.SetFloat(key + "Y", q.y);
+            PlayerPrefs.SetFloat(key + "Z", q.z); PlayerPrefs.SetFloat(key + "W", q.w);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Point the controller straight ahead (at the horizon) and call this: that pose becomes "pointer neutral".</summary>
+        public void CalibratePointer(bool right)
+        {
+            var hand = right ? RightHand : LeftHand;
+            Vector3 flat = Head.transform.forward;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < .01f) flat = Vector3.forward;
+            Quaternion aim = Quaternion.Inverse(hand.rotation) * Quaternion.LookRotation(flat.normalized, Vector3.up);
+            if (right) { rightAim = aim; SaveAim("aimRight", aim); }
+            else { leftAim = aim; SaveAim("aimLeft", aim); }
+            Pulse(right, .6f, .15f);
+        }
+
         void OnEnable() { Application.onBeforeRender += ApplyPoses; }
         void OnDisable() { Application.onBeforeRender -= ApplyPoses; }
 
@@ -95,6 +133,13 @@ namespace BinaryLift
                     turn = stick.x;
                 restart = Button(XRNode.RightHand, CommonUsages.secondaryButton)
                           || Button(XRNode.LeftHand, CommonUsages.secondaryButton);
+
+                bool rightClick = RightTracked && Button(XRNode.RightHand, CommonUsages.primary2DAxisClick);
+                bool leftClick = LeftTracked && Button(XRNode.LeftHand, CommonUsages.primary2DAxisClick);
+                if (rightClick && !prevRightClick) CalibratePointer(true);
+                if (leftClick && !prevLeftClick) CalibratePointer(false);
+                prevRightClick = rightClick;
+                prevLeftClick = leftClick;
             }
             else
             {
@@ -194,7 +239,7 @@ namespace BinaryLift
         {
             var hand = right ? RightHand : LeftHand;
             bool tracked = right ? RightTracked : LeftTracked;
-            Vector3 dir = hand.rotation * Quaternion.Euler(PointerPitch, 0f, 0f) * Vector3.forward;
+            Vector3 dir = hand.rotation * (right ? rightAim : leftAim) * Vector3.forward;
             ray = new Ray(hand.position, dir);
             return XRActive && tracked;
         }

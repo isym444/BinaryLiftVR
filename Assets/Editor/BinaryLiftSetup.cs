@@ -100,6 +100,8 @@ namespace BinaryLift.EditorTools
             PlayerSettings.companyName = "BinaryLift";
             PlayerSettings.productName = "Binary Lift VR";
             PlayerSettings.colorSpace = ColorSpace.Linear;
+            // CreatePrimitive makes colliders natively; engine stripping can remove those classes in release builds.
+            PlayerSettings.stripEngineCode = false;
 
             var android = NamedBuildTarget.Android;
             PlayerSettings.SetApplicationIdentifier(android, "com.binarylift.vr");
