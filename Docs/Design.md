@@ -23,10 +23,23 @@ quiz gates, automatic ascents or transitions into the historical race game.
    selection; then explore any remaining edges. With the default Mono seed, this is
    4 + 1 + 1 to the six-level target. Collect the third cone to recover the funding.
 6. Results show actual route decisions, levels, cones and reused connections. New
-   Target keeps memory and alternates five/six-level goals; Replay from Classroom
+   Target keeps memory and cycles through 3/5/7/4/6-level goals after the original
+   target; Replay from Classroom
    resets everything. Both remain in AdventureController.
 
 ## Algorithm contract
+
+After a recovery, RECORD NEW ROUTES offers unrecorded connections whose adjacent
+halves are already known. Construction is optional and cancellable. Newly explored
+edges can therefore become twos and then fours throughout subsequent searches.
+Results compare decisions with the minimum possible using memory available at the
+start of that search. Later research does not retroactively change the rating.
+This rewards applying knowledge without a timer or a physical climbing shortcut.
+
+OPTIONAL QUIZ offers three rotating audit topics: composition, avoiding overshoot,
+and actual ancestors. Wrong answers explain and allow retry. Skip always works.
+One correct answer earns one stamp per search; reopening cannot duplicate it.
+Quizzes never replace exploration, movement or cone collection.
 Connections are indexed by start node and power-of-two span. A two-edge connection
 requires both observed parent edges; a four-edge connection requires both adjacent
 stored two-edge connections. This is binary lifting, not binary search. Connections

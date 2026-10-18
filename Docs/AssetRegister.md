@@ -67,3 +67,11 @@ reference-only and were not copied into the repository.
 External assets remain free and require source/preview/licence approval before import.
 Limited AI assets are allowed, but each needs a labelled preview and approval. Preserve
 source, licence, cost, author/tool, approval, modifications and hardware checks here.
+
+## Project-authored surfaces added 2026-10-18
+
+CampusSurface.shader supplies procedural wood grain and paving seams. Rain-dark
+patches, warm windows, lamps, noticeboards and the branch apparatus use project
+geometry/materials. These additions contain no new external or AI-generated media.
+The shader uses Unity's built-in Standard lighting with SurfaceOutputStandard.
+Existing approved sandstone, furniture and poster provenance above still applies.

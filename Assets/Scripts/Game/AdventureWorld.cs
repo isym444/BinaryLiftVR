@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace BinaryLift
 {
-    public enum AdventureAction { Exit, Waypoint, OneLevel, TwoLevels, FourLevels, EightLevels, Grip, Cone, Replay, LinkStart, LinkEnd, NextTarget }
+    public enum AdventureAction { Exit, Waypoint, OneLevel, TwoLevels, FourLevels, EightLevels, Grip, Cone, Replay, LinkStart, LinkEnd, NextTarget, OpenQuiz, QuizA, QuizB, CloseQuiz, Coffee, Paperwork, GreetHorse, Research, CancelResearch }
     public sealed class AdventureTarget : MonoBehaviour
     {
         public AdventureAction Action;
@@ -27,6 +27,18 @@ namespace BinaryLift
         public TextMesh LoomTitle, LoomNodes, LoomHint, SearchTitle, MemoryLabel;
         public AdventureTarget LinkStart, LinkEnd;
         public LineRenderer Thread;
+        public Transform LinkMiddle;
+        public TextMesh[] AnchorLabels=new TextMesh[3];
+        public Transform QuizPanel;
+        public TextMesh QuizPrompt, QuizReply;
+        public readonly List<AdventureTarget> QuizAnswers=new List<AdventureTarget>();
+        public TextMesh[] QuizLabels=new TextMesh[2];
+        public Transform CoffeeProp, FormProp;
+        public AdventureTarget ResearchButton, ResearchBack;
+        public TextMesh ResearchCaption;
+        LineRenderer workshopPath;
+        Transform workshopMarkers;
+        readonly List<Transform> branchAnchors=new List<Transform>();
         readonly List<LineRenderer> remembered = new List<LineRenderer>();
         public Vector3[] CampusNodes;
         public readonly List<AdventureTarget> Choices=new List<AdventureTarget>();
@@ -49,9 +61,12 @@ namespace BinaryLift
             Art.transform.SetParent(transform,false);Art.Build(new CampusQuestState(),true);
             Art.SaddleTarget.enabled=false;Art.SaddleTarget.GetComponent<Collider>().enabled=false;
             Art.CompanionLine.text="YOUR CAMPUS COMPANION";
+            Target(Art.Horse.Find("Head").gameObject,AdventureAction.GreetHorse,new Vector3(1.5f,1.5f,1.5f));
             Art.Monkey.position=new Vector3(-1,.4f,4.2f);
             Art.Monkey.Find("Stolen route notebook").gameObject.SetActive(false);
             silver=Art.Mat(new Color(.35f,.48f,.52f));bark=Art.Mat(new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.05f);
+            var surface=Resources.Load<Shader>("CampusSurface");
+            if(surface!=null){bark.shader=surface;bark.SetColor("_Color",new Color(.20f,.15f,.10f));bark.SetFloat("_Glossiness",.10f);bark.SetFloat("_Grain",1);}
             BuildCourtyard();BuildClassroom();
             Intro=Art.Root("Classroom welcome",Classroom);
             Panel("CONE COURIER", "UNIVERSITY OF GLASGOW / AFTER HOURS\nExplore the classroom, then head outside.",Intro,new Vector3(0,2.85f,-1.18f),new Vector2(3.7f,1.1f));
@@ -110,11 +125,26 @@ namespace BinaryLift
                 Art.Box("Wet paving inlay",details,new Vector3((i%2==0?-.8f:.8f),.025f,z),new Vector3(.32f,.015f,.65f),i%4==0?Art.Orange:Art.Muted);
             }
             Panel("AFTER HOURS", "STUDY SPACES OPEN\nCOFFEE / CLOISTERS / ARCHIVE",details,new Vector3(4,1.7f,11),new Vector2(2.2f,1.2f));
+            var warm=Art.Mat(new Color(.95f,.65f,.30f),true);
+            var wet=Art.Mat(new Color(.14f,.23f,.27f));wet.SetFloat("_Glossiness",.88f);
+            for(int i=0;i<10;i++)
+            {
+                Art.Primitive("Rain-dark paving patch",PrimitiveType.Cylinder,details,new Vector3((i%2==0?-1:1)*2.3f,.012f,5+i*4),new Vector3(1.1f,.004f,.55f),wet);
+                Art.Box("Warm occupied window",details,new Vector3(-10.37f,2.6f,5+i*4),new Vector3(.08f,1.5f,.8f),warm);
+            }
+            for(int side=-1;side<=1;side+=2)
+            {
+                Art.Box("Campus lamp",details,new Vector3(side*3.7f,1.4f,9),new Vector3(.08f,2.8f,.08f),Art.Dark);
+                Art.Box("Lamp hood",details,new Vector3(side*3.7f,2.85f,9),new Vector3(.45f,.12f,.4f),Art.Dark);
+                Art.Box("Lamp diffuser",details,new Vector3(side*3.7f,2.77f,9),new Vector3(.32f,.05f,.30f),warm);
+            }
+            Panel("GILMOREHILL WEATHER", "LIGHT RAIN\nFollowed by ambitious rain.",details,new Vector3(-4,1.6f,10),new Vector2(2.3f,1.1f));
+            Panel("RESEARCH NOTICE", "Please do not feed the auditor.\nEspecially if the auditor has a tail.",details,new Vector3(4,1.7f,23),new Vector2(2.8f,1.2f));
         }
         void BuildClassroom()
         {
             Classroom=Art.Root("Computing classroom",transform);
-            Art.Box("Timber floor",Classroom,new Vector3(0,-.1f,-6),new Vector3(10,.2f,12),Art.Bronze);
+            Art.Box("Timber floor",Classroom,new Vector3(0,-.1f,-6),new Vector3(10,.2f,12),bark).GetComponent<Renderer>().receiveShadows=true;
             Art.Box("Ceiling",Classroom,new Vector3(0,3.5f,-6),new Vector3(10,.18f,12),Art.Dark);
             Art.Box("Rear wall",Classroom,new Vector3(0,1.7f,-12),new Vector3(10,3.4f,.2f),Art.Sand);
             for(int side=-1;side<=1;side+=2)
@@ -130,8 +160,15 @@ namespace BinaryLift
                     Art.Box("Screen glow",Classroom,new Vector3(side*2.8f,1.12f,z+.117f),new Vector3(.7f,.35f,.01f),Art.Cyan);
                     Art.Box("Keyboard",Classroom,new Vector3(side*2.8f,.82f,z-.18f),new Vector3(.55f,.03f,.19f),Art.Dark);
                     for(int line=0;line<4;line++)Art.Box("Code line",Classroom,new Vector3(side*2.8f-.07f,1.23f-line*.065f,z+.105f),new Vector3(.35f-line*.055f,.018f,.006f),Art.White);
-                    Art.Box("Lecture notes",Classroom,new Vector3(side*2.8f+.8f,.82f,z-.12f),new Vector3(.36f,.012f,.29f),Art.White);
-                    Art.Primitive("Coffee cup",PrimitiveType.Cylinder,Classroom,new Vector3(side*2.8f-.78f,.89f,z),new Vector3(.13f,.1f,.13f),Art.Orange);
+                    var notes=Art.Box("Lecture notes",Classroom,new Vector3(side*2.8f+.8f,.82f,z-.12f),new Vector3(.36f,.012f,.29f),Art.White);
+                    var cup=Art.Primitive("Coffee cup",PrimitiveType.Cylinder,Classroom,new Vector3(side*2.8f-.78f,.89f,z),new Vector3(.13f,.1f,.13f),Art.Orange);
+                    if(side==1&&z==-3)
+                    {
+                        CoffeeProp=cup.transform;FormProp=notes.transform;
+                        Target(cup,AdventureAction.Coffee,new Vector3(2,3,2));Target(notes,AdventureAction.Paperwork,new Vector3(1.4f,10,1.4f));
+                        Button("COFFEE STATUS",Classroom,new Vector3(2.0f,1.12f,-3.4f),AdventureAction.Coffee,.95f);
+                        Button("STAMP FORM",Classroom,new Vector3(3.8f,1.12f,-3.4f),AdventureAction.Paperwork,.95f);
+                    }
                     PlaceFurniture("chairDesk",new Vector3(side*2.8f,0,z-.85f),new Vector3(.60f,1.05f,.60f));
                 }
             }
@@ -207,15 +244,28 @@ namespace BinaryLift
             RouteTitle=Art.Text("",Controls,new Vector3(0,1.88f,1.65f),.095f,Art.White.color);
             MemoryLabel=Art.Text("",Controls,new Vector3(0,.72f,1.45f),.08f,Art.Cyan.color);
             Loom=Art.Root("Connection workshop",Course);
-            Panel("REMEMBER THE BRANCHES", "",Loom,new Vector3(0,1.35f,1.65f),new Vector2(3.1f,1.85f));
+            Panel("BRANCH MEMORY WORKBENCH", "",Loom,new Vector3(0,1.93f,1.65f),new Vector2(3.1f,.55f));
             LoomTitle=Art.Text("",Loom,new Vector3(0,1.71f,1.52f),.105f,Art.Cyan.color);
-            LoomNodes=Art.Text("",Loom,new Vector3(0,1.4f,1.50f),.09f,Art.White.color);
+            LoomNodes=Art.Text("",Loom,new Vector3(0,1.48f,1.50f),.075f,Art.White.color);
             LoomHint=Art.Text("",Loom,new Vector3(0,.68f,1.50f),.085f,Art.White.color);
             var plug=Art.Primitive("Memory connector",PrimitiveType.Sphere,Loom,new Vector3(-.85f,1.05f,1.40f),Vector3.one*.24f,Art.Orange);
             LinkStart=Target(plug,AdventureAction.LinkStart,Vector3.one*1.6f);
             var socket=Art.Primitive("Memory socket",PrimitiveType.Cube,Loom,new Vector3(.85f,1.05f,1.40f),Vector3.one*.24f,Art.Cyan);
             LinkEnd=Target(socket,AdventureAction.LinkEnd,Vector3.one*1.6f);
-            Thread=Art.Line("Memory thread",transform,Art.Orange,.025f);Thread.positionCount=2;Thread.enabled=false;
+            LinkMiddle=Art.Primitive("Shared ancestor anchor",PrimitiveType.Sphere,Loom,new Vector3(0,1.22f,1.42f),Vector3.one*.13f,Art.White).transform;
+            for(int i=0;i<3;i++)
+            {
+                Vector3 p=new Vector3((i-1)*.85f,i==1?1.22f:1.05f,1.45f);
+                Beam(Loom,p-Vector3.up*.20f,p,.045f,bark);
+                AnchorLabels[i]=Art.Text("",Loom,p+new Vector3(0,-.25f,-.08f),.07f,Art.White.color);
+            }
+            Beam(Loom,new Vector3(-1,.76f,1.52f),new Vector3(1,.76f,1.52f),.065f,bark);
+            Art.Box("Workbench instruction strip",Loom,new Vector3(0,.59f,1.6f),new Vector3(3,.27f,.04f),Art.Dark);
+            ResearchBack=Button("BACK",Loom,new Vector3(1.25f,1.46f,1.45f),AdventureAction.CancelResearch,.45f);
+            workshopPath=Art.Line("Two remembered branch segments",Loom,Art.Cyan,.014f);workshopPath.positionCount=3;
+            workshopMarkers=Art.Root("Actual ancestor anchors",Course);
+            for(int i=0;i<3;i++)branchAnchors.Add(Art.Primitive("Ancestor anchor "+i,PrimitiveType.Sphere,workshopMarkers,Vector3.zero,Vector3.one*.18f,i==1?Art.White:Art.Orange).transform);
+            Thread=Art.Line("Memory thread",transform,Art.Orange,.025f);Thread.positionCount=3;Thread.enabled=false;
             NewSearch=Art.Root("New funding target",Course);
             Panel("CONNECTIONS READY", "",NewSearch,new Vector3(0,1.8f,1.65f),new Vector2(3.5f,1.5f));
             SearchTitle=Art.Text("",NewSearch,new Vector3(0,1.65f,1.52f),.10f,Art.White.color);
@@ -227,11 +277,25 @@ namespace BinaryLift
             ConeTarget=Target(Cone.gameObject,AdventureAction.Cone,new Vector3(.65f,.75f,.65f));ConeTarget.GetComponent<BoxCollider>().center=Vector3.up*.15f;
             Art.Text("RECOVER CONE",Cone,new Vector3(0,.65f,0),.10f,Art.White.color);
             EndCard=Art.Root("Journey results",Course);
-            Panel("ROUTE MEMORY RESTORED", "",EndCard,new Vector3(0,2,2),new Vector2(3.8f,1.3f));
+            Panel("ROUTE MEMORY RESTORED", "",EndCard,new Vector3(0,1.92f,2),new Vector2(3.8f,1.3f));
             Outcome=Art.Text("",EndCard,new Vector3(0,1.9f,1.88f),.11f,Art.White.color);
-            Button("NEW TARGET / KEEP MEMORY",EndCard,new Vector3(0,1.08f,1.6f),AdventureAction.NextTarget,2.9f);
-            Button("REPLAY FROM CLASSROOM",EndCard,new Vector3(0,.62f,1.6f),AdventureAction.Replay,2.9f);
+            Button("NEW TARGET",EndCard,new Vector3(-.78f,1.08f,1.6f),AdventureAction.NextTarget,1.4f);
+            Button("OPTIONAL QUIZ",EndCard,new Vector3(.78f,1.08f,1.6f),AdventureAction.OpenQuiz,1.4f);
+            ResearchButton=Button("RECORD NEW ROUTES",EndCard,new Vector3(-.78f,.78f,1.6f),AdventureAction.Research,1.4f);
+            ResearchCaption=ResearchButton.transform.parent.GetComponentInChildren<TextMesh>();ResearchCaption.characterSize=.075f*.15f;
+            Button("REPLAY CLASSROOM",EndCard,new Vector3(.78f,.78f,1.6f),AdventureAction.Replay,1.4f);
             EndCard.gameObject.SetActive(false);Grips.gameObject.SetActive(false);Course.gameObject.SetActive(false);
+            QuizPanel=Art.Root("Optional monkey audit",Course);
+            Panel("AUDIT THE MONKEY", "",QuizPanel,new Vector3(0,1.43f,1.65f),new Vector2(3.15f,1.8f));
+            QuizPrompt=Art.Text("",QuizPanel,new Vector3(0,1.68f,1.5f),.078f,Art.White.color);
+            for(int i=0;i<2;i++)
+            {
+                var answer=Button("ANSWER",QuizPanel,new Vector3((i==0?-.72f:.72f),1.26f,1.5f),i==0?AdventureAction.QuizA:AdventureAction.QuizB,1.25f);
+                QuizAnswers.Add(answer);QuizLabels[i]=answer.transform.parent.GetComponentInChildren<TextMesh>();
+            }
+            QuizReply=Art.Text("",QuizPanel,new Vector3(0,.88f,1.49f),.068f,Art.Cyan.color);
+            Button("BACK TO THE TREE / SKIP",QuizPanel,new Vector3(0,.58f,1.5f),AdventureAction.CloseQuiz,2.75f);
+            QuizPanel.gameObject.SetActive(false);
         }
         void PlaceFurniture(string resource,Vector3 feet,Vector3 size)
         {
@@ -258,6 +322,18 @@ namespace BinaryLift
                 for(int j=0;j<=span;j++)line.SetPosition(j,CourseOrigin+Positions[model.Tree.KthAncestor(n,j)]+new Vector3(span==4?-.24f:.24f,.12f,-.15f));
                 line.gameObject.SetActive(Course.gameObject.activeSelf);remembered.Add(line);
             }
+        }
+        public void RefreshWorkshop(AdventureState model)
+        {
+            workshopMarkers.gameObject.SetActive(model.Phase==AdventurePhase.Weaving);
+            if(model.Phase!=AdventurePhase.Weaving)return;
+            int[] nodes={model.PendingStart,model.PendingMiddle,model.PendingEnd};
+            for(int i=0;i<3;i++)
+            {
+                branchAnchors[i].localPosition=Positions[nodes[i]]+new Vector3(0,.12f,-.18f);
+                AnchorLabels[i].text=(i==1?"VIA ":i==0?"FROM ":"TO ")+nodes[i];
+            }
+            workshopPath.SetPosition(0,LinkStart.transform.position);workshopPath.SetPosition(1,LinkMiddle.position);workshopPath.SetPosition(2,LinkEnd.transform.position);
         }
         public void BuildGrips(AdventureState model,float headHeight)
         {

@@ -1,5 +1,16 @@
 # Handoff - Funding and route memory (2026-10-18)
 
+## Three-cycle improvement contracts
+See ImprovementCycles-2026-10-18.md for per-cycle changes, evidence and decisions.
+Cycle 1 adds procedural campus surfaces, an open branch connection workbench and
+post-introduction targets at 3/5/7/4/6 levels. Preserve source-node-specific memory.
+The user now permits small optional algorithm quizzes; do not gate the core climb.
+Cycle 2 adds a Quiz phase, entered only from Complete and returning there on skip.
+AnswerQuiz permits retries, awards one ResearchStamp per search and preserves all
+climb/cone counters. The next target resets QuizSolved but keeps earned stamps.
+Coffee/Paperwork are arrival-only interactions; GreetHorse is available while resting.
+Optional audits cover composition, remaining-distance bounds and actual ancestors.
+
 ## Current scope
 Single AdventureController journey: classroom exploration, funding theft, seven campus
 waypoints, aerial map reveal, original tree, four individual exploration edges, two
@@ -24,8 +35,16 @@ external asset is approved by implication. University photographs remain referen
   Weave constructs the pending path; after the second two it requests four-edge
   composition. Retargeting follows that composition. This is binary lifting.
 - NextTarget preserves tree and memory, returns to StartNode, and chooses the original
-  final goal first. Further searches alternate five/six-level goals. They do not load
+  final goal first. Further searches cycle through 3/5/7/4/6-level goals. They do not load
   another controller, tree topology or game.
+- BeginResearch is Complete-only and offers a new connection only when its two
+  adjacent halves exist. Researching distinguishes optional construction from tutorial
+  Weaving. CancelResearch changes no memory; successful research returns to Complete.
+- BestRouteDecisions is frozen at NextTarget using MinimumDecisions over actual
+  source-node memory. EfficientRecoveries counts matching routes. Further research
+  must never rewrite that search's rating. ResearchedConnections counts new builds.
+- Optional Quiz is Complete-only, always skippable and awards at most one stamp per
+  search. QuizSolved resets on NextTarget. Quiz must not mutate climbing or cone state.
 - Pull requires finite input in (0,0.2], accumulates 0.65 per physical edge, and follows
   horizontal and vertical ancestor displacement. No idle or selection-time ascent.
 - AdventureController owns input, transitions, animation and local event logs.
@@ -40,6 +59,16 @@ external asset is approved by implication. University photographs remain referen
   generated colliders and embedded materials. No new dependency or package was added.
 
 ## Validation
+Current three-cycle revision: all three Unity reports pass. Actual mouse input passed
+classroom/chase/map, four single exploration edges, two/four composition, six-level
+4+1+1 recovery, research cancel/build, another four composition, a three-level 2+1
+recovery, quiz wrong/correct/back and clean replay at 01:14:47 UTC. See
+ThreeCyclesManual-2026-10-18.log, Cycle3-Smoke-2026-10-18.txt and AdventureValidation.md.
+Five connections persisted into the repeat search. The research benchmark remains
+frozen for the completed mission. Unity was stopped after successful validation.
+Procedural surfaces and quiz/research controls still need target-headset profiling.
+
+Previous baseline evidence:
 Pure logic: Scripts/Test-Logic.ps1 reports ALL PASSED, including 40 adventure seeds,
 node-specific memory, composition, partial edges, effort invariants, original topology,
 repeated searches and reset. Existing tree/race/layout regression checks remain.

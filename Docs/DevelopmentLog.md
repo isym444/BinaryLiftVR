@@ -391,3 +391,54 @@ and .cursor data remain outside this contribution. Publication target is Fexas o
 Final integration passed, including the new-target viewport-margin check. Trimmed
 generated metadata whitespace. Git attributes preserve original FBX/licence bytes
 without normalizing vendor formatting; approved asset checksums remain unchanged.
+
+## Session 09 - Three autonomous improvement cycles (2026-10-18)
+User requested three completed cycles, prioritising playability, humour, interaction
+and content. Optional algorithm quizzes are now explicitly allowed. No further opinion
+check is needed. Continue on Fexas; preserve unrelated XR/packages/settings and .cursor.
+Cycle 1: richer campus surfaces/details, branch-mounted connection apparatus, varied
+funding targets. Validate, inspect the result, then choose cycle 2 from that evidence.
+Use approved art and project-authored geometry/shaders; no additional external imports.
+
+### Cycle 1 completed
+Added procedural campus surfaces, rain-dark paving, warm windows, humorous notices,
+an open three-anchor workbench and varied 3/5/7/4/6 funding targets. Logic passed
+40 seeds. Fixed the Standard shader output signature after visual inspection exposed
+a white fallback. Final Unity integration PASS at 00:52 UTC; real workbench drag and
+classroom reset passed. Evidence and the cycle 2 rationale are in ImprovementCycles.
+
+
+### Cycle 2 implementation
+The cycle 1 review identified weak explanatory feedback and passive classroom props.
+Added optional, retryable quizzes with tree-derived answers, non-farmable stamps,
+coffee/form interactions, horse nods and humorous prompts. No quiz gates the climb.
+Logic tests passed for phase guards, skip, wrong/correct answers, replay prevention,
+unchanged physical progress and actual ancestor answers across forty seeds. UI checks
+and complete integration are next. No new external asset was imported.
+
+### Cycle 2 completed / Cycle 3 scope
+Cycle 2 full integration PASS at 00:59 UTC. Actual quiz wrong/correct/back flow and
+coffee/form clicks passed; raised quiz exit for margin. Cycle 3 now adds continued
+route research, fair decision-efficiency feedback and replay progression. No automatic
+climb, forced quiz gate, new topology or second-game transition is permitted.
+
+### Cycle 3 implementation and layout repair
+Added optional research/cancellation with real adjacent prerequisites, finite unique
+connections, mission-start decision benchmarks and efficient-recovery counts. Forty
+seed logic tests passed, including exhaustive benchmark comparison and research
+exhaustion. Runtime integration passed the new gameplay flow but found the results
+heading too close to the upper viewport edge. Lowered the heading, moved the lower
+button row upward, and shortened the non-optimal route message. Final rerun follows.
+
+### Cycle 3 completed
+Final Unity integration PASS at 01:07 UTC. Full actual mouse walkthrough passed
+through two funding searches, five learned connections, optional research cancellation,
+quiz retry/stamp and clean classroom replay at 01:14:47 UTC. Stopped Play afterward.
+Saved ThreeCyclesManual-2026-10-18.log, all three smoke reports and six selected
+screenshots. Updated README, Design, Handoff, AssetRegister, VRValidation and
+AdventureValidation. No new external/generated media or package dependency was added.
+
+Publication scope: gameplay/controller/world/state, editor validation, logic tests,
+CampusSurface shader/meta and English documentation/evidence. Preserve and exclude
+the existing XR/package/project-setting edits and .cursor. Destination remains Fexas;
+remote Fexas was 495c764 and main was 15279ec before publication. No force push.

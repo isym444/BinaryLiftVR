@@ -17,7 +17,7 @@ Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
 - Follow each orange waypoint by walking or clicking its beacon. WASD cancels auto-walk.
 - Start with 1 LEVEL. Explore two edges, collect a cone, then drag the orange memory
   plug to the cyan socket (or click each). Explore two more edges and repeat; join
-  the two remembered routes into a four-edge connection. No quiz is involved.
+  the two remembered routes into a four-edge connection. Climbing has no quiz gate.
 - FOLLOW THE FUNDING returns to the same tree start with memory intact and a new goal.
   Hover available 1/2/4 LEVELS to preview; click to select. Memory is specific to nodes.
 - Click and drag an orange branch hold downward. Release to rest, then regrip.
@@ -26,15 +26,26 @@ Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
 - Grey connections are undiscovered at this node or pass the goal. This slice stops
   at four-level memory. Seed 13 explores four levels, then revisits the start for the
   original six-level goal: four remembered levels plus two individual edges.
-- Recover the final cone. NEW TARGET keeps memory and alternates five/six-level goals;
+- Recover the final cone. NEW TARGET keeps memory and cycles 3/5/7/4/6-level goals;
   REPLAY FROM CLASSROOM clears progress. Neither launches the legacy game.
 - R restarts with a fade. There is no chase timer or falling penalty.
+- OPTIONAL QUIZ at results opens a short monkey-auditing challenge. Wrong answers
+  explain the concept and permit retry; BACK / SKIP always returns to results. One
+  audit stamp can be earned per search. Stamps never substitute for physical climbing.
+- In the classroom, click COFFEE STATUS or STAMP FORM; point at the horse's head to
+  greet the companion. VR uses the same trigger-ray targets.
+- RECORD NEW ROUTES at results builds further twos/fours from the edges you explored.
+  BACK cancels safely. Research keeps existing memory and returns to the same results.
+  MEMORY BEST compares decisions with the connections available at mission start.
+  A six-level route can improve from 4+1+1 to 4+2 after recording the final pair;
+  all six levels still require manual climbing.
 
 ## VR controls and presentation
 Left stick moves; either controller trigger selects. Grip near an orange hold and pull
 down to climb; alternate hands, release to rest. Two-hand input is averaged. Right stick
 snaps when no hold is held; B/Y restarts. Grip near the cone or select it with a ray.
 Select the orange plug and then the cyan socket to compose a memory connection.
+The branch workbench shows FROM / VIA / TO anchors and animates the shared middle node.
 Desktop reveal raises and tilts the camera. VR fades to a stationary overlook, preserving
 tracked head rotation; look down at the campus. Map/tree changes use a fade.
 No forced head bob, camera roll or falling. Device comfort and reach still need testing.

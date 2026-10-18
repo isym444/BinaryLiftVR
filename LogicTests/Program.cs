@@ -51,6 +51,8 @@ static class Program
             var s=new AdventureState(seed);
             Check(string.Join(",",s.Tree.Parent)==string.Join(",",TreeGenerator.Generate(seed,16,18).Parent),"original topology retained");
             Check(!s.BeginChase()&&!s.Choose(1)&&!s.EnterTree()&&!s.Weave()&&!s.NextTarget(),"phases cannot be skipped");
+            Check(!s.OpenQuiz()&&!s.AnswerQuiz(0),"quiz cannot skip the adventure");
+            Check(!s.BeginResearch()&&!s.CancelResearch()&&s.MinimumDecisions(4)==4,"no research or shortcut before discovery");
             Check(s.ExitClassroom()&&!s.ExitClassroom()&&s.BeginChase()&&!s.BeginChase(),"exit and theft once");
             Check(s.ReachGate()&&s.EnterTree(),"map before tree");
             Check(!s.CanChoose(2)&&!s.CanChoose(4)&&!s.Choose(3)&&!s.Choose(8),"no global upgrades before exploration");
@@ -74,13 +76,60 @@ static class Program
             while(s.Remaining>0)ClimbSelection(s,1);
             Check(s.CollectCone()&&!s.CollectCone()&&s.Phase==AdventurePhase.Complete,"single terminal results");
             Check(s.Cones==3&&s.ReusedConnections==1,"recovery and reuse recorded");
+            Check(s.EfficientRecoveries==1&&s.BestRouteDecisions==s.MissionSelections,"efficiency is based on available memory, not ideal unseen routes");
+            CheckQuiz(s);
+            BuildAllResearch(s);
             Check(Math.Abs(s.TotalPull-s.TotalLevels*AdventureState.PullPerEdge)<.003f,"no upgrade bypasses physical effort");
             Check(s.NextTarget()&&s.Knows(s.StartNode,4)&&s.Cones==3,"another target keeps learned routes");
-            ClimbSelection(s,4);
-            while(s.Remaining>0){Check(!s.CanChoose(4),"overshoot refused");ClimbSelection(s,1);}
+            Check(s.RequiredLevels==3&&!s.CanChoose(4),"short target rejects overshooting four");
+            ClimbSelection(s,2);ClimbSelection(s,1);
             Check(s.CollectCone()&&s.Cones==4,"repeat search completes in same game");
+            foreach(int distance in new[]{5,7,4,6,3})
+            {
+                Check(s.NextTarget()&&s.RequiredLevels==distance&&s.Goal>=0,"varied targets stay within original ancestry");
+                while(s.Remaining>0)ClimbSelection(s,s.CanChoose(4)?4:s.CanChoose(2)?2:1);
+                Check(s.CollectCone(),"varied funding target recoverable");
+                CheckQuiz(s);
+                BuildAllResearch(s);
+            }
             Check(new AdventureState(seed).Cones==0&&!new AdventureState(seed).Knows(s.StartNode,4),"classroom restart resets memory");
         }
+    }
+
+    static void CheckQuiz(AdventureState s)
+    {
+        int cones=s.Cones,levels=s.TotalLevels,stamps=s.ResearchStamps;
+        Check(s.OpenQuiz()&&s.CloseQuiz()&&s.ResearchStamps==stamps,"optional quiz can be skipped without penalty");
+        Check(s.OpenQuiz()&&!s.NextTarget()&&!s.AnswerQuiz(-1)&&!s.AnswerQuiz(2),"quiz has bounded answers and safe phase guards");
+        Check(s.AnswerQuiz(1-s.CorrectQuizAnswer)&&!s.QuizSolved&&s.ResearchStamps==stamps&&s.QuizFeedback.Length>30,"wrong answer explains and allows retry");
+        Check(s.AnswerQuiz(s.CorrectQuizAnswer)&&s.QuizSolved&&s.ResearchStamps==stamps+1,"correct retry earns one stamp");
+        Check(!s.AnswerQuiz(s.CorrectQuizAnswer)&&s.CloseQuiz()&&s.OpenQuiz()&&!s.AnswerQuiz(s.CorrectQuizAnswer),"reopening cannot farm stamps");
+        Check(s.CloseQuiz()&&s.Cones==cones&&s.TotalLevels==levels,"quiz never changes climb or cones");
+        if(s.QuizTopic==2)Check(s.QuizOption(0)=="NODE "+s.Tree.Parent[s.Tree.Parent[s.StartNode]],"ancestor quiz uses the actual tree");
+    }
+    static int ReferenceMinimum(AdventureState s,int node,int remaining)
+    {
+        if(remaining==0)return 0;
+        int best=remaining;
+        foreach(int span in new[]{1,2,4})if(span<=remaining&&(span==1||s.Knows(node,span)))best=Math.Min(best,1+ReferenceMinimum(s,s.Tree.KthAncestor(node,span),remaining-span));
+        return best;
+    }
+    static void BuildAllResearch(AdventureState s)
+    {
+        int levels=s.TotalLevels,cones=s.Cones,guard=0,frozenBest=s.BestRouteDecisions;
+        while(s.CanResearch&&guard++<s.Tree.Count*2)
+        {
+            int count=s.ConnectionCount;
+            Check(s.BeginResearch()&&s.CancelResearch()&&s.ConnectionCount==count,"research can be cancelled without mutation");
+            Check(s.BeginResearch()&&s.Knows(s.PendingStart,s.PendingSpan/2)&&s.Knows(s.PendingMiddle,s.PendingSpan/2),"research requires actual adjacent memories");
+            int from=s.PendingStart,span=s.PendingSpan;
+            Check(s.Weave()&&s.Knows(from,span)&&s.ConnectionCount==count+1&&s.Phase==AdventurePhase.Complete,"optional research returns to same results");
+            Check(!s.Weave(),"no duplicate research reward");
+        }
+        Check(guard<s.Tree.Count*2&&!s.BeginResearch(),"research exhausts a finite set");
+        Check(s.TotalLevels==levels&&s.Cones==cones&&s.BestRouteDecisions==frozenBest,"research preserves physical progress and historical score");
+        for(int k=0;k<=s.Tree.Depth[s.StartNode];k++)Check(s.MinimumDecisions(k)==ReferenceMinimum(s,s.StartNode,k),"decision benchmark matches exhaustive routes");
+        if(s.OriginalLevels>=6)Check(s.MinimumDecisions(6)==2,"new knowledge makes a six-level 4+2 route possible");
     }
 
     static void PhysicalClimbProgression()

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 namespace BinaryLift
 {
-    public enum AdventurePhase { Arrival, Courtyard, Chase, Mapping, Choosing, Climbing, Clue, Weaving, Retargeting, Complete }
+    public enum AdventurePhase { Arrival, Courtyard, Chase, Mapping, Choosing, Climbing, Clue, Weaving, Retargeting, Complete, Quiz }
     /// <summary>Physical exploration teaches node-specific binary-lifting connections.</summary>
     public sealed class AdventureState
     {
@@ -24,6 +24,33 @@ namespace BinaryLift
         public int Cones { get; private set; }
         public int Searches { get; private set; }
         public int ReusedConnections { get; private set; }
+        public int ResearchStamps { get; private set; }
+        public int BestRouteDecisions { get; private set; } = 4;
+        public int EfficientRecoveries { get; private set; }
+        public int ResearchedConnections { get; private set; }
+        public bool Researching { get; private set; }
+        public int ConnectionCount => connections.Count;
+        public bool CanResearch { get { int from,span;return Phase==AdventurePhase.Complete&&FindResearch(out from,out span); } }
+        public bool QuizSolved { get; private set; }
+        public string QuizFeedback { get; private set; } = "Optional. No grades, no banana-based penalties.";
+        public int QuizTopic => Math.Max(0,Searches-1)%3;
+        public int CorrectQuizAnswer => QuizTopic==1?1:0;
+        public string QuizQuestion => QuizTopic==0?"The monkey claims 2 + 2 makes eight levels.\nWhat do two adjacent two-level routes make?":QuizTopic==1?"Three levels remain. You know routes of 1, 2 and 4.\nWhich longest route can fit without passing the goal?":"Start at node "+StartNode+". Follow two parent edges.\nWhich node receives the funding envelope?";
+        public string QuizOption(int index)
+        {
+            if(QuizTopic==0)return index==0?"4 LEVELS":"8 LEVELS";
+            if(QuizTopic==1)return index==0?"4 LEVELS":"2 LEVELS";
+            return "NODE "+Tree.KthAncestor(StartNode,index==0?2:1);
+        }
+        public bool OpenQuiz(){if(Phase!=AdventurePhase.Complete)return false;Phase=AdventurePhase.Quiz;return true;}
+        public bool CloseQuiz(){if(Phase!=AdventurePhase.Quiz)return false;Phase=AdventurePhase.Complete;return true;}
+        public bool AnswerQuiz(int index)
+        {
+            if(Phase!=AdventurePhase.Quiz||QuizSolved||index<0||index>1)return false;
+            string explanation=QuizTopic==0?"Two adjacent twos cover FOUR parent edges.":QuizTopic==1?"Two fits inside three; four passes the target.":"parent(parent("+StartNode+")) = "+Tree.KthAncestor(StartNode,2)+".";
+            if(index!=CorrectQuizAnswer){QuizFeedback="The monkey's accounting needs work. Try again.\n"+explanation;return true;}
+            QuizSolved=true;ResearchStamps++;QuizFeedback="AUDIT STAMP EARNED. Banana fraud prevented.\n"+explanation;return true;
+        }
         public int PendingSpan { get; private set; }
         public int PendingStart { get; private set; } = -1;
         public int PendingMiddle => PendingStart < 0 ? -1 : Tree.KthAncestor(PendingStart, PendingSpan / 2);
@@ -80,7 +107,7 @@ namespace BinaryLift
         {
             if (Phase != AdventurePhase.Clue) return false;
             Cones++;
-            if (Searches > 0) { Phase = AdventurePhase.Complete; return true; }
+            if (Searches > 0) { if(MissionSelections==BestRouteDecisions)EfficientRecoveries++;Phase = AdventurePhase.Complete; return true; }
             PendingSpan = 2; PendingStart = Tree.KthAncestor(StartNode, MissionLevels - 2);
             Phase = AdventurePhase.Weaving; return true;
         }
@@ -90,16 +117,52 @@ namespace BinaryLift
                 !Knows(PendingStart, PendingSpan / 2) || !Knows(PendingMiddle, PendingSpan / 2) ||
                 Knows(PendingStart, PendingSpan)) return false;
             connections.Add(PendingStart * 8 + PendingSpan);
+            if(Researching){ResearchedConnections++;Researching=false;PendingSpan=0;PendingStart=-1;Phase=AdventurePhase.Complete;return true;}
             if (PendingSpan == 2 && MissionLevels == 4) { PendingSpan = 4; PendingStart = StartNode; }
             else { PendingSpan = 0; PendingStart = -1; Phase = MissionLevels == 4 ? AdventurePhase.Retargeting : AdventurePhase.Choosing; }
             return true;
         }
-        public int NextTargetLevels => Searches == 0 ? OriginalLevels : (RequiredLevels == 5 ? 6 : 5);
+        static readonly int[] targetLevels = {3,5,7,4,6};
+        static readonly string[] fundingNames = {"FIELDWORK FUND", "COFFEE CONTINGENCY", "LIBRARY LATE FEES", "BANANA-FREE EQUIPMENT", "CLOISTER WIFI FUND", "RAIN RESEARCH GRANT"};
+        public string FundingName => Searches==0 ? "ROUTE RESEARCH" : fundingNames[(Searches-1)%fundingNames.Length];
+        public string NextFundingName => fundingNames[Searches%fundingNames.Length];
+        public int NextTargetLevels => Searches == 0 ? OriginalLevels : targetLevels[(Searches-1)%targetLevels.Length];
+        bool FindResearch(out int from,out int span)
+        {
+            // Prefer a composable four; otherwise record the highest newly explored pair.
+            foreach(int width in new[]{4,2})for(int distance=Tree.Depth[StartNode];distance>=0;distance--)
+            {
+                int node=Tree.KthAncestor(StartNode,distance),middle=Tree.KthAncestor(node,width/2);
+                if(!Knows(node,width)&&Knows(node,width/2)&&Knows(middle,width/2))
+                {from=node;span=width;return true;}
+            }
+            from=-1;span=0;return false;
+        }
+        public bool BeginResearch()
+        {
+            int from,span;if(Phase!=AdventurePhase.Complete||!FindResearch(out from,out span))return false;
+            PendingStart=from;PendingSpan=span;Researching=true;Phase=AdventurePhase.Weaving;return true;
+        }
+        public bool CancelResearch()
+        {
+            if(!Researching||Phase!=AdventurePhase.Weaving)return false;
+            Researching=false;PendingStart=-1;PendingSpan=0;Phase=AdventurePhase.Complete;return true;
+        }
+        public int MinimumDecisions(int levels)
+        {
+            if(levels<0||levels>Tree.Depth[StartNode])return -1;
+            var cost=new int[levels+1];for(int i=1;i<=levels;i++)cost[i]=levels+1;
+            for(int i=0;i<levels;i++)foreach(int span in new[]{1,2,4})
+                if(i+span<=levels&&(span==1||Knows(Tree.KthAncestor(StartNode,i),span)))cost[i+span]=Math.Min(cost[i+span],cost[i]+1);
+            return cost[levels];
+        }
         public bool NextTarget()
         {
             if (Phase != AdventurePhase.Retargeting && Phase != AdventurePhase.Complete) return false;
             RequiredLevels = NextTargetLevels; Goal = Tree.KthAncestor(StartNode, RequiredLevels);
+            BestRouteDecisions=MinimumDecisions(RequiredLevels);
             Searches++; Node = StartNode; MissionLevels = MissionSelections = CompletedInSelection = Span = 0;
+            QuizSolved=false;QuizFeedback="Optional. No grades, no banana-based penalties.";
             Destination = -1; EdgeProgress = 0; Phase = AdventurePhase.Choosing; return true;
         }
     }

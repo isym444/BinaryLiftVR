@@ -1,4 +1,43 @@
-# Learning-loop validation - current revision 2026-10-18
+# Three-cycle validation - current revision 2026-10-18
+
+## Current revision evidence
+All three optimization cycles are complete. Scripts/Test-Logic.ps1: ALL PASSED,
+including forty seeds, varied target distances, optional quizzes, unique stamps,
+research prerequisites/cancellation/exhaustion and decision benchmarks checked against
+exhaustive routes. The original tree and physical effort contracts remain covered.
+Cycle1/2/3-Smoke-2026-10-18.txt each records a passing Unity integration run.
+Cycle 3 final run passed at 01:07 UTC after correcting the results heading margin.
+These tests invoke gameplay methods; they are separate from actual input below.
+
+ThreeCyclesManual-2026-10-18.log isolates the actual mouse walkthrough after the
+integration runner's clean classroom reset at 01:07:43 UTC:
+
+1. Exit classroom, trigger theft, click seven pursuit beacons and watch the map/tree
+   transition. Original tree entered at 01:09:40.
+2. Manually climb four individual edges, collecting two cones. Drag the orange plug
+   to cyan to build both twos and compose four at 01:11:09.
+3. Follow the funding; physically climb six levels using 4+1+1. Recover cone three at
+   01:12:27. Results show three decisions and a memory-best benchmark of three.
+4. Enter research, cancel, reopen, and build node 10 -> 9 -> 8 at 01:12:52. Then
+   compose node 12 -> 10 -> 8 into four at 01:13:16. Five connections are retained;
+   the completed mission's score stays unchanged.
+5. Start the three-level Coffee Contingency target. Four is unavailable. Select two,
+   manually traverse both edges, then select/climb one. Cone four recovered 01:14:00.
+6. Open the remaining-distance quiz. Deliberately choose four, read the explanation,
+   retry two, receive one stamp and return to the same results.
+7. Replay Classroom at 01:14:47: cones, stamps, memory and counters reset. No second
+   game starts. Unity was stopped after validation to avoid idle rendering.
+
+Screenshots: Evidence/Adventure-Climbing-011146.png (live 3-of-4 progression),
+Adventure-Weaving-011308.png (additional four-level research),
+Adventure-Complete-011439.png (second recovery with five connections and one stamp).
+Cycle 1/2 focused input evidence is detailed in ImprovementCycles-2026-10-18.md.
+
+No headset is connected. Stereo, physical reach, comfort, haptics, target-device
+performance and APK validation remain NOT RUN. This remains a stylized prototype.
+
+## Previous learning-loop revision evidence
+The records below predate the three-cycle update and are retained as history.
 
 ## Scope and results
 Unity 6000.0.85f1 Windows Editor, Main scene. Scripts/Test-Logic.ps1: ALL PASSED.
@@ -154,5 +193,6 @@ tracking loss, haptics, stereo rendering, comfort and device performance are NOT
 The head-following panel's 0.4 m depth needs comfort review. Android modules/APK are
 not available. Pull metres shown on desktop are normalized input units, not measured
 human hand travel. Geometry and character animation remain development blockouts;
-there are no imported character rigs, textures or audio assets. This does not establish
+there are no imported character rigs or audio assets. Approved environment textures
+were added in the subsequent learning-loop revision. This does not establish
 final-art quality or parity with a commercial third-person game.

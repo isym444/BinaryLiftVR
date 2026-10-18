@@ -4,7 +4,7 @@ using UnityEngine.Rendering;
 
 namespace BinaryLift
 {
-    /// <summary>Approved primitive blockout. All dimensions are metres; no imported art.</summary>
+    /// <summary>Campus geometry with registered approved art. All dimensions are metres.</summary>
     public sealed class CampusWorld : MonoBehaviour
     {
         public Transform Station, Horse, Monkey, Cone, Saddle, MapRoot;
@@ -92,8 +92,10 @@ namespace BinaryLift
         {
             architecture = Root("Campus architecture - replaceable blockout", transform);
             Material paving = Mat(new Color(.115f,.16f,.19f));
+            var surface=Resources.Load<Shader>("CampusSurface");
+            if(surface!=null){paving.shader=surface;paving.SetColor("_Color",new Color(.115f,.16f,.19f));paving.SetFloat("_Grain",0);}
             paving.SetFloat("_Glossiness", .72f);
-            Box("Courtyard", architecture, new Vector3(0,-.18f,22), new Vector3(36,.3f,66), paving);
+            Box("Courtyard", architecture, new Vector3(0,-.18f,22), new Vector3(36,.3f,66), paving).GetComponent<Renderer>().receiveShadows=true;
             Material lawn = Mat(new Color(.09f,.21f,.17f));
             Box("West lawn", architecture, new Vector3(-7,-.005f,22), new Vector3(6,.05f,48), lawn);
             Box("East lawn", architecture, new Vector3(7,-.005f,22), new Vector3(6,.05f,48), lawn);

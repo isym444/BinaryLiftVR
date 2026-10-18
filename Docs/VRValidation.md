@@ -45,3 +45,16 @@ Record device model, runtime, controller type, build, date and tester; no serial
   or final character rigs is included. New external art/audio needs separate approval.
 - Profile the approved sandstone, furniture and poster on device; inspect mipmaps,
   readability and texture/shader cost. See AssetRegister.md for exact imported sources.
+
+## Three-cycle additions: hardware checks still required
+
+- Read FROM/VIA/TO labels, the shared middle anchor, remembered branch paths and
+  current level count stereoscopically while climbing and resting.
+- Select optional quiz answers, read retry feedback and reach BACK / SKIP reliably.
+- Enter/cancel RECORD NEW ROUTES, compose a connection with trigger rays, and return
+  to the same results. Confirm a larger selection still requires every physical edge.
+- Inspect the four result buttons, efficiency text and memory count at headset scale.
+- Check procedural shader support, soft-shadow cost and frame timing on target hardware.
+- Verify coffee/form response and horse nods remain comfortable and do not move the head.
+
+Desktop tests do not validate these hardware conditions. No headset run is claimed.
