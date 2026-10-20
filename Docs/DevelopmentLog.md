@@ -606,3 +606,5 @@ No code or gameplay changed.
 Follow-up: GitHub refused to display the 15 MB video, so it was re-encoded to 854x480,
 5 MB, and a 14 s looping GIF (3.3 MB, gameplay-demo.gif) now serves as the inline preview
 linked to the video. The poster JPEG was removed. The earlier 15 MB blob remains in history.
+Final form: the README embeds the full recording through a GitHub user-attachments URL
+(inline player), so the GIF was removed; the 5 MB mp4 stays in Docs/Media as a backup.
