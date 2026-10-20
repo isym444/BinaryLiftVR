@@ -6,10 +6,10 @@ binary lifting: you climb a 35-node tree by hand, collect cones, and remember tw
 four-level connections so later searches need fewer decisions, while every edge is still
 climbed physically.
 
-[![Gameplay on Meta Quest 2: the Highland calf chase](Docs/Media/gameplay-demo-poster.jpg)](Docs/Media/gameplay-demo.mp4)
+[![Gameplay on Meta Quest 2: the Highland calf chase](Docs/Media/gameplay-demo.gif)](Docs/Media/gameplay-demo.mp4)
 
-*Demo (about 78 s, 720p): recorded on a Meta Quest 2 with the headset's built-in recorder.
-Click the image to play it.*
+*Demo recorded on a Meta Quest 2 with the headset's built-in recorder. The loop above is a
+14 s excerpt; click it for the full video (about 78 s, 480p, 5 MB).*
 
 Current flow: classroom exploration -> exit -> Highland calf theft -> seven connected chase
 waypoints -> aerial route reveal -> original generated tree -> manual exploration -> cone collection -> two/four-edge route memory
