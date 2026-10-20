@@ -592,3 +592,14 @@ courtyard and chase phases only) now moves the player at StartWalkSpeed = 2.2 m/
 faster each. Climbing and later phases are unchanged. Compiles against the Unity
 assemblies; not tried in Play Mode or on a headset, so the comfort of the new speed in VR
 is unverified.
+
+### README refresh and Quest demo video (2026-10-20, branch quest-fixes)
+Request: update the README with current game information and add gameplay footage.
+The game was sideloaded to a Quest 2 (package com.binarylift.vr) and played; the user
+recorded it with the headset's built-in recorder. The 1080p original (72 MB) was
+re-encoded to 720p H.264/AAC (15 MB) as Docs/Media/gameplay-demo.mp4, with a poster frame
+at Docs/Media/gameplay-demo-poster.jpg; the README links the poster to the video.
+README changes: added a Status section, Run on Quest instructions, the pointer
+recalibration note, and corrected stale claims (no headset run, monkey placeholder).
+Docs/VRValidation.md remains NOT RUN as a structured checklist; no performance claim.
+No code or gameplay changed. Nothing was committed or pushed.

@@ -1,9 +1,33 @@
 # Cone Courier - Classroom to Canopy
 
-English-only Unity VR project set in a University of Glasgow-inspired electronic campus.
+English-only Unity VR game (Unity product name: Binary Lift VR, Android package
+`com.binarylift.vr`) set in a University of Glasgow-inspired electronic campus. It teaches
+binary lifting: you climb a 35-node tree by hand, collect cones, and remember two- and
+four-level connections so later searches need fewer decisions, while every edge is still
+climbed physically.
+
+[![Gameplay on Meta Quest 2: the Highland calf chase](Docs/Media/gameplay-demo-poster.jpg)](Docs/Media/gameplay-demo.mp4)
+
+*Demo (about 78 s, 720p): recorded on a Meta Quest 2 with the headset's built-in recorder.
+Click the image to play it.*
+
 Current flow: classroom exploration -> exit -> Highland calf theft -> seven connected chase
 waypoints -> aerial route reveal -> original generated tree -> manual exploration -> cone collection -> two/four-edge route memory
 -> new funding target -> manual reuse -> results -> replay from the classroom. There is no second-game handoff.
+
+## Status
+- Runs on Meta Quest 2 (standalone Android, OpenXR). A build was sideloaded and played
+  on a headset on 2026-10-20; the demo above is that session.
+- The approved animated Highland calf is the thief and carries the funding. It replaced the
+  earlier monkey placeholder.
+- Quest-specific fixes on the `quest-fixes` branch: the OpenXR loader is declared in the
+  manifest at build time (Android 12+ otherwise hung the app on the loading dots), engine
+  code stripping is off so primitive colliders survive, and controller pointers have a
+  saved recalibration (see VR controls).
+- Recent gameplay tweaks: the branch workbench labels FROM / VIA / TO nodes with START and
+  YOU ARE HERE, and the opening walk is about 30 percent faster (2.2 m/s).
+- Not done: the full Docs/VRValidation.md checklist, on-device profiling (frame time,
+  thermals) and any audio. Treat comfort and performance as unverified.
 
 The campus detail pass adds stone window frames, a moving clock, kiosk/entrance
 dressing, gentle banners, rain puddles and a more detailed coffee machine. Cones
@@ -18,6 +42,19 @@ adaptation is in Tools/CalfPreview, with the original CC0 source in SourceArt/Hi
 Open Assets/Scenes/Main.unity in Unity 6000.0.85f1 and press Play. Scenery is generated
 at runtime; Edit Mode intentionally has no game camera. Stop Play before editing C#.
 Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
+
+## Run on Quest
+Run BinaryLift > Configure Project once (OpenXR plus Meta Quest Support for Android), or
+build in batch mode with BinaryLiftSetup.BuildAndroid; the APK goes to Builds/ and is not
+committed. Enable developer mode on the headset, connect it with USB and sideload:
+
+    adb install -r Builds/BinaryLift.apk
+
+Sideloaded apps appear under Unknown Sources in the Quest library. To launch from the
+computer: `adb shell monkey -p com.binarylift.vr -c android.intent.category.LAUNCHER 1`.
+For demo footage use the headset's built-in recorder (Sharing > Record) and pull the file
+from /sdcard/Oculus/VideoShots with adb. scrcpy shows the lens-warped per-eye image
+(use `--no-audio`, as the Quest blocks audio capture), so it suits monitoring, not demos.
 
 ## Desktop controls
 - WASD: explore the classroom/courtyard. Hold right mouse to look; Q/E: snap turn.
@@ -56,6 +93,8 @@ Use Assets > Refresh after editing. Double-click the Game tab for a larger view.
 Left stick moves; either controller trigger selects. Grip near an orange hold and pull
 down to climb; alternate hands, release to rest. Two-hand input is averaged. Right stick
 snaps when no hold is held; B/Y restarts. Grip near the cone or select it with a ray.
+If a pointer ray aims off, press that thumbstick while pointing straight ahead to
+recalibrate it; the offset is saved per hand (default pitch 70 degrees).
 Select the orange plug and then the cyan socket to compose a memory connection.
 The branch workbench shows FROM / VIA / TO anchors and animates the shared middle node.
 Desktop reveal raises and tilts the camera. VR fades to a stationary overlook, preserving
@@ -81,14 +120,15 @@ BinaryLift > Validate Adventure (Ctrl+Shift+J) runs method-driven integration.
 BinaryLift > Capture Adventure Screenshot (Ctrl+Shift+K) records the current view.
 Read Docs/AdventureValidation.md and Docs/CampusLifeValidation-2026-10-18.md for
 actual input evidence and hardware limitations.
-No headset or APK validation is claimed; Android modules are not installed.
+Desktop Play Mode is not a headset test. The game has been played on a Quest 2 (see Status),
+but the structured headset checklist in Docs/VRValidation.md has not been completed.
 
 Approved Poly Haven sandstone, bark and wood maps, Kenney food, planting and furniture,
 and a separately preview-approved
-AI funding poster are now used. Characters and architecture remain project-built.
+AI funding poster are now used, plus the approved calf. The horse and architecture remain project-built.
 Read Docs/AssetRegister.md for provenance, licences and pending character reviews.
-The user selected environment and interactions first; a suitable free animated Highland
-calf is still being sought. The monkey remains until a replacement passes review.
+The calf is the Quaternius-based adaptation approved on 2026-10-18; it replaced the monkey
+as the funding thief. The companion horse and project-built architecture remain.
 The learning loop is specified in Docs/Design.md. No audio or university-photo pixels
 are imported. This remains a stylized campus prototype, not a surveyed reconstruction.
 
