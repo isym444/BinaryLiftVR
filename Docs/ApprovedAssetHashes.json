@@ -1,0 +1,127 @@
+[
+  {
+    "file": "Assets/Resources/Approved/FundingPoster.png",
+    "bytes": 3134993,
+    "sha256": "f345b8e86dd088005b530781f7a5181a09ca2feebb2b99a4b5b8c250877df423"
+  },
+  {
+    "file": "Assets/Resources/Approved/HighlandCalf.calf",
+    "bytes": 8796873,
+    "sha256": "3632f041fa8f283dadd1a53aeb0d99662ad5403080a2524104507a8d929e486c"
+  },
+  {
+    "file": "Assets/Resources/Approved/Sandstone.jpg",
+    "bytes": 242776,
+    "sha256": "0cac65461ba33003b8a27b03c2b87f3393a824a9a98036c4c8de6182a1449369"
+  },
+  {
+    "file": "Assets/Resources/Approved/bark_brown_02_diff.jpg",
+    "bytes": 659592,
+    "sha256": "920fa0bed0c9d78c1d530e99795113afd532d7db746de440f4a85d7c83ed0f1a"
+  },
+  {
+    "file": "Assets/Resources/Approved/bark_brown_02_nor_gl.jpg",
+    "bytes": 1015623,
+    "sha256": "0d5e691e8ad8bcd093a3587887fda2a6b4a948b5708a4f256f7919584c6eb857"
+  },
+  {
+    "file": "Assets/Resources/Approved/bark_brown_02_rough.jpg",
+    "bytes": 337946,
+    "sha256": "68125592de36e15bae7aa6db85c4d135aeb7e5653199ba226483a70f6d69837d"
+  },
+  {
+    "file": "Assets/Resources/Approved/chairDesk.fbx",
+    "bytes": 94274,
+    "sha256": "61015377194c58d7371e30f718f9bf04332dfa8295949ad5de49f764d3f1a1ed"
+  },
+  {
+    "file": "Assets/Resources/Approved/desk.fbx",
+    "bytes": 34207,
+    "sha256": "eb09dd20820cf755394a27459ae05bceebbda016a0a9e295fe3b89fb7dc06322"
+  },
+  {
+    "file": "Assets/Resources/Approved/food/colormap.png",
+    "bytes": 10715,
+    "sha256": "75baf74d9483a0fc56ac21ceba346fbe16fc24a2a1bf0524c53e6bbe802e1153"
+  },
+  {
+    "file": "Assets/Resources/Approved/food/cookie.fbx",
+    "bytes": 27984,
+    "sha256": "7c4dddbfa3ec79db0e29fb0abe269ef647c9d8d88b4be63e7d0046d14ae903fd"
+  },
+  {
+    "file": "Assets/Resources/Approved/food/cup-saucer.fbx",
+    "bytes": 26064,
+    "sha256": "b5bec867b91a5625e776b3e93886a82eaaa5a1b4461a74fe237f5c795adceca6"
+  },
+  {
+    "file": "Assets/Resources/Approved/food/donut.fbx",
+    "bytes": 29088,
+    "sha256": "9601db08126f13a0cfeaefd937daa7c9b31e64a4b5edcf8eae9a3d5eaf93920d"
+  },
+  {
+    "file": "Assets/Resources/Approved/food/mug.fbx",
+    "bytes": 29136,
+    "sha256": "664c1a810335ffcddf57515d47d27bde18cd147d8fedca29731c91f795b9fa70"
+  },
+  {
+    "file": "Assets/Resources/Approved/furniture/bench.fbx",
+    "bytes": 25079,
+    "sha256": "2c570d3a665509f8f246b7dae42900f07a285b2db86743f0fccce7ad6cdf262f"
+  },
+  {
+    "file": "Assets/Resources/Approved/furniture/bookcaseOpen.fbx",
+    "bytes": 38100,
+    "sha256": "da2555923479f0176b48de82ebdeb2a032158bfb81645d376a501eaec46adba9"
+  },
+  {
+    "file": "Assets/Resources/Approved/furniture/books.fbx",
+    "bytes": 19229,
+    "sha256": "feaac69951afd9629b40c75ee0f02fe0d020e0e084c4f5c8fc6380a093501e23"
+  },
+  {
+    "file": "Assets/Resources/Approved/furniture/lampRoundTable.fbx",
+    "bytes": 21261,
+    "sha256": "5bbe92f7b42614d166ba6070fbca5cd2dfaacbf9ae96d3dd97a50df3d08bf65c"
+  },
+  {
+    "file": "Assets/Resources/Approved/furniture/pottedPlant.fbx",
+    "bytes": 23744,
+    "sha256": "61e963d81fbf4e0772b5b8d542a44dbb0c794affa9994b6d5715f425d71fc97d"
+  },
+  {
+    "file": "Assets/Resources/Approved/nature/flower_purpleA.fbx",
+    "bytes": 23329,
+    "sha256": "d95109e8d69177743b2eb14a39a0a5e5ebbceeed0d49956a36a97a3eb4e05f23"
+  },
+  {
+    "file": "Assets/Resources/Approved/nature/plant_bushDetailed.fbx",
+    "bytes": 30970,
+    "sha256": "dbf6bb7abdc22304a97c331c245d7bdbc8ae3977555229670c2f08a5eb67098f"
+  },
+  {
+    "file": "Assets/Resources/Approved/nature/tree_oak.fbx",
+    "bytes": 45836,
+    "sha256": "efa277f3467e6102cce7d35381a4e8256e2346f86c6ce83a0fd02f5586b7c9fe"
+  },
+  {
+    "file": "Assets/Resources/Approved/wood_planks_diff.jpg",
+    "bytes": 609525,
+    "sha256": "3b0669f683e4bf10f5a55a381cfa9669a7b8dfd921901829daa3b35acc2bbdec"
+  },
+  {
+    "file": "Assets/Resources/Approved/wood_planks_nor_gl.jpg",
+    "bytes": 652441,
+    "sha256": "d02abf113e17a8abe97e1be3e9d6d88add242e8c2291e2200d37aa8c68909f25"
+  },
+  {
+    "file": "Assets/Resources/Approved/wood_planks_rough.jpg",
+    "bytes": 299757,
+    "sha256": "1b7f115bfa25619b0a2db554eb1ab88a6fc5ef0b74ba4890611eae04d00b9829"
+  },
+  {
+    "file": "SourceArt/HighlandCalf/Bull.gltf",
+    "bytes": 3110158,
+    "sha256": "535da2992eb125d517725159a2eddeb520b72595bcb3021985fc43d2c84bff76"
+  }
+]

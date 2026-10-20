@@ -1,0 +1,16 @@
+Tree climb desktop integration
+PASS physical tree contains trunk and both side branches
+PASS bark and root grip colliders constructed
+PASS no route quiz terminal in default experience
+PASS branch junction accepts nearby grip
+PASS distant hand cannot grab bark
+PASS pull displacement moves rig vertically
+PASS large displacement is bounded
+PASS two downward hands lift body once, not twice
+PASS tracking loss releases and holds belay
+PASS near grip collects once, hides cone and displays horse trophy
+PASS upgrade uses four actual ancestor edges
+PASS restart resets collection and rig
+PASS horse remains at ground base
+Result: PASS
+Headset/controller/comfort/performance: NOT RUN

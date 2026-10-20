@@ -4,7 +4,7 @@ using UnityEngine;
 
 namespace BinaryLift
 {
-    public enum TargetKind { Platform, Portal }
+    public enum TargetKind { Platform, Portal, Start, Retry, NewRound }
 
     /// <summary>Marks a collider the player can point at.</summary>
     public sealed class HoverTarget : MonoBehaviour
@@ -57,6 +57,19 @@ namespace BinaryLift
         Material fadeMat;
 
         TextMesh hud, banner;
+        TextMesh hint;
+        Transform startButton, retryButton, newButton;
+        TextMesh[] portalLabels;
+        LineRenderer routePreview;
+        bool waitingForStart;
+        bool activeRight = true;
+        string feedback = "";
+        float feedbackUntil;
+        readonly List<Material> roundMaterials = new List<Material>();
+        readonly List<Material> overlayMaterials = new List<Material>();
+        public RaceState State => race;
+        public bool IsBusy => busy;
+        public bool WaitingForStart => waitingForStart;
         float bannerUntil;
         RacePhase shownPhase = RacePhase.Countdown;
 
@@ -71,6 +84,7 @@ namespace BinaryLift
             unlitShader = Shader.Find("Sprites/Default");
 
             var sun = new GameObject("Sun").AddComponent<Light>();
+            sun.transform.SetParent(transform, false);
             sun.type = LightType.Directional;
             sun.transform.rotation = Quaternion.Euler(50f, -30f, 0f);
             RenderSettings.ambientMode = UnityEngine.Rendering.AmbientMode.Flat;
@@ -81,12 +95,12 @@ namespace BinaryLift
                 if (cam != rig.Head) Destroy(cam.gameObject);
 
             BuildOverlays();
-            StartRound(Random.Range(1, 100000));
+            StartRound(13);
         }
 
         // ---------------------------------------------------------------- round setup
 
-        void StartRound(int newSeed)
+        public void StartRound(int newSeed)
         {
             seed = newSeed;
             StopAllCoroutines();
@@ -95,7 +109,11 @@ namespace BinaryLift
             hover = null;
             bannerUntil = 0f;
             if (worldRoot != null) Destroy(worldRoot.gameObject);
+            foreach (var material in roundMaterials) Destroy(material);
+            roundMaterials.Clear();
             billboards.Clear();
+            waitingForStart = true;
+            feedbackUntil = 0;
 
             tree = TreeGenerator.Generate(seed, TrunkLength, ExtraNodes);
             race = RaceState.Create(tree, seed);
@@ -104,7 +122,10 @@ namespace BinaryLift
             BuildWorld();
             PlaceRig(race.Player);
             RepositionPortals();
-            StartCoroutine(RoundRoutine());
+            portalRoot.gameObject.SetActive(false);
+            ShowBanner("BINARY LIFT\nReach the gold platform before the red runner.\nClick a numbered portal to climb 1, 2, 4 or 8 levels.\nThe runner climbs one level at a time.");
+            UpdateActionButtons();
+            Debug.Log("Race | ready | seed=" + seed + " | levels=" + race.K);
         }
 
         void BuildWorld()
@@ -184,6 +205,12 @@ namespace BinaryLift
             billboards.Add(avatarLabel);
 
             BuildPortals();
+            var routeGo = new GameObject("Hovered ancestor path");
+            routeGo.transform.SetParent(worldRoot, false);
+            routePreview = routeGo.AddComponent<LineRenderer>();
+            routePreview.sharedMaterial = NewMat(unlitShader, HoverColor);
+            routePreview.startWidth = routePreview.endWidth = .045f;
+            routePreview.enabled = false;
         }
 
         void MakeEdge(Vector3 a, Vector3 b)
@@ -206,13 +233,14 @@ namespace BinaryLift
             portalRoot.SetParent(worldRoot, false);
             portalHolders = new Transform[n];
             portalMats = new Material[n];
+            portalLabels = new TextMesh[n];
 
             for (int j = 0; j < n; j++)
             {
                 var holder = new GameObject("Portal " + (1 << j));
                 holder.transform.SetParent(portalRoot, false);
                 var sphere = holder.AddComponent<SphereCollider>();
-                sphere.radius = 0.4f;
+                sphere.radius = 0.27f;
                 var target = holder.AddComponent<HoverTarget>();
                 target.Kind = TargetKind.Portal;
                 target.Index = j;
@@ -226,7 +254,8 @@ namespace BinaryLift
                 portalMats[j] = NewMat(litShader, PortalColor(j, true));
                 disc.GetComponent<Renderer>().sharedMaterial = portalMats[j];
 
-                var label = MakeText((1 << j).ToString(), holder.transform, new Vector3(0f, 0.45f, 0f), 0.025f, Color.white);
+                var label = MakeText((1 << j).ToString(), holder.transform, new Vector3(0f, 0f, -.04f), 0.015f, Color.white);
+                portalLabels[j] = label;
                 billboards.Add(label.transform);
                 portalHolders[j] = holder.transform;
             }
@@ -234,12 +263,12 @@ namespace BinaryLift
 
         static Color PortalColor(int j, bool valid)
         {
-            return valid ? Color.HSVToRGB((j * 0.17f) % 1f, 0.75f, 1f) : new Color(0.25f, 0.25f, 0.25f);
+            return valid ? Color.Lerp(new Color(.05f,.35f,.43f), new Color(.18f,.65f,.72f), j/4f) : new Color(.13f,.15f,.18f);
         }
 
         void RepositionPortals()
         {
-            portalRoot.position = rig.transform.position;
+            portalRoot.position = new Vector3(rig.Head.transform.position.x, rig.Head.transform.position.y - 1.6f, rig.Head.transform.position.z);
             portalRoot.rotation = Quaternion.Euler(0f, rig.Head.transform.eulerAngles.y, 0f);
 
             int n = portalHolders.Length;
@@ -247,7 +276,7 @@ namespace BinaryLift
             {
                 float angle = (j - (n - 1) / 2f) * 22f;
                 Quaternion rot = Quaternion.Euler(0f, angle, 0f);
-                portalHolders[j].localPosition = rot * Vector3.forward * 1.4f + Vector3.up * 1.3f;
+                portalHolders[j].localPosition = rot * Vector3.forward * 1.65f + Vector3.up * 1.25f;
                 portalHolders[j].localRotation = rot;
                 portalMats[j].color = PortalColor(j, tree.Up[j][race.Player] >= 0);
             }
@@ -256,7 +285,7 @@ namespace BinaryLift
         void PlaceRig(int node)
         {
             Vector3 feet = nodePos[node] + new Vector3(0f, PlatformThickness / 2f, -ViewDistance);
-            rig.transform.position = feet;
+            rig.TeleportFeet(feet);
             pad.position = feet - Vector3.up * 0.015f;
             avatarTarget = AvatarPosition(node);
         }
@@ -277,12 +306,16 @@ namespace BinaryLift
         {
             Transform head = rig.Head.transform;
 
-            hud = MakeText("", head, new Vector3(0f, -0.32f, 1.4f), 0.0045f, Color.white);
+            hud = MakeText("", head, new Vector3(0f, .67f, 2.2f), 0.0058f, Color.white);
             hud.fontSize = 100;
             hud.anchor = TextAnchor.UpperCenter;
 
-            banner = MakeText("", head, new Vector3(0f, 0.15f, 2.2f), 0.018f, Color.white);
+            banner = MakeText("", head, new Vector3(0f, .12f, 2.2f), 0.008f, Color.white);
             banner.fontSize = 100;
+            hint = MakeText("", head, new Vector3(0f, -.75f, 2.2f), .0048f, Color.white);
+            startButton = ActionButton("START RACE", TargetKind.Start, new Vector3(0,-.42f,2.2f));
+            retryButton = ActionButton("RETRY SAME TREE", TargetKind.Retry, new Vector3(-.6f,-.42f,2.2f));
+            newButton = ActionButton("NEW TREE", TargetKind.NewRound, new Vector3(.6f,-.42f,2.2f));
 
             var fade = GameObject.CreatePrimitive(PrimitiveType.Quad);
             fade.name = "Fade";
@@ -291,6 +324,7 @@ namespace BinaryLift
             fade.transform.localPosition = new Vector3(0f, 0f, 0.3f);
             fade.transform.localScale = Vector3.one * 3f;
             fadeMat = NewMat(unlitShader, new Color(0f, 0f, 0f, 0f));
+            fadeMat.renderQueue = 5000;
             fade.GetComponent<Renderer>().sharedMaterial = fadeMat;
 
             var ret = GameObject.CreatePrimitive(PrimitiveType.Sphere);
@@ -314,6 +348,28 @@ namespace BinaryLift
             Color c = fadeMat.color;
             c.a = alpha;
             fadeMat.color = c;
+        }
+
+        Transform ActionButton(string label, TargetKind kind, Vector3 position)
+        {
+            var button = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            button.name = label;
+            button.transform.SetParent(rig.Head.transform, false);
+            button.transform.localPosition = position;
+            button.transform.localScale = new Vector3(1.05f,.24f,.05f);
+            button.GetComponent<Renderer>().sharedMaterial = NewMat(unlitShader, new Color(.08f,.36f,.43f));
+            button.AddComponent<HoverTarget>().Kind = kind;
+            var labelText = MakeText(label,rig.Head.transform,position+new Vector3(0,0,-.04f),.0055f,Color.white);
+            labelText.transform.SetParent(button.transform,true);
+            return button.transform;
+        }
+
+        void UpdateActionButtons()
+        {
+            bool finished = race.Phase == RacePhase.Won || race.Phase == RacePhase.Lost;
+            startButton.gameObject.SetActive(waitingForStart);
+            retryButton.gameObject.SetActive(finished);
+            newButton.gameObject.SetActive(finished);
         }
 
         IEnumerator Fade(float from, float to, float seconds)
@@ -344,6 +400,7 @@ namespace BinaryLift
 
             ShowBanner("GO!", 1f);
             race.Begin();
+            Debug.Log("Race | started | seed=" + seed);
 
             while (race.Phase == RacePhase.Running)
             {
@@ -371,13 +428,33 @@ namespace BinaryLift
             busy = false;
         }
 
-        void Select()
+        public bool SelectTarget(TargetKind kind, int index = 0)
         {
-            if (busy || hover == null || race.Phase != RacePhase.Running) return;
-            bool ok = hover.Kind == TargetKind.Platform
-                ? race.TryStepTo(hover.Index)
-                : race.TryPortal(hover.Index);
-            if (ok) StartCoroutine(TeleportRoutine());
+            if (busy) return false;
+            if (kind == TargetKind.Start && waitingForStart)
+            {
+                waitingForStart = false;
+                UpdateActionButtons();
+                portalRoot.gameObject.SetActive(true);
+                StartCoroutine(RoundRoutine());
+                return true;
+            }
+            bool finished = race.Phase == RacePhase.Won || race.Phase == RacePhase.Lost;
+            if (finished && (kind == TargetKind.Retry || kind == TargetKind.NewRound))
+            { StartRound(kind == TargetKind.Retry ? seed : seed + 1); return true; }
+            if (race.Phase != RacePhase.Running) return false;
+            bool ok = kind == TargetKind.Platform ? race.TryStepTo(index)
+                : kind == TargetKind.Portal && race.TryPortal(index);
+            if (ok)
+            {
+                rig.Pulse(activeRight);
+                feedback = "Moved to depth " + tree.Depth[race.Player] + " / " + race.Moves + " jumps";
+                Debug.Log("Race | moved | depth=" + tree.Depth[race.Player] + " | moves=" + race.Moves);
+                StartCoroutine(TeleportRoutine());
+            }
+            else feedback = kind == TargetKind.Platform ? "Choose a connected platform or a numbered portal." : "This portal goes beyond the root. Choose a smaller jump.";
+            feedbackUntil = Time.time + 2;
+            return ok;
         }
 
         // ---------------------------------------------------------------- per-frame
@@ -385,24 +462,37 @@ namespace BinaryLift
         void Update()
         {
             rig.Poll();
-            if (rig.RestartPressed) { StartRound(seed + 1); return; }
+            if (rig.RestartPressed) { StartRound(seed); return; }
 
             UpdateHover();
-            if (rig.SelectPressed) Select();
+            if (rig.RightSelectPressed || rig.LeftSelectPressed)
+            {
+                if (hover != null) SelectTarget(hover.Kind, hover.Index);
+                else { feedback="Point at a numbered portal or a connected platform."; feedbackUntil=Time.time+2; }
+            }
 
             if (race.Phase != shownPhase)
             {
                 shownPhase = race.Phase;
+                UpdateActionButtons();
                 if (shownPhase == RacePhase.Won)
-                    ShowBanner("YOU WIN!\n" + race.Moves + " jumps vs " + race.K + " steps\nB / R = new round");
+                {
+                    ShowBanner("YOU WIN!\n" + race.Moves + " jumps vs " + race.K + " one-level steps\nBest possible: " + TreeModel.PopCount(race.K) + " jumps");
+                    Debug.Log("Race | won | moves=" + race.Moves + " | ordinary_steps=" + race.K);
+                }
                 else if (shownPhase == RacePhase.Lost)
-                    ShowBanner("NPC WINS\nB / R = new round");
+                {
+                    ShowBanner("THE RUNNER ARRIVED FIRST\nUse larger jumps, then smaller ones to land on gold.\nRetry the same tree to compare your route.");
+                    Debug.Log("Race | lost | moves=" + race.Moves);
+                }
+                if (race.Phase == RacePhase.Won || race.Phase == RacePhase.Lost) portalRoot.gameObject.SetActive(false);
             }
             if (bannerUntil > 0f && Time.time > bannerUntil) { banner.text = ""; bannerUntil = 0f; }
 
             avatar.position = Vector3.Lerp(avatar.position, avatarTarget, 1f - Mathf.Exp(-10f * Time.deltaTime));
             UpdateColors();
             UpdateHud();
+            UpdatePreview();
         }
 
         void LateUpdate()
@@ -435,18 +525,16 @@ namespace BinaryLift
 
             if (rig.XRActive)
             {
-                bool found = false;
-                foreach (bool right in new[] { true, false })
+                if(rig.RightSelectPressed) activeRight=true;
+                else if(rig.LeftSelectPressed) activeRight=false;
+                Ray ray;
+                if (rig.TryGetHandRay(activeRight, out ray) || rig.TryGetHandRay(!activeRight,out ray))
                 {
-                    if (!rig.TryGetHandRay(right, out Ray ray)) continue;
-                    found = Cast(ray, out hover, out point);
-                    if (right)
-                    {
-                        pointerLine.enabled = true;
-                        pointerLine.SetPosition(0, ray.origin);
-                        pointerLine.SetPosition(1, point);
-                    }
-                    if (found) return;
+                    Cast(ray,out hover,out point);
+                    pointerLine.enabled=true;
+                    pointerLine.SetPosition(0,ray.origin);
+                    pointerLine.SetPosition(1,point);
+                    return;
                 }
 
                 Ray gaze = rig.GazeRay;
@@ -464,6 +552,13 @@ namespace BinaryLift
 
         void UpdateColors()
         {
+            for(int j=0;j<portalMats.Length;j++)
+            {
+                bool valid=tree.Up[j][race.Player]>=0;
+                portalMats[j].color=PortalColor(j,valid);
+                portalLabels[j].color=valid?Color.white:Color.gray;
+                portalHolders[j].localScale=Vector3.one;
+            }
             for (int v = 0; v < tree.Count; v++)
             {
                 Color c = PlatformColor;
@@ -480,10 +575,12 @@ namespace BinaryLift
                 bool adjacent = v != race.Player && (tree.Parent[race.Player] == v || tree.Parent[v] == race.Player);
                 if (adjacent) platformMats[v].color = HoverColor;
             }
-            else
+            else if (hover.Kind == TargetKind.Portal)
             {
                 int dest = tree.Up[hover.Index][race.Player];
                 if (dest >= 0) platformMats[dest].color = PreviewColor;
+                portalMats[hover.Index].color = dest >= 0 ? HoverColor : new Color(.5f,.18f,.12f);
+                portalHolders[hover.Index].localScale = Vector3.one * 1.08f;
             }
         }
 
@@ -491,7 +588,7 @@ namespace BinaryLift
         {
             int depth = tree.Depth[race.Player];
             int goalDepth = tree.Depth[race.Target];
-            string text = "Climb " + race.K + " levels\n"
+            string text = "GOLD TARGET / " + race.K + " levels up\n"
                           + "You: depth " + depth + "   Goal: depth " + goalDepth + "\n"
                           + "Jumps " + race.Moves + "   NPC " + race.NpcSteps + "/" + race.K;
 
@@ -503,13 +600,49 @@ namespace BinaryLift
                     : "\nPortal +" + (1 << hover.Index) + " goes past the root";
             }
             hud.text = text;
+            hint.text = waitingForStart ? "Point + trigger / mouse click to start. Take your time to read."
+                : busy ? "JUMPING..."
+                : Time.time < feedbackUntil ? feedback
+                : race.Phase == RacePhase.Countdown ? "Get ready. Choose a numbered portal when GO appears."
+                : race.Phase != RacePhase.Running ? "Select RETRY or NEW TREE. B / Y / R retries this tree."
+                : hover != null && hover.Kind == TargetKind.Portal ? "CLICK / TRIGGER: jump " + (1 << hover.Index) + " ancestor levels"
+                : "Point + trigger / click: jump  |  Right mouse: look  |  B / Y / R: retry";
+        }
+
+        void UpdatePreview()
+        {
+            routePreview.enabled=false;
+            if(hover==null || race.Phase!=RacePhase.Running || busy) return;
+            var points=new List<Vector3>();
+            if(hover.Kind==TargetKind.Portal)
+            {
+                int destination=tree.Up[hover.Index][race.Player];
+                if(destination<0)return;
+                for(int v=race.Player;v>=0;v=tree.Parent[v])
+                {points.Add(nodePos[v]+Vector3.back*.08f);if(v==destination)break;}
+            }
+            else if(hover.Kind==TargetKind.Platform && (tree.Parent[race.Player]==hover.Index || tree.Parent[hover.Index]==race.Player))
+            {points.Add(nodePos[race.Player]);points.Add(nodePos[hover.Index]);}
+            if(points.Count<2)return;
+            routePreview.positionCount=points.Count;routePreview.SetPositions(points.ToArray());routePreview.enabled=true;
         }
 
         // ---------------------------------------------------------------- helpers
 
-        static Material NewMat(Shader shader, Color color)
+        Material NewMat(Shader shader, Color color)
         {
-            return new Material(shader) { color = color };
+            var material = new Material(shader) { color = color };
+            if(worldRoot==null)overlayMaterials.Add(material);else roundMaterials.Add(material);
+            return material;
+        }
+
+        void OnDestroy()
+        {
+            if(worldRoot!=null)Destroy(worldRoot.gameObject);
+            if(rig!=null)Destroy(rig.gameObject);
+            if(reticle!=null)Destroy(reticle.gameObject);
+            foreach(var material in roundMaterials)if(material!=null)Destroy(material);
+            foreach(var material in overlayMaterials)if(material!=null)Destroy(material);
         }
 
         static TextMesh MakeText(string s, Transform parent, Vector3 position, float characterSize, Color color)
@@ -536,8 +669,11 @@ namespace BinaryLift
         [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.AfterSceneLoad)]
         static void Init()
         {
-            if (Object.FindFirstObjectByType<RaceController>() != null) return;
-            new GameObject("BinaryLiftGame").AddComponent<RaceController>();
+            if (Object.FindFirstObjectByType<RaceController>() != null ||
+                Object.FindFirstObjectByType<CampusQuestController>() != null ||
+                Object.FindFirstObjectByType<TreeClimbingController>() != null ||
+                Object.FindFirstObjectByType<AdventureController>() != null) return;
+            new GameObject("ConeCourierAdventure").AddComponent<AdventureController>();
         }
     }
 }

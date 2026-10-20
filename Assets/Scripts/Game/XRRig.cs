@@ -12,7 +12,7 @@ namespace BinaryLift
     public sealed class XRRig : MonoBehaviour
     {
         /// <summary>Degrees to tilt the controller ray down (+) / up (-) from the grip pose. Tune on device.</summary>
-        public static float PointerPitch = 0f;
+        public static float PointerPitch = 70f;
 
         public Camera Head { get; private set; }
         public Transform LeftHand { get; private set; }
@@ -22,8 +22,17 @@ namespace BinaryLift
         public bool RightTracked { get; private set; }
         public bool SelectPressed { get; private set; }
         public bool RestartPressed { get; private set; }
+        public bool RightSelectPressed { get; private set; }
+        public bool LeftSelectPressed { get; private set; }
+        public bool RightGrip { get; private set; }
+        public bool LeftGrip { get; private set; }
+        public int SnapDirection { get; private set; }
 
+        // Rotation from each controller's tracked pose to its pointing direction. Reset by pressing the thumbstick.
+        Quaternion rightAim = Quaternion.identity, leftAim = Quaternion.identity;
+        bool prevRightClick, prevLeftClick;
         bool prevSelect, prevRestart, originSet;
+        bool prevRightSelect, prevLeftSelect, turnLatched;
         float yaw, pitch;
         static readonly List<XRInputSubsystem> subsystems = new List<XRInputSubsystem>();
 
@@ -61,6 +70,41 @@ namespace BinaryLift
             return hand.transform;
         }
 
+        void Start()
+        {
+            Quaternion fallback = Quaternion.Euler(PointerPitch, 0f, 0f);
+            rightAim = LoadAim("aimRight", fallback);
+            leftAim = LoadAim("aimLeft", fallback);
+        }
+
+        static Quaternion LoadAim(string key, Quaternion fallback)
+        {
+            if (!PlayerPrefs.HasKey(key + "X")) return fallback;
+            var q = new Quaternion(PlayerPrefs.GetFloat(key + "X"), PlayerPrefs.GetFloat(key + "Y"),
+                PlayerPrefs.GetFloat(key + "Z"), PlayerPrefs.GetFloat(key + "W"));
+            return q.x * q.x + q.y * q.y + q.z * q.z + q.w * q.w > .5f ? q : fallback;
+        }
+
+        static void SaveAim(string key, Quaternion q)
+        {
+            PlayerPrefs.SetFloat(key + "X", q.x); PlayerPrefs.SetFloat(key + "Y", q.y);
+            PlayerPrefs.SetFloat(key + "Z", q.z); PlayerPrefs.SetFloat(key + "W", q.w);
+            PlayerPrefs.Save();
+        }
+
+        /// <summary>Point the controller straight ahead (at the horizon) and call this: that pose becomes "pointer neutral".</summary>
+        public void CalibratePointer(bool right)
+        {
+            var hand = right ? RightHand : LeftHand;
+            Vector3 flat = Head.transform.forward;
+            flat.y = 0f;
+            if (flat.sqrMagnitude < .01f) flat = Vector3.forward;
+            Quaternion aim = Quaternion.Inverse(hand.rotation) * Quaternion.LookRotation(flat.normalized, Vector3.up);
+            if (right) { rightAim = aim; SaveAim("aimRight", aim); }
+            else { leftAim = aim; SaveAim("aimLeft", aim); }
+            Pulse(right, .6f, .15f);
+        }
+
         void OnEnable() { Application.onBeforeRender += ApplyPoses; }
         void OnDisable() { Application.onBeforeRender -= ApplyPoses; }
 
@@ -69,16 +113,33 @@ namespace BinaryLift
         {
             XRActive = XRSettings.isDeviceActive;
             bool select = false, restart = false;
+            bool rightSelect = false, leftSelect = false;
+            float turn = 0;
+            RightGrip = LeftGrip = false;
+            SnapDirection = 0;
 
             if (XRActive)
             {
                 TrySetFloorOrigin();
-                select = Button(XRNode.RightHand, CommonUsages.triggerButton)
-                         || Button(XRNode.LeftHand, CommonUsages.triggerButton)
-                         || Button(XRNode.RightHand, CommonUsages.primaryButton)
+                ApplyPoses();
+                rightSelect = Button(XRNode.RightHand, CommonUsages.triggerButton)
+                         || Button(XRNode.RightHand, CommonUsages.primaryButton);
+                leftSelect = Button(XRNode.LeftHand, CommonUsages.triggerButton)
                          || Button(XRNode.LeftHand, CommonUsages.primaryButton);
+                select = rightSelect || leftSelect;
+                RightGrip = RightTracked && Button(XRNode.RightHand, CommonUsages.gripButton);
+                LeftGrip = LeftTracked && Button(XRNode.LeftHand, CommonUsages.gripButton);
+                if (InputDevices.GetDeviceAtXRNode(XRNode.RightHand).TryGetFeatureValue(CommonUsages.primary2DAxis, out Vector2 stick))
+                    turn = stick.x;
                 restart = Button(XRNode.RightHand, CommonUsages.secondaryButton)
                           || Button(XRNode.LeftHand, CommonUsages.secondaryButton);
+
+                bool rightClick = RightTracked && Button(XRNode.RightHand, CommonUsages.primary2DAxisClick);
+                bool leftClick = LeftTracked && Button(XRNode.LeftHand, CommonUsages.primary2DAxisClick);
+                if (rightClick && !prevRightClick) CalibratePointer(true);
+                if (leftClick && !prevLeftClick) CalibratePointer(false);
+                prevRightClick = rightClick;
+                prevLeftClick = leftClick;
             }
             else
             {
@@ -91,6 +152,8 @@ namespace BinaryLift
                     }
                     select = Input.GetMouseButton(0);
                     restart = Input.GetKey(KeyCode.R);
+                    rightSelect = select;
+                    turn = Input.GetKey(KeyCode.Q) ? -1 : Input.GetKey(KeyCode.E) ? 1 : 0;
                 }
                 catch (System.InvalidOperationException)
                 {
@@ -104,6 +167,16 @@ namespace BinaryLift
             }
 
             SelectPressed = select && !prevSelect;
+            RightSelectPressed = rightSelect && !prevRightSelect;
+            LeftSelectPressed = leftSelect && !prevLeftSelect;
+            prevRightSelect = rightSelect;
+            prevLeftSelect = leftSelect;
+            if (Mathf.Abs(turn) < .3f) turnLatched = false;
+            if (!turnLatched && Mathf.Abs(turn) > .75f)
+            {
+                SnapDirection = turn > 0 ? 1 : -1;
+                turnLatched = true;
+            }
             RestartPressed = restart && !prevRestart;
             prevSelect = select;
             prevRestart = restart;
@@ -166,7 +239,7 @@ namespace BinaryLift
         {
             var hand = right ? RightHand : LeftHand;
             bool tracked = right ? RightTracked : LeftTracked;
-            Vector3 dir = hand.rotation * Quaternion.Euler(PointerPitch, 0f, 0f) * Vector3.forward;
+            Vector3 dir = hand.rotation * (right ? rightAim : leftAim) * Vector3.forward;
             ray = new Ray(hand.position, dir);
             return XRActive && tracked;
         }
@@ -174,5 +247,32 @@ namespace BinaryLift
         public Ray GazeRay => new Ray(Head.transform.position, Head.transform.forward);
 
         public Ray MouseRay => Head.ScreenPointToRay(Input.mousePosition);
+
+        public void Pulse(bool right, float amplitude = .25f, float duration = .06f)
+        {
+            var device = InputDevices.GetDeviceAtXRNode(right ? XRNode.RightHand : XRNode.LeftHand);
+            if (device.TryGetHapticCapabilities(out HapticCapabilities caps) && caps.supportsImpulse)
+                device.SendHapticImpulse(0, Mathf.Clamp01(amplitude), duration);
+        }
+
+        public void TeleportFeet(Vector3 destination)
+        {
+            // Preserve the tracked room offset and head rotation; place the feet under the headset.
+            Vector3 offset = Head.transform.position - transform.position;
+            offset.y = 0;
+            transform.position = destination - offset;
+        }
+
+        public void SetDesktopView(float newPitch, float newYaw = 0)
+        {
+            if (XRActive) return;
+            pitch = newPitch; yaw = newYaw;
+            Head.transform.localRotation = Quaternion.Euler(pitch, yaw, 0);
+        }
+
+        public void SnapTurn(int direction)
+        {
+            transform.RotateAround(Head.transform.position, Vector3.up, direction * 30f);
+        }
     }
 }

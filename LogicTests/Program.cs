@@ -22,9 +22,150 @@ static class Program
         PlayerWinsWithSetBitsOnly();
         NpcWinsIfPlayerIdles();
         RulesRejectIllegalMoves();
+        CampusQuestProgression();
+        PhysicalClimbProgression();
+        AdventureFlow();
+        LoomLabels();
+        LoomLabelsStayConsistent();
+        CampusLifeFlow();
 
         Console.WriteLine(failures == 0 ? "ALL PASSED" : failures + " FAILURE(S)");
         return failures == 0 ? 0 : 1;
+    }
+
+    static void ClimbSelection(AdventureState s,int span)
+    {
+        int from=s.Node,levels=s.TotalLevels;
+        Check(s.Choose(span)&&s.Node==from&&s.TotalLevels==levels,"selection never moves player");
+        Check(!s.Pull(0)&&!s.Pull(-1)&&!s.Pull(float.NaN)&&!s.Pull(float.PositiveInfinity)&&!s.Pull(.21f),"invalid pulls rejected");
+        s.Pull(.1f);Check(s.Node==from&&s.TotalLevels==levels&&s.EdgeProgress>0,"partial edge not counted");
+        int guard=0;
+        while(s.Phase==AdventurePhase.Climbing&&guard++<1000)
+        {
+            int old=s.Node,oldLevels=s.TotalLevels;s.Pull(.1f);
+            if(s.Node!=old)Check(s.Node==s.Tree.Parent[old]&&s.TotalLevels==oldLevels+1,"each ancestor crossing counted once");
+        }
+        Check(guard<1000&&s.Node==s.Tree.KthAncestor(from,span),"physical ancestor chain completed");
+    }
+    static void AdventureFlow()
+    {
+        for(int seed=0;seed<40;seed++)
+        {
+            var s=new AdventureState(seed);
+            Check(string.Join(",",s.Tree.Parent)==string.Join(",",TreeGenerator.Generate(seed,16,18).Parent),"original topology retained");
+            Check(!s.BeginChase()&&!s.Choose(1)&&!s.EnterTree()&&!s.Weave()&&!s.NextTarget(),"phases cannot be skipped");
+            Check(!s.OpenQuiz()&&!s.AnswerQuiz(0),"quiz cannot skip the adventure");
+            Check(!s.BeginResearch()&&!s.CancelResearch()&&s.MinimumDecisions(4)==4,"no research or shortcut before discovery");
+            Check(s.ExitClassroom()&&!s.ExitClassroom()&&s.BeginChase()&&!s.BeginChase(),"exit and theft once");
+            Check(s.ReachGate()&&s.EnterTree(),"map before tree");
+            Check(!s.CanChoose(2)&&!s.CanChoose(4)&&!s.Choose(3)&&!s.Choose(8),"no global upgrades before exploration");
+            for(int pair=0;pair<2;pair++)
+            {
+                ClimbSelection(s,1);ClimbSelection(s,1);
+                Check(s.Phase==AdventurePhase.Clue&&!s.Choose(1),"stop at a physical cone");
+                Check(s.CollectCone()&&!s.CollectCone(),"unique cone collection");
+                int from=s.PendingStart,mid=s.PendingMiddle,end=s.PendingEnd;
+                Check(s.PendingSpan==2&&s.Knows(from,1)&&s.Knows(mid,1),"two observed adjacent edges required");
+                Check(s.Tree.Parent[mid]==end&&s.Weave()&&s.Knows(from,2),"store a node-specific two-edge connection");
+            }
+            Check(s.PendingSpan==4&&s.PendingMiddle==s.Tree.KthAncestor(s.StartNode,2),"four-edge composition keeps middle ancestor");
+            Check(s.Weave()&&!s.Weave()&&s.Phase==AdventurePhase.Retargeting,"compose once and offer new target");
+            Check(!s.Knows(s.Tree.Parent[s.StartNode],2),"memory is not a universal two-level power");
+            Check(s.Cones==2&&s.MissionSelections==4&&s.TotalLevels==4,"four physical discoveries and two cones");
+            Check(s.NextTarget()&&!s.NextTarget()&&s.Node==s.StartNode&&s.Goal==s.OriginalGoal,"new target preserves original final goal");
+            Check(s.TotalLevels==4&&s.MissionLevels==0&&s.CanChoose(4),"return preserves memory and lifetime effort");
+            ClimbSelection(s,4);
+            Check(s.MissionSelections==1&&s.MissionLevels==4,"one decision replaces four, same physical distance");
+            while(s.Remaining>0)ClimbSelection(s,1);
+            Check(s.CollectCone()&&!s.CollectCone()&&s.Phase==AdventurePhase.Complete,"single terminal results");
+            Check(s.Cones==3&&s.ReusedConnections==1,"recovery and reuse recorded");
+            Check(s.EfficientRecoveries==1&&s.BestRouteDecisions==s.MissionSelections,"efficiency is based on available memory, not ideal unseen routes");
+            CheckQuiz(s);
+            BuildAllResearch(s);
+            Check(Math.Abs(s.TotalPull-s.TotalLevels*AdventureState.PullPerEdge)<.003f,"no upgrade bypasses physical effort");
+            Check(s.NextTarget()&&s.Knows(s.StartNode,4)&&s.Cones==3,"another target keeps learned routes");
+            Check(s.RequiredLevels==3&&!s.CanChoose(4),"short target rejects overshooting four");
+            ClimbSelection(s,2);ClimbSelection(s,1);
+            Check(s.CollectCone()&&s.Cones==4,"repeat search completes in same game");
+            foreach(int distance in new[]{5,7,4,6,3})
+            {
+                Check(s.NextTarget()&&s.RequiredLevels==distance&&s.Goal>=0,"varied targets stay within original ancestry");
+                while(s.Remaining>0)ClimbSelection(s,s.CanChoose(4)?4:s.CanChoose(2)?2:1);
+                Check(s.CollectCone(),"varied funding target recoverable");
+                CheckQuiz(s);
+                BuildAllResearch(s);
+            }
+            Check(new AdventureState(seed).Cones==0&&!new AdventureState(seed).Knows(s.StartNode,4),"classroom restart resets memory");
+        }
+    }
+
+    static void CampusLifeFlow()
+    {
+        var s=new CampusLifeState();
+        Check(!s.Brew()&&!s.PlaceCup(CupPlace.Coaster)&&!s.Submit()&&!s.OpenDrawer()&&!s.TakeClue(),"campus tasks require real ordered actions");
+        Check(!s.PlaceCup((CupPlace)99)&&s.PlaceCup(CupPlace.Brewer)&&s.Brew()&&!s.Brew(),"cup must dock before brewing once");
+        Check(!s.PlaceCup(CupPlace.Tray)&&!s.Advance(float.NaN)&&!s.Advance(10),"brewing locks cup and rejects invalid time");
+        for(int i=0;i<26;i++)s.Advance(.1f);
+        Check(s.Fill==1&&!s.Brewing&&s.PlaceCup(CupPlace.Coaster)&&s.CoffeeServed&&!s.PlaceCup(CupPlace.Tray),"coffee fills and serving is persistent");
+        Check(s.Stamp()&&!s.Stamp()&&s.Submit()&&!s.Submit()&&s.OpenDrawer()&&s.TakeClue()&&!s.TakeClue(),"stamp submit drawer clue cannot be farmed");
+        var reset=new CampusLifeState();Check(!reset.CoffeeServed&&!reset.ClueFound&&!reset.Stamped&&reset.Fill==0,"campus replay starts clean");
+        var optional=new AdventureState();Check(optional.ExitClassroom(),"campus chores never gate departure");
+    }
+    static void CheckQuiz(AdventureState s)
+    {
+        int cones=s.Cones,levels=s.TotalLevels,stamps=s.ResearchStamps;
+        Check(s.OpenQuiz()&&s.CloseQuiz()&&s.ResearchStamps==stamps,"optional quiz can be skipped without penalty");
+        Check(s.OpenQuiz()&&!s.NextTarget()&&!s.AnswerQuiz(-1)&&!s.AnswerQuiz(2),"quiz has bounded answers and safe phase guards");
+        Check(s.AnswerQuiz(1-s.CorrectQuizAnswer)&&!s.QuizSolved&&s.ResearchStamps==stamps&&s.QuizFeedback.Length>30,"wrong answer explains and allows retry");
+        Check(s.AnswerQuiz(s.CorrectQuizAnswer)&&s.QuizSolved&&s.ResearchStamps==stamps+1,"correct retry earns one stamp");
+        Check(!s.AnswerQuiz(s.CorrectQuizAnswer)&&s.CloseQuiz()&&s.OpenQuiz()&&!s.AnswerQuiz(s.CorrectQuizAnswer),"reopening cannot farm stamps");
+        Check(s.CloseQuiz()&&s.Cones==cones&&s.TotalLevels==levels,"quiz never changes climb or cones");
+        if(s.QuizTopic==2)Check(s.QuizOption(0)=="NODE "+s.Tree.Parent[s.Tree.Parent[s.StartNode]],"ancestor quiz uses the actual tree");
+    }
+    static int ReferenceMinimum(AdventureState s,int node,int remaining)
+    {
+        if(remaining==0)return 0;
+        int best=remaining;
+        foreach(int span in new[]{1,2,4})if(span<=remaining&&(span==1||s.Knows(node,span)))best=Math.Min(best,1+ReferenceMinimum(s,s.Tree.KthAncestor(node,span),remaining-span));
+        return best;
+    }
+    static void BuildAllResearch(AdventureState s)
+    {
+        int levels=s.TotalLevels,cones=s.Cones,guard=0,frozenBest=s.BestRouteDecisions;
+        while(s.CanResearch&&guard++<s.Tree.Count*2)
+        {
+            int count=s.ConnectionCount;
+            Check(s.BeginResearch()&&s.CancelResearch()&&s.ConnectionCount==count,"research can be cancelled without mutation");
+            Check(s.BeginResearch()&&s.Knows(s.PendingStart,s.PendingSpan/2)&&s.Knows(s.PendingMiddle,s.PendingSpan/2),"research requires actual adjacent memories");
+            int from=s.PendingStart,span=s.PendingSpan;
+            Check(s.Weave()&&s.Knows(from,span)&&s.ConnectionCount==count+1&&s.Phase==AdventurePhase.Complete,"optional research returns to same results");
+            Check(!s.Weave(),"no duplicate research reward");
+        }
+        Check(guard<s.Tree.Count*2&&!s.BeginResearch(),"research exhausts a finite set");
+        Check(s.TotalLevels==levels&&s.Cones==cones&&s.BestRouteDecisions==frozenBest,"research preserves physical progress and historical score");
+        for(int k=0;k<=s.Tree.Depth[s.StartNode];k++)Check(s.MinimumDecisions(k)==ReferenceMinimum(s,s.StartNode,k),"decision benchmark matches exhaustive routes");
+        if(s.OriginalLevels>=6)Check(s.MinimumDecisions(6)==2,"new knowledge makes a six-level 4+2 route possible");
+    }
+
+    static void PhysicalClimbProgression()
+    {
+        var p = new ClimbProgress();
+        Check(p.Ancestor(9)==8, "unassisted return follows one real branch");
+        Check(!p.Collect(2) && !p.Collect(-1), "only physical clue nodes collect");
+        Check(p.Collect(9) && !p.Collect(9), "free exploration and unique collection");
+        Check(p.Reach==2 && p.Ancestor(9)==3, "two-edge return crosses branch junction");
+        p.Collect(3);
+        Check(p.Ancestor(11)==3, "four-edge return stays on ancestor route");
+        p.Collect(7); p.Collect(11);
+        Check(p.Cones==4 && p.Reach==8, "four cones cap reach at eight");
+        Check(p.Ancestor(12)==0, "eight-edge rope reaches the root from the crown");
+        Check(p.Ancestor(0)==-1 && p.Ancestor(100)==-1, "no root or invalid return");
+        for(int i=1;i<p.Tree.Count;i++)
+        {
+            int a=p.Ancestor(i);
+            Check(a>=0 && p.Tree.Depth[a]<p.Tree.Depth[i], "return always moves rootward");
+        }
+        Check(new ClimbProgress().Cones==0, "restart has no collected cones");
     }
 
     static void KthAncestorMatchesNaive()
@@ -127,5 +268,104 @@ static class Program
         for (int j = 0; j < shallow.Bits; j++)
             if (shallow.Up[j][r2.Player] < 0) Check(!r2.TryPortal(j), "overshooting portal refused");
         Check(r2.Moves == movesBefore, "refused portals do not count as moves");
+    }
+
+    static void CampusQuestProgression()
+    {
+        var q = new CampusQuestState();
+        Check(!q.TryJump(1) && !q.PickUpCone(), "quest blocks actions before briefing ends");
+        Check(q.Begin() && !q.Begin(), "quest starts exactly once");
+        Check(!q.TryJump(2) && !q.TryJump(0) && !q.TryJump(-1), "locked and invalid jumps rejected");
+        Check(!q.PickUpCone() && !q.DepositCone(), "cannot collect remotely or deposit empty hands");
+        int[] legs = { 1, 2, 4 };
+        foreach (int leg in legs)
+        {
+            Check(q.CanJump(leg), "new jump available: " + leg);
+            var preview = q.Preview(leg);
+            Check(preview.Count == leg + 1 && preview[0] == q.Node && preview[leg] == q.Goal, "preview follows each parent edge");
+            Check(q.TryJump(leg) && q.Node == q.Goal, "jump reaches clue");
+            Check(!q.TryJump(1), "cannot overshoot a clue");
+            Check(q.PickUpCone() && !q.PickUpCone(), "cone cannot be duplicated");
+            Check(!q.TryJump(1), "cannot travel while carrying cone");
+            Check(q.ReturnCone() && q.PickUpCone(), "dropped cone can be recovered");
+            Check(q.DepositCone() && !q.DepositCone(), "deposit unlocks exactly once");
+        }
+        Check(q.Remaining == 13 && q.MaxJump == 8, "final challenge teaches 13 = 8 + 4 + 1");
+        Check(!q.TryJump(3) && !q.TryJump(16), "non-powers and unavailable powers rejected");
+        Check(q.TryJump(8) && !q.TryJump(8) && q.TryJump(4) && q.TryJump(1), "final bit decomposition");
+        Check(q.PickUpCone() && q.DepositCone(), "last clue stored");
+        Check(q.Phase == QuestPhase.Complete && q.Cones == 4 && q.Moves == 6, "complete in six jumps");
+        Check(!q.Begin() && !q.TryJump(1) && !q.PickUpCone() && !q.ReturnCone(), "completion is terminal");
+        var visited = q.BreadthFirstOrder();
+        var unique = new HashSet<int>(visited);
+        Check(visited.Count == q.Tree.Count && unique.Count == q.Tree.Count, "BFS visits every node once");
+        for (int i = 1; i < visited.Count; i++)
+            Check(q.Tree.Depth[visited[i]] >= q.Tree.Depth[visited[i-1]], "BFS visits nondecreasing depth");
+        var reset = new CampusQuestState();
+        Check(reset.Node == 20 && reset.Cones == 0 && reset.Moves == 0 && reset.Phase == QuestPhase.Briefing, "fresh session resets progression");
+    }
+
+    // Replays the weaving screens a player sees on the default tree (start node 23, goal node 10).
+    static void LoomLabels()
+    {
+        var s=new AdventureState(13);
+        s.ExitClassroom();s.BeginChase();s.ReachGate();s.EnterTree();
+        Check(s.StartNode==23&&s.Goal==10,"default tree has start 23 and goal 10");
+        Check(s.LoomNodesText==""&&s.LoomAnchorText(0)==""&&s.LoomRoleOf(23)==LoomRole.None,"loom text and roles are empty outside weaving");
+
+        ClimbSelection(s,1);ClimbSelection(s,1);
+        Check(s.CollectCone()&&s.Phase==AdventurePhase.Weaving,"first weave after two levels");
+        Check(s.LoomNodesText=="NODE 23   >   13   >   12\nDEPTH 14   >   13   >   12","first loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 23\nDEPTH 14\nSTART","first loom: the start node is marked START");
+        Check(s.LoomAnchorText(1)=="VIA 13\nDEPTH 13","first loom: the middle node has no marker");
+        Check(s.LoomAnchorText(2)=="TO 12\nDEPTH 12\nYOU ARE HERE","first loom: the player's node is marked YOU ARE HERE");
+        Check(s.LoomRoleOf(23)==LoomRole.Start&&s.LoomRoleOf(13)==LoomRole.Middle&&s.LoomRoleOf(12)==LoomRole.End&&s.LoomRoleOf(11)==LoomRole.None,"first loom: three platforms have roles");
+        Check(s.Weave(),"first connection woven");
+
+        ClimbSelection(s,1);ClimbSelection(s,1);
+        Check(s.Node==10&&s.CollectCone()&&s.Phase==AdventurePhase.Weaving,"second weave at the goal, node 10 depth 10");
+        Check(s.LoomNodesText=="NODE 12   >   11   >   10\nDEPTH 12   >   11   >   10","second loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 12\nDEPTH 12"&&s.LoomAnchorText(2)=="TO 10\nDEPTH 10\nYOU ARE HERE","second loom: only the player's node is tagged");
+        Check(s.Weave()&&s.Phase==AdventurePhase.Weaving&&s.PendingSpan==4,"second connection leads to the four-level loom");
+
+        // The screen that looked like a teleport to node 23: the player is still on node 10, depth 10.
+        Check(s.Node==10&&s.Tree.Depth[s.Node]==10,"four-level loom does not move the player");
+        Check(s.LoomNodesText=="NODE 23   >   12   >   10\nDEPTH 14   >   12   >   10","four-level loom: nodes and depths");
+        Check(s.LoomAnchorText(0)=="FROM 23\nDEPTH 14\nSTART","four-level loom: node 23 is the START, not the player's position");
+        Check(s.LoomAnchorText(1)=="VIA 12\nDEPTH 12","four-level loom: shared middle ancestor");
+        Check(s.LoomAnchorText(2)=="TO 10\nDEPTH 10\nYOU ARE HERE","four-level loom: the player is at node 10");
+        Check(s.LoomTag(23)=="START"&&s.LoomTag(10)=="YOU ARE HERE"&&s.LoomTag(12)=="","tags for start, player and others");
+        Check(s.Weave()&&s.LoomNodesText=="","loom text clears once woven");
+    }
+
+    // For many trees: displayed depths are real depths, markers sit on the right nodes, no placeholder values leak.
+    static void LoomLabelsStayConsistent()
+    {
+        for(int seed=1;seed<=40;seed++)
+        {
+            var s=new AdventureState(seed);
+            s.ExitClassroom();s.BeginChase();s.ReachGate();s.EnterTree();
+            Check(s.LoomTag(s.StartNode).Contains("START"),"start node always tagged START, seed "+seed);
+            Check(s.LoomTag(s.Node).Contains("YOU ARE HERE"),"player node always tagged, seed "+seed);
+            while(s.Phase!=AdventurePhase.Weaving&&s.Phase!=AdventurePhase.Retargeting&&s.Phase!=AdventurePhase.Complete&&s.Remaining>0)
+            {
+                if(s.Phase==AdventurePhase.Clue){s.CollectCone();continue;}
+                ClimbSelection(s,1);
+            }
+            for(int guard=0;guard<6&&s.Phase==AdventurePhase.Weaving;guard++)
+            {
+                int[] nodes={s.PendingStart,s.PendingMiddle,s.PendingEnd};
+                Check(s.LoomNodesText.Contains("NODE "+nodes[0])&&!s.LoomNodesText.Contains("-1"),"loom text names real nodes, seed "+seed);
+                Check(s.LoomNodesText.EndsWith(s.Tree.Depth[nodes[0]]+"   >   "+s.Tree.Depth[nodes[1]]+"   >   "+s.Tree.Depth[nodes[2]]),"loom depths match the tree, seed "+seed);
+                for(int i=0;i<3;i++)
+                {
+                    Check(s.LoomAnchorText(i).Contains("DEPTH "+s.Tree.Depth[nodes[i]]),"anchor depth matches, seed "+seed);
+                    Check(s.LoomAnchorText(i).Contains("YOU ARE HERE")==(nodes[i]==s.Node),"YOU ARE HERE only on the player's node, seed "+seed);
+                    Check(s.LoomAnchorText(i).Contains("START")==(nodes[i]==s.StartNode),"START only on the start node, seed "+seed);
+                }
+                Check(s.LoomRoleOf(nodes[0])==LoomRole.Start&&s.LoomRoleOf(nodes[1])==LoomRole.Middle&&s.LoomRoleOf(nodes[2])==LoomRole.End,"roles map to the three nodes, seed "+seed);
+                s.Weave();
+            }
+        }
     }
 }

@@ -1,0 +1,21 @@
+Highland calf native asset checks
+PASS imported prefab exists
+PASS approved geometry retained: 7594 triangles
+PASS body and coat share one material and submesh
+PASS coat shader compiles
+PASS 13 native clips and 42 bones
+PASS Attack_Headbutt deforms with finite vertices inside skin bounds
+PASS Attack_Kick deforms with finite vertices inside skin bounds
+PASS Death deforms with finite vertices inside skin bounds
+PASS Eating deforms with finite vertices inside skin bounds
+PASS Gallop deforms with finite vertices inside skin bounds
+PASS Gallop_Jump deforms with finite vertices inside skin bounds
+PASS Idle deforms with finite vertices inside skin bounds
+PASS Idle_2 deforms with finite vertices inside skin bounds
+PASS Idle_Headlow deforms with finite vertices inside skin bounds
+PASS Idle_HitReact1 deforms with finite vertices inside skin bounds
+PASS Idle_HitReact2 deforms with finite vertices inside skin bounds
+PASS Jump_toIdle deforms with finite vertices inside skin bounds
+PASS Walk deforms with finite vertices inside skin bounds
+Result: PASS
+Headset validation: NOT RUN

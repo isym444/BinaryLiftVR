@@ -1,0 +1,69 @@
+# VR validation - Classroom to Canopy
+
+Status: NOT RUN ON HEADSET. Desktop success does not establish headset readiness.
+Record device model, runtime, controller type, build, date and tester; no serials/accounts.
+
+## Entry and locomotion
+- Build and launch on the intended device after installing matching Android modules.
+- Confirm OpenXR/controller profile, both-eye rendering, floor origin and seated height.
+- Explore the classroom, open the door, approach the funding and trigger theft once.
+- Complete all seven checkpoints with left-stick movement and with optional ray walking.
+- Check clear routes around desks and the exit; the prototype is not a room-scale collision solver.
+
+## Transitions and comfort
+- At the aerial reveal, verify fade coverage and a stationary overlook with head rotation
+  and existing snap yaw retained. Looking down must reveal the traced campus graph.
+- Check the tree overview and fade to the climbing start without forced pitch or roll.
+- Verify no camera bob, involuntary turning or falling when input stops.
+- Assess the head-following instruction panel at 0.4 m and all close grip distances.
+  Move or redesign the panel if uncomfortable; current depth is not hardware-approved.
+
+## Manual climbing and collection
+- Initially only one level is available. Explore four levels with cone stops at two/four.
+- Join each pair through orange-plug/cyan-socket trigger selections; combine two pairs
+  into four. Check workshop text, connector reach and visible thread animation.
+- Select each learned 1/2/4 connection. Selecting alone must not move the player.
+- Change to the six-level target, retaining memory; manually traverse 4+1+1.
+- Reach and grip each rounded orange hold with either hand, then pull downward.
+- Alternate hands, use both hands, pause and release. Two hands must not double speed.
+- Verify motion follows the actual branch direction, including sideways connections.
+- Cross every node once; total and selected-route counters must agree with the graph.
+- Lose tracking or introduce a pose discontinuity: release safely without extra progress.
+- Check physical reach while seated, glove contact, personal space and haptic comfort.
+- Collect the final cone by nearby grip and by trigger ray in separate runs.
+- Results offer New Target / Keep Memory and Replay from Classroom only.
+- A new target preserves cones and node-specific connections, resets mission counts,
+  and fades to the start without forcing head rotation. Try 2+2+1 on the five-level target.
+- No legacy controller or second game may start.
+- Replay/reset must clear counters, trophy, grips and route reveal, returning to classroom.
+
+## Performance and production gaps
+- Profile CPU/GPU, draw calls, memory and thermals on the actual standalone headset.
+- Inspect the full campus/35-node overview and dense branch holds as worst-case views.
+- Repeat ten minutes of climbing and restarts; check object/material counts.
+- No device performance claim, verified APK, audio, persistent save, guardian integration
+  or final character rigs is included. New external art/audio needs separate approval.
+- Profile the approved sandstone, furniture and poster on device; inspect mipmaps,
+  readability and texture/shader cost. See AssetRegister.md for exact imported sources.
+
+## Three-cycle additions: hardware checks still required
+
+- Read FROM/VIA/TO labels, the shared middle anchor, remembered branch paths and
+  current level count stereoscopically while climbing and resting.
+- Select optional quiz answers, read retry feedback and reach BACK / SKIP reliably.
+- Enter/cancel RECORD NEW ROUTES, compose a connection with trigger rays, and return
+  to the same results. Confirm a larger selection still requires every physical edge.
+- Inspect the four result buttons, efficiency text and memory count at headset scale.
+- Check procedural shader support, soft-shadow cost and frame timing on target hardware.
+- Verify coffee/form response and horse nods remain comfortable and do not move the head.
+
+Desktop tests do not validate these hardware conditions. No headset run is claimed.
+
+## Campus life hardware checks added 2026-10-18
+NOT RUN on hardware. Verify seated and standing approach to the new worktops, left/right
+near-grip selection at 12 cm, cup docking, brew movement lock, stamp contact, tray release,
+drawer pull and card pickup. Confirm tracking/focus loss returns held props, and snap/move
+cannot displace the player during a grab. Check stereo readability of worktop hints and
+whether drawer/card reach needs a seated accessibility adjustment. Measure CPU/GPU frame
+time after the new imported meshes, normal/roughness maps and three shadowless point lights.
+Desktop input evidence is in CampusLifeValidation-2026-10-18.md; it does not satisfy these.

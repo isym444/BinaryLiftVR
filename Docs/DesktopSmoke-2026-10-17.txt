@@ -1,0 +1,37 @@
+Campus Quest desktop integration checks
+PASS initial briefing
+PASS nine interaction targets constructed
+PASS route tree renders all nodes
+PASS placeholder characters constructed
+PASS jump enabled: 1
+PASS clue cone visible at goal
+PASS ray pickup enters carrying phase
+PASS saddle deposit accepted
+PASS horse displays recovered cone
+PASS jump enabled: 2
+PASS clue cone visible at goal
+PASS ray pickup enters carrying phase
+PASS saddle deposit accepted
+PASS horse displays recovered cone
+PASS jump enabled: 4
+PASS clue cone visible at goal
+PASS ray pickup enters carrying phase
+PASS saddle deposit accepted
+PASS horse displays recovered cone
+PASS jump enabled: 8
+PASS jump enabled: 4
+PASS jump enabled: 1
+PASS clue cone visible at goal
+PASS ray pickup enters carrying phase
+PASS saddle deposit accepted
+PASS horse displays recovered cone
+PASS full route completes in six jumps
+PASS completion presentation
+PASS restart returns to clean briefing
+PASS restart hides collectible
+PASS restart clears trophy
+PASS restart clears trophy
+PASS restart clears trophy
+PASS restart clears trophy
+Result: PASS
+Headset validation: NOT RUN

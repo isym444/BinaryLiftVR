@@ -1,0 +1,10 @@
+2026-10-18T09:28:04.1732806Z event=arrival phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:29.4581045Z event=campus_prop_grabbed_Cup phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:29.4800042Z event=campus_prop_placed_Cup phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:37.0901928Z event=coffee_brewing_started phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:39.5672854Z event=coffee_brewed phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:47.2893093Z event=campus_prop_grabbed_Cup phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:47.3202325Z event=campus_prop_placed_Cup phase=Arrival node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:58.2849532Z event=classroom_exited phase=Courtyard node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:28:59.8133063Z event=theft_anticipation phase=Chase node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
+2026-10-18T09:29:01.0296998Z event=funding_snatched phase=Chase node=23 climbed=0 selected=0 crossed=0 selections=0 search=0 mission_levels=0 cones=0 reused=0 stamps=0 memories=0 best=4 researched=0
